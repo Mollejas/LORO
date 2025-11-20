@@ -1947,11 +1947,14 @@
 
       // Acumulador de archivos
       let accumulatedFiles = [];
+      let isUpdatingInput = false;
 
       function updateInputFromAccumulator() {
+        isUpdatingInput = true;
         const dt = new DataTransfer();
         accumulatedFiles.forEach(f => dt.items.add(f));
         input.files = dt.files;
+        isUpdatingInput = false;
       }
 
       function removeFileAtIndex(index) {
@@ -2021,6 +2024,7 @@
 
       // File picker - acumular archivos
       input.addEventListener('change', () => {
+        if (isUpdatingInput) return; // Evitar duplicados por cambio programático
         const newFiles = Array.from(input.files || []);
         if (newFiles.length === 0) return;
         appendFiles(newFiles);
