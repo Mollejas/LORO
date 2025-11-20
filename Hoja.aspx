@@ -149,6 +149,11 @@
     .icon-row.inv.compacto .icon-btn i{font-size:18px;}
     .doc-strip.compacto.alert-pulse{animation:blinkBorder 1.1s ease-in-out infinite;}
     @keyframes blinkBorder{0%{box-shadow:0 0 0 0 rgba(239,68,68,.55);border-color:#fecaca;}50%{box-shadow:0 0 0 6px rgba(239,68,68,0);border-color:#ef4444;}100%{box-shadow:0 0 0 0 rgba(239,68,68,.55);border-color:#fecaca;}}
+
+    /* Blink para botón PROCESO DE RECEPCION */
+    .btn-toggle-strip.blink-danger{animation:blinkBtnDanger 1.1s ease-in-out infinite;background:#fee2e2;border-color:#ef4444;color:#dc2626;}
+    @keyframes blinkBtnDanger{0%{box-shadow:0 0 0 0 rgba(239,68,68,.55);}50%{box-shadow:0 0 0 8px rgba(239,68,68,0);}100%{box-shadow:0 0 0 0 rgba(239,68,68,.55);}}
+    .btn-toggle-strip.blink-success{background:#dcfce7;border-color:#16a34a;color:#15803d;}
     #strip{overflow:hidden;transition:max-height .35s ease,opacity .25s ease,transform .35s ease;}
     #strip.is-collapsed{max-height:0!important;opacity:0;transform:translateY(6px);pointer-events:none;margin-top:0!important;margin-bottom:0!important;border-width:0;}
 
@@ -1551,6 +1556,12 @@
             stripEl.classList.toggle('alert-pulse', !ok);
             btnEl.classList.toggle('danger', !ok);
             btnEl.title = ok ? 'Todos los visores habilitados' : 'Faltan visores por habilitar';
+
+            // Aplicar blink al botón PROCESO DE RECEPCION
+            if (stripEl.id === 'strip') {
+                btnEl.classList.toggle('blink-danger', !ok);
+                btnEl.classList.toggle('blink-success', ok);
+            }
         }
 
         function eyesAllEnabled(scopeEl) {
