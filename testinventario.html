@@ -1,0 +1,179 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formulario Inspección</title>
+
+    <!-- Tu CSS -->
+    <link rel="stylesheet" href="css1.css" />
+
+    <!-- Librerías -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+
+<body>
+    <div id="form-content">
+        <form method="post">
+            <!-- ================== PARTE 1: Encabezado y datos del vehículo ================== -->
+            <div class="parte1">
+                <table class="form-table">
+                    <!-- ====== FILA 1: 5 columnas (puros textbox) ====== -->
+                    <tr class="row-5col">
+                        <td>
+                            <label class="fld">
+                                FECHA
+                                <input type="text" name="fecha" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                ORDEN
+                                <input type="text" name="orden" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                SINIESTRO
+                                <input type="text" name="siniestro" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                AUTO COLOR
+                                <input type="text" name="auto_color" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                MARCA
+                                <input type="text" name="marca" required>
+                            </label>
+                        </td>
+                    </tr>
+
+                    <!-- ====== FILA 2: 5 columnas (puros textbox) ====== -->
+                    <tr class="row-5col">
+                        <td>
+                            <label class="fld">
+                                No. DE SERIE
+                                <input type="text" name="num_serie" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                PLACAS
+                                <input type="text" name="placas" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                KILOMETRAJE
+                                <input type="text" name="kilometraje" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                AÑO
+                                <input type="text" name="anio">
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                MODELO / VERSIÓN
+                                <input type="text" name="modelo">
+                            </label>
+                        </td>
+                    </tr>
+
+                    <!-- ===== TÍTULO DATOS DE CONTACTO ===== -->
+                    <tr>
+                        <td colspan="5" class="subsection-title">DATOS DE CONTACTO</td>
+                    </tr>
+
+                    <!-- ===== Fila contacto 1: 4 columnas ===== -->
+                    <tr class="row-4col">
+                        <td>
+                            <label class="fld">
+                                CLIENTE (ENTREGA)
+                                <input type="text" name="cliente" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                TALLER RECIBE CLIENTE (ENTREGA)
+                                <input type="text" name="taller" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                TELÉFONOS
+                                <input type="text" name="telefonos" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                CEL
+                                <input type="text" name="cel" required>
+                            </label>
+                        </td>
+                    </tr>
+
+                    <!-- ===== Fila contacto 2: 2 columnas amplias ===== -->
+                    <tr class="row-4col">
+                        <td colspan="2">
+                            <label class="fld">
+                                NOMBRE
+                                <input type="text" name="nombre_taller" required>
+                            </label>
+                        </td>
+                        <td colspan="2">
+                            <label class="fld">
+                                CORREO ELECTRÓNICO
+                                <input type="email" name="correo_electronico" required>
+                            </label>
+                        </td>
+                    </tr>
+
+                    <!-- ====== FILA EXTRA: CIA + GASOLINA + LLAVES + TRANSMISIÓN ====== -->
+                    <tr>
+                        <td colspan="5" class="extra-row">
+                            <div class="extra-blocks">
+                                <!-- CIA ASEGURADORA -->
+                                <div class="blk cia">
+                                    <label class="fld">
+                                        CIA. ASEGURADORA
+                                        <textarea name="cia_aseguradora" rows="3" required></textarea>
+                                    </label>
+                                </div>
+
+                                <!-- GASOLINA -->
+                                <div class="blk gasolina-compact">
+                                    <div class="blk-title">GASOLINA</div>
+                                    <div class="gas-grid">
+                                        <label>0 <input type="radio" name="NivelGasolina" required></label>
+                                        <label>1/4 <input type="radio" name="NivelGasolina" required></label>
+                                        <label>1/2 <input type="radio" name="NivelGasolina" required></label>
+                                        <label>3/4 <input type="radio" name="NivelGasolina" required></label>
+                                        <label>1 <input type="radio" name="NivelGasolina" required></label>
+                                    </div>
+                                </div>
+
+                                <!-- LLAVES -->
+                                <div class="blk llaves-compact">
+                                    <div class="blk-title">LLAVES</div>
+                                    <label>SI <input type="radio" name="llaves" required></label>
+                                    <label>NO <input type="radio" name="llaves" required></label>
+                                </div>
+
+                                <!-- TRANSMISIÓN -->
+                                <div class="blk transmision-compact">
+                                    <div class="blk-title">TRANSMISIÓN</div>
+                                    <label>STD <input type="radio" name="transmision" required></label>
+                                    <label>AUT. <input type="radio" name="transmision" required></label>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>

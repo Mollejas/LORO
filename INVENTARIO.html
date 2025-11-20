@@ -1,0 +1,2090 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Inspeccion</title>
+    <link rel="stylesheet" href="css1.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+</head>
+
+<body>
+    <div id="form-content">
+        <form method="post">
+            <div class="parte1">
+                <table class="form-table">
+                    <!-- ====== FILA 1: LOGO (rowspan=2) + 5 columnas (puros textbox) ====== -->
+                    <tr class="row-5col-with-logo">
+                        <!-- LOGO a la izquierda, ocupa el alto de 2 filas -->
+                        <td class="logo-cell" rowspan="2">
+                            <div class="logo-wrap">
+                                <!-- Cambia la ruta del logo a la tuya -->
+                                <img src="images/logo.png" alt="Logo">
+                            </div>
+                        </td>
+
+                        <td>
+                            <label class="fld">
+                                FECHA
+                                <input type="text" name="fecha" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                FOLIO INBURSA
+                                <input type="text" name="orden" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                SINIESTRO
+                                <input type="text" name="siniestro" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                NUM. EXPEDIENTE
+                                <input type="text" name="expedientee" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                ASEGURADORA
+                                <input type="text" name="aseguradora" required value="INBURSA">
+                            </label>
+                        </td>
+                    </tr>
+
+                    <!-- ====== FILA 2: (continúa el LOGO a la izquierda) + 5 columnas ====== -->
+                    <tr class="row-5col-with-logo">
+                        <td>
+                            <label class="fld">
+                                MARCA
+                                <input type="text" name="marca" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                modelo
+                                <input type="text" name="modelo" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                AÑO
+                                <input type="text" name="anio" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                PLACAS
+                                <input type="text" name="placas">
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                KILOMETRAJE
+                                <input type="text" name="KILOMETRAJE">
+                            </label>
+                        </td>
+                    </tr>
+
+                    <!-- ===== TÍTULO DATOS DE CONTACTO (ahora la tabla tiene 6 columnas en total) ===== -->
+                    <tr>
+                        <td colspan="6" class="subsection-title">DATOS DE CONTACTO</td>
+                    </tr>
+
+                    <!-- ===== Fila contacto 1: 6 columnas totales (2+2+1+1) ===== -->
+                    <tr class="row-contact-6">
+                        <td colspan="2">
+                            <label class="fld">
+                                CLIENTE (ENTREGA)
+                                <input type="text" name="cliente" required>
+                            </label>
+                        </td>
+                        <td colspan="2">
+                            <label class="fld">
+                                TALLER RECIBE CLIENTE (ENTREGA)
+                                <input type="text" name="taller" required value="DAYTONA AUTOMOTRIZ">
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                TELÉFONOS
+                                <input type="text" name="telefonos" required>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="fld">
+                                CEL
+                                <input type="text" name="cel" required>
+                            </label>
+                        </td>
+                    </tr>
+
+                    <!-- ===== Fila contacto 2: 6 columnas totales (3+3) ===== -->
+                    <tr class="row-contact-6">
+                        <td colspan="3">
+                            <label class="fld">
+                                NOMBRE
+                                <input type="text" name="nombre_taller" required>
+                            </label>
+                        </td>
+                        <td colspan="3">
+                            <label class="fld">
+                                CORREO ELECTRÓNICO
+                                <input type="email" name="correo_electronico" required>
+                            </label>
+                        </td>
+                    </tr>
+
+                    <!-- ====== FILA EXTRA: CIA + GASOLINA + LLAVES + TRANSMISIÓN ====== -->
+                    <tr>
+                        <td colspan="6" class="extra-row">
+                            <div class="extra-blocks">
+                                <!-- CIA ASEGURADORA -->
+                                <!-- GASOLINA -->
+                                <div class="blk gasolina-compact">
+                                    <div class="blk-title">GASOLINA</div>
+                                    <div class="gas-grid">
+                                        <label>0 <input type="radio" name="NivelGasolina" required></label>
+                                        <label>1/4 <input type="radio" name="NivelGasolina" required></label>
+                                        <label>1/2 <input type="radio" name="NivelGasolina" required></label>
+                                        <label>3/4 <input type="radio" name="NivelGasolina" required></label>
+                                        <label>1 <input type="radio" name="NivelGasolina" required></label>
+                                    </div>
+                                </div>
+
+                                <!-- LLAVES -->
+                                <div class="blk llaves">
+                                    <div class="blk-title">LLAVES</div>
+
+                                    <!-- Grupo 1: ¿Trae llaves? -->
+                                    <div class="grupo">
+                                        <span>¿Trae llaves?</span>
+                                        <label>SI <input type="radio" name="llaves_presencia" id="llaves_si" value="si" required></label>
+                                        <label>NO <input type="radio" name="llaves_presencia" id="llaves_no" value="no" required></label>
+                                    </div>
+
+                                    <!-- Grupo 2: Cantidad (se habilita solo si hay llaves) -->
+                                    <div class="grupo">
+                                        <span>Cantidad:</span>
+                                        <label>1 <input type="radio" name="llaves_cantidad" value="1" disabled></label>
+                                        <label>2 <input type="radio" name="llaves_cantidad" value="2" disabled></label>
+                                    </div>
+                                </div>
+
+
+                                <!-- TRANSMISIÓN -->
+                                <div class="blk transmision-compact">
+                                    <div class="blk-title">TRANSMISIÓN</div>
+                                    <label>STD <input type="radio" name="transmision" required></label>
+                                    <label>AUT. <input type="radio" name="transmision" required></label>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+
+                <table>
+                    <thead>
+                        <tr class="espacio"></tr>
+                        <tr>
+                            <th colspan="4">MOTOR</th>
+                            <th colspan="1">SI</th>
+                            <th colspan="1">NO</th>
+                            <th colspan="1">DAÑOS</th>
+                            <th colspan="4">INTERIOR</th>
+                            <th colspan="1">SI</th>
+                            <th colspan="1">NO</th>
+                            <th colspan="1">DAÑOS</th>
+                            <th colspan="4">LADO DERECHO</th>
+                            <th colspan="1">SI</th>
+                            <th colspan="1">NO</th>
+                            <th colspan="1">DAÑOS</th>
+                            <th colspan="4">FRENTE</th>
+                            <th colspan="1">SI</th>
+                            <th colspan="1">NO</th>
+                            <th colspan="1">DAÑOS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4">ALTERNADOR</td>
+                            <th colspan="1"><input type="radio" name="alternador" id="" required></th>
+                            <th colspan="1"><input type="radio" name="alternador" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="alternador_dano" id=""></th>
+                            <td colspan="4">CAJUELA DE GUANTES</td>
+                            <th colspan="1"><input type="radio" name="CajuelaGuantes" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CajuelaGuantes" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CajuelaGuantes_dano" id=""></th>
+                            <td colspan="4">CRISTAL PUERTA TRASERA</td>
+                            <th colspan="1"><input type="radio" name="CristalPTraseraD" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CristalPTraseraD" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CristalPTraseraD_dano" id=""></th>
+                            <td colspan="4">FACIA DELANTERA</td>
+                            <th colspan="1"><input type="radio" name="FaciaDelantera" id="" required></th>
+                            <th colspan="1"><input type="radio" name="FaciaDelantera" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="FaciaDelantera_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">BANDAS DE FRENO</td>
+                            <th colspan="1"><input type="radio" name="BandasFreno" id="" required></th>
+                            <th colspan="1"><input type="radio" name="BandasFreno" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="BandasFreno_dano" id=""></th>
+                            <td colspan="4">CENICERO</td>
+                            <th colspan="1"><input type="radio" name="Cenicero" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Cenicero" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Cenicero_dano" id=""></th>
+                            <td colspan="4">ESTEREO</td>
+                            <th colspan="1"><input type="radio" name="Estereo" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Estereo" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Estereo_dano" id=""></th>
+                            <td colspan="4">FAROS DE NIEBLA</td>
+                            <th colspan="1"><input type="radio" name="FarosNiebla" id="" required></th>
+                            <th colspan="1"><input type="radio" name="FarosNiebla" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="FarosNiebla_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">BAYONETA ACEITE MOTOR</td>
+                            <th colspan="1"><input type="radio" name="Bayoneta_AceiteMotor" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Bayoneta_AceiteMotor" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Bayoneta_AceiteMotor_dano" id=""></th>
+                            <td colspan="4">CINTURONES DE SEGURIDAD</td>
+                            <th colspan="1"><input type="radio" name="CinturonesSeguridad" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CinturonesSeguridad" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CinturonesSeguridad_dano" id=""></th>
+                            <td colspan="4">EMBLEMAS</td>
+                            <th colspan="1"><input type="radio" name="EmblemasDerecho" id="" required></th>
+                            <th colspan="1"><input type="radio" name="EmblemasDerecho" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="EmblemasDerecho_dano" id=""></th>
+                            <td colspan="4">FAROS</td>
+                            <th colspan="1"><input type="radio" name="Faros" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Faros" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Faros_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">BAYONETA ACEITE TRANS.</td>
+                            <th colspan="1"><input type="radio" name="Bayoneta_AceiteTrans" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Bayoneta_AceiteTrans" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name=" Bayoneta_AceiteTrans_dano" id=""></th>
+                            <td colspan="4">CODERAS</td>
+                            <th colspan="1"><input type="radio" name="Coderas" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Coderas" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Coderas_dano" id=""></th>
+                            <td colspan="4">ESPEJOS EXTERIORES</td>
+                            <th colspan="1"><input type="radio" name="EspejosExterioresDerecho" id="" required></th>
+                            <th colspan="1"><input type="radio" name="EspejosExterioresDerecho" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="EspejosExterioresDerecho_dano" id=""></th>
+                            <td colspan="4">LUZ XENON</td>
+                            <th colspan="1"><input type="radio" name="LuzXenon" id="" required></th>
+                            <th colspan="1"><input type="radio" name="LuzXenon" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="LuzXenon_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">BOBINA</td>
+                            <th colspan="1"><input type="radio" name="Bobina" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Bobina" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Bobina_dano" id=""></th>
+                            <td colspan="4">CONSOLA</td>
+                            <th colspan="1"><input type="radio" name="Consola" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Consola" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Consola_dano" id=""></th>
+                            <td colspan="4">MANIJAS EXTERIORES</td>
+                            <th colspan="1"><input type="radio" name="ManijasExterioresDerecho" id="" required></th>
+                            <th colspan="1"><input type="radio" name="ManijasExterioresDerecho" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="ManijasExterioresDerecho_dano" id=""></th>
+                            <td colspan="4">MOLDURAS</td>
+                            <th colspan="1"><input type="radio" name="MoldurasFrente" id="" required></th>
+                            <th colspan="1"><input type="radio" name="MoldurasFrente" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="MoldurasFrente_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">BOCINAS DE CLAXON</td>
+                            <th colspan="1"><input type="radio" name="BocinasClaxon" id="" required></th>
+                            <th colspan="1"><input type="radio" name="BocinasClaxon" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="BocinasClaxon_dano" id=""></th>
+                            <td colspan="4">CONTROL AIRE ACON.</td>
+                            <th colspan="1"><input type="radio" name="ControlAC" id="" required></th>
+                            <th colspan="1"><input type="radio" name="ControlAC" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="ControlAC_dano" id=""></th>
+                            <td colspan="4">MOLDURAS</td>
+                            <th colspan="1"><input type="radio" name="MoldurasDerecha" id="" required></th>
+                            <th colspan="1"><input type="radio" name="MoldurasDerecha" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="MoldurasDerecha_dano" id=""></th>
+                            <td colspan="4">PARABRISAS</td>
+                            <th colspan="1"><input type="radio" name="Parabrisas" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Parabrisas" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Parabrisas_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">BOMBA DE AGUA</td>
+                            <th colspan="1"><input type="radio" name="Bomba_Agua" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Bomba_Agua" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Bomba_Agua_dano" id=""></th>
+                            <td colspan="4">CONTROL CALEFACCION</td>
+                            <th colspan="1"><input type="radio" name="ControlCalefaccion" id="" required></th>
+                            <th colspan="1"><input type="radio" name="ControlCalefaccion" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="ControlCalefaccion_dano" id=""></th>
+                            <td colspan="4">PUERTA DELANTERA</td>
+                            <th colspan="1"><input type="radio" name="PuertaDelanteraD" id="" required></th>
+                            <th colspan="1"><input type="radio" name="PuertaDelanteraD" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="PuertaDelanteraD_dano" id=""></th>
+                            <td colspan="4">PARRILLA</td>
+                            <th colspan="1"><input type="radio" name="Parrilla" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Parrilla" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Parrilla_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">BOMBA DIREC. HIDRAU.</td>
+                            <th colspan="1"><input type="radio" name="BombaDirecHidrau" id="" required></th>
+                            <th colspan="1"><input type="radio" name="BombaDirecHidrau" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="BombaDirecHidrau_dano" id=""></th>
+                            <td colspan="4">VIDRIOS ELECTRICOS</td>
+                            <th colspan="1"><input type="radio" name="VidriosElectricos" id="" required></th>
+                            <th colspan="1"><input type="radio" name="VidriosElectricos" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="VidriosElectricos_dano" id=""></th>
+                            <td colspan="4">PUERTA TRASERA</td>
+                            <th colspan="1"><input type="radio" name="PuertaTraserasD" id="" required></th>
+                            <th colspan="1"><input type="radio" name="PuertaTraserasD" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="PuertaTraserasD_dano" id=""></th>
+                            <td colspan="4">PLUMAS LIMPIADORAS</td>
+                            <th colspan="1"><input type="radio" name="PlumasLimpiadoras" id="" required></th>
+                            <th colspan="1"><input type="radio" name="PlumasLimpiadoras" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="PlumasLimpiadoras_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">BOSTER DE FRENOS</td>
+                            <th colspan="1"><input type="radio" name="BosterFreno" id="" required></th>
+                            <th colspan="1"><input type="radio" name="BosterFreno" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="BosterFreno_dano" id=""></th>
+                            <td colspan="4">ENCENDEDORES</td>
+                            <th colspan="1"><input type="radio" name="Encendedores" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Encendedores" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Encendedores_dano" id=""></th>
+                            <td colspan="4">CRISTAL DE COSTADO</td>
+                            <th colspan="1"><input type="radio" name="CristalCostadoD" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CristalCostadoD" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CristalCostadoD_dano" id=""></th>
+                            <td colspan="4">PORTA PLACA</td>
+                            <th colspan="1"><input type="radio" name="PortaPlacaFrente" id="" required></th>
+                            <th colspan="1"><input type="radio" name="PortaPlacaFrente" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="PortaPlacaFrente_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">CABLES BUJIA</td>
+                            <th colspan="1"><input type="radio" name="CablesBujias" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CablesBujias" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CablesBujias_dano" id=""></th>
+                            <td colspan="4">ESPEJO RETROVISOR</td>
+                            <th colspan="1"><input type="radio" name="EspejoRetrovisor" id="" required></th>
+                            <th colspan="1"><input type="radio" name="EspejoRetrovisor" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="EspejoRetrovisor_dano" id=""></th>
+                            <td colspan="4">COSTADO</td>
+                            <th colspan="1"><input type="radio" name="CostadoD" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CostadoD" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CostadoD_dano" id=""></th>
+                            <td colspan="4">SPOILER</td>
+                            <th colspan="1"><input type="radio" name="SpoilerFrente" id="" required></th>
+                            <th colspan="1"><input type="radio" name="SpoilerFrente" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="SpoilerFrente_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">COMPRESOR AIRE ACON.</td>
+                            <th colspan="1"><input type="radio" name="CompresorAC" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CompresorAC" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CompresorAC_dano" id=""></th>
+                            <td colspan="4">LUZ INTERIOR</td>
+                            <th colspan="1"><input type="radio" name="LuzInterior" id="" required></th>
+                            <th colspan="1"><input type="radio" name="LuzInterior" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="LuzInterior_dano" id=""></th>
+                            <td colspan="4">SALPICADERA</td>
+                            <th colspan="1"><input type="radio" name="Salpicadera" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Salpicadera" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Salpicadera_dano" id=""></th>
+                            <th colspan="4" class="th2">TRASERA</th>
+                            <th colspan="1" class="th2">SI</th>
+                            <th colspan="1" class="th2">NO</th>
+                            <th colspan="1" class="th2">DAÑOS</th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">COMPUTADORA</td>
+                            <th colspan="1"><input type="radio" name="Computadora" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Computadora" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Computadora_dano" id=""></th>
+                            <td colspan="4">MANIJAS INTERIORES</td>
+                            <th colspan="1"><input type="radio" name="ManijaInteriores" id="" required></th>
+                            <th colspan="1"><input type="radio" name="ManijaInteriores" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="ManijaInteriores_damo" id=""></th>
+                            <td colspan="4">TAPONES RUEDA</td>
+                            <th colspan="1"><input type="radio" name="TaponesRuedaD" id="" required></th>
+                            <th colspan="1"><input type="radio" name="TaponesRuedaD" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="TaponesRuedaD  _dano" id=""></th>
+                            <td colspan="4">CALAVERAS</td>
+                            <th colspan="1"><input type="radio" name="Calaveras" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Calaveras" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Calaveras_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">DEPOSITO DE AGUA LIMPIA</td>
+                            <th colspan="1"><input type="radio" name="DepositoAguaLimp" id="" required></th>
+                            <th colspan="1"><input type="radio" name="DepositoAguaLimp" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="DepositoAguaLimp_dano" id=""></th>
+                            <td colspan="4">PERILLA PALANCA</td>
+                            <th colspan="1"><input type="radio" name="PerillaPalanca" id="" required></th>
+                            <th colspan="1"><input type="radio" name="PerillaPalanca" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="PerillaPalanca_dano" id=""></th>
+                            <th colspan="4" class="th2">LADO IZQUIERDO</th>
+                            <th colspan="1" class="th2">SI</th>
+                            <th colspan="1" class="th2">NO</th>
+                            <th colspan="1" class="th2">DAÑOS</th>
+                            <td colspan="4">EMBLEMA CAJUELA</td>
+                            <th colspan="1"><input type="radio" name="EmblemaCajuela" id="" required></th>
+                            <th colspan="1"><input type="radio" name="EmblemaCajuela" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="EmblemaCajuela_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">ENCENDIDO ELECTRONICO</td>
+                            <th colspan="1"><input type="radio" name="EncendidoElectronico" id="" required></th>
+                            <th colspan="1"><input type="radio" name="EncendidoElectronico" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="EncendidoElectronico_dano" id=""></th>
+                            <td colspan="4">PALANCA DE VELOCIDADES</td>
+                            <th colspan="1"><input type="radio" name="PalancaVelocidades" id="" required></th>
+                            <th colspan="1"><input type="radio" name="PalancaVelocidades" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="PalancaVelocidades_dano" id=""></th>
+                            <td colspan="4">CRISTAL PUERTA DELANTERA</td>
+                            <th colspan="1"><input type="radio" name="CristalPuertaDelanteraI" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CristalPuertaDelanteraI" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CristalPuertaDelanteraI_dano" id=""></th>
+                            <td colspan="4">FACIA TRASERA</td>
+                            <th colspan="1"><input type="radio" name="FaciaTrasera" id="" required></th>
+                            <th colspan="1"><input type="radio" name="FaciaTrasera" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="FaciaTrasera_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">FILTRO AIRE</td>
+                            <th colspan="1"><input type="radio" name="FiltroAire" id="" required></th>
+                            <th colspan="1"><input type="radio" name="FiltroAire" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="FiltroAire_dano" id=""></th>
+                            <td colspan="4">RELOJ</td>
+                            <th colspan="1"><input type="radio" name="Reloj" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Reloj" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Reloj_dano" id=""></th>
+                            <td colspan="4">CRISTAL PUERTA TRASERA</td>
+                            <th colspan="1"><input type="radio" name="CristalPuertaTraseraI" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CristalPuertaTraseraI" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CristalPuertaTraseraI_dano" id=""></th>
+                            <td colspan="4">LAMPARA STOP</td>
+                            <th colspan="1"><input type="radio" name="LamparaStop" id="" required></th>
+                            <th colspan="1"><input type="radio" name="LamparaStop" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="LamparaStop_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">FILTRO GASOLINA</td>
+                            <th colspan="1"><input type="radio" name="FiltroGasolina" id="" required></th>
+                            <th colspan="1"><input type="radio" name="FiltroGasolina" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="FiltroGasolina_dano" id=""></th>
+                            <td colspan="4">TABLERO</td>
+                            <th colspan="1"><input type="radio" name="Tablero" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Tablero" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Tablero_dano" id=""></th>
+                            <td colspan="4">ESTRIBO</td>
+                            <th colspan="1"><input type="radio" name="Estribo" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Estribo" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Estribo_dano" id=""></th>
+                            <td colspan="4">LIMPIADORES</td>
+                            <th colspan="1"><input type="radio" name="Limpiadores" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Limpiadores" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Limpiadores_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">MARCHA</td>
+                            <th colspan="1"><input type="radio" name="Marcha" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Marcha" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Marcha_dano" id=""></th>
+                            <td colspan="4">TAPETES</td>
+                            <th colspan="1"><input type="radio" name="Tapetes" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Tapetes" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Tapetes_dano" id=""></th>
+                            <td colspan="4">EMBLEMAS</td>
+                            <th colspan="1"><input type="radio" name="EmblemaIzquierdo" id="" required></th>
+                            <th colspan="1"><input type="radio" name="EmblemaIzquierdo" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="EmblemaIzquierdo_dano" id=""></th>
+                            <td colspan="4">MEDALLON</td>
+                            <th colspan="1"><input type="radio" name="Medallon" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Medallon" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Medallon_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">MOTOR LIMPIADORES</td>
+                            <th colspan="1"><input type="radio" name="MotorLimpiador" id="" required></th>
+                            <th colspan="1"><input type="radio" name="MotorLimpiador" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="MotorLimpiador_dano" id=""></th>
+                            <td colspan="4">VISERAS</td>
+                            <th colspan="1"><input type="radio" name="Viseras" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Viseras" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Viseras_dano" id=""></th>
+                            <td colspan="4">ESPEJOS EXTERIORES</td>
+                            <th colspan="1"><input type="radio" name="EspejosExterioresIzquierdo" id="" required></th>
+                            <th colspan="1"><input type="radio" name="EspejosExterioresIzquierdo" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="EspejosExterioresIzquierdo_dano" id=""></th>
+                            <td colspan="4">MOLDURAS</td>
+                            <th colspan="1"><input type="radio" name="MoldurasTrasera" id="" required></th>
+                            <th colspan="1"><input type="radio" name="MoldurasTrasera" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="MoldurasTrasera_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">MOTOR VENTILADOR</td>
+                            <th colspan="1"><input type="radio" name="MotorVentilador" id="" required></th>
+                            <th colspan="1"><input type="radio" name="MotorVentilador" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="MotorVentilador_dano" id=""></th>
+                            <td colspan="4">CIELO</td>
+                            <th colspan="1"><input type="radio" name="Cielo" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Cielo" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Cielo_dano" id=""></th>
+                            <td colspan="4">MANIJAS EXTERIORES</td>
+                            <th colspan="1"><input type="radio" name="ManijasExterioresIzquierdo" id="" required></th>
+                            <th colspan="1"><input type="radio" name="ManijasExterioresIzquierdo" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="ManijasExterioresIzquierdo_dano" id=""></th>
+                            <td colspan="4">PORTA PLACAS</td>
+                            <th colspan="1"><input type="radio" name="PortaPlacaTrasera" id="" required></th>
+                            <th colspan="1"><input type="radio" name="PortaPlacaTrasera" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="PortaPlacaTrasera_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">RADIADOR</td>
+                            <th colspan="1"><input type="radio" name="Radiador" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Radiador" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Radiador_dano" id=""></th>
+                            <th colspan="4" class="th2">CAJUELA</th>
+                            <th colspan="1" class="th2">SI</th>
+                            <th colspan="1" class="th2">NO</th>
+                            <th colspan="1" class="th2">DAÑOS</th>
+                            <td colspan="4">MOLDURAS</td>
+                            <th colspan="1"><input type="radio" name="MolduraIzquierda" id="" required></th>
+                            <th colspan="1"><input type="radio" name="MolduraIzquierda" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="MolduraIzquierda_dano" id=""></th>
+                            <td colspan="4">SPOILER</td>
+                            <th colspan="1"><input type="radio" name="SpoilerTrasero" id="" required></th>
+                            <th colspan="1"><input type="radio" name="SpoilerTrasero" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="SpoilerTrasero_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">SISTEMA DE INYECCION</td>
+                            <th colspan="1"><input type="radio" name="SistemaInyeccion" id="" required></th>
+                            <th colspan="1"><input type="radio" name="SistemaInyeccion" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="SistemaInyeccion_dano" id=""></th>
+                            <td colspan="4">CABLES PASA CORRIENTE</td>
+                            <th colspan="1"><input type="radio" name="CablePasaCorriente" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CablePasaCorriente" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CablePasaCorriente_dano" id=""></th>
+                            <td colspan="4">PUERTA DELANTERA</td>
+                            <th colspan="1"><input type="radio" name="PuertaDelanteraI" id="" required></th>
+                            <th colspan="1"><input type="radio" name="PuertaDelanteraI" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="PuertaDelanteraI_dano" id=""></th>
+                            <td colspan="4">TAPA CAJUELA</td>
+                            <th colspan="1"><input type="radio" name="TapaCajuela" id="" required></th>
+                            <th colspan="1"><input type="radio" name="TapaCajuela" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="TapaCajuela_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">TAPÓN ACEITE MOTOR</td>
+                            <th colspan="1"><input type="radio" name="TaponAceiteMotor" id="" required></th>
+                            <th colspan="1"><input type="radio" name="TaponAceiteMotor" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="TaponAceiteMotor_dano" id=""></th>
+                            <td colspan="4">CARTÓN CAJUELA</td>
+                            <th colspan="1"><input type="radio" name="CartonCajuela" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CartonCajuela" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CartonCajuela_dano" id=""></th>
+                            <td colspan="4">PUERTA TRASERA</td>
+                            <th colspan="1"><input type="radio" name="PuertaTraseraI" id="" required></th>
+                            <th colspan="1"><input type="radio" name="PuertaTraseraI" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="PuertaTraseraI_dano" id=""></th>
+                            <th colspan="4" class="th2">GENERAL</th>
+                            <th colspan="1" class="th2">SI</th>
+                            <th colspan="1" class="th2">NO</th>
+                            <th colspan="1" class="th2">DAÑOS</th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">TAPÓN RADIADOR</td>
+                            <th colspan="1"><input type="radio" name="TaponRadiador" id="" required></th>
+                            <th colspan="1"><input type="radio" name="TaponRadiador" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="TaponRadiador_dano" id=""></th>
+                            <td colspan="4">BIRLO</td>
+                            <th colspan="1"><input type="radio" name="Birlo" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Birlo" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Birlo_dano" id=""></th>
+                            <td colspan="4">CRISTAL DE COSTADO</td>
+                            <th colspan="1"><input type="radio" name="CristalCostadoI" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CristalCostadoI" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CristalCostadoI_dano" id=""></th>
+                            <td colspan="4">TUMBA-BURROS</td>
+                            <th colspan="1"><input type="radio" name="TumbaBurros" id="" required></th>
+                            <th colspan="1"><input type="radio" name="TumbaBurros" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="TumbaBurros_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <th colspan="4" class="th2">INTERIOR</th>
+                            <th colspan="1" class="th2">SI</th>
+                            <th colspan="1" class="th2">NO</th>
+                            <th colspan="1" class="th2">DAÑOS</th>
+                            <td colspan="4">LUZ DE CAJUELA</td>
+                            <th colspan="1"><input type="radio" name="LuzCajuela" id="" required></th>
+                            <th colspan="1"><input type="radio" name="LuzCajuela" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="LuzCajuela_dano" id=""></th>
+                            <td colspan="4">COSTADO</td>
+                            <th colspan="1"><input type="radio" name="CostadoI" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CostadoI" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CostadoI_dano" id=""></th>
+                            <td colspan="4">TOLDO</td>
+                            <th colspan="1"><input type="radio" name="Toldo" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Toldo" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Toldo_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">ALFOMBRA</td>
+                            <th colspan="1"><input type="radio" name="Alfombra" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Alfombra" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Alfombra_dano" id=""></th>
+                            <td colspan="4">EXTINGUIDOR</td>
+                            <th colspan="1"><input type="radio" name="Extinguidor" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Extinguidor" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Extinguidor_dano" id=""></th>
+                            <td colspan="4">SALPICADERA</td>
+                            <th colspan="1"><input type="radio" name="Salpicadera" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Salpicadera" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Salpicadera_dano" id=""></th>
+                            <td colspan="4">CANASTILLA</td>
+                            <th colspan="1"><input type="radio" name="Canastilla" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Canastilla" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Canastilla_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">ASIENTOS DELANTEROS</td>
+                            <th colspan="1"><input type="radio" name="AsientosDelanteros" id="" required></th>
+                            <th colspan="1"><input type="radio" name="AsientosDelanteros" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="AsientosDelanteros_dano" id=""></th>
+                            <td colspan="4">GATO</td>
+                            <th colspan="1"><input type="radio" name="Gato" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Gato" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Gato_dano" id=""></th>
+                            <td colspan="4">TAPONES RUEDA</td>
+                            <th colspan="1"><input type="radio" name="TaponesRuedaI" id="" required></th>
+                            <th colspan="1"><input type="radio" name="TaponesRuedaI" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="TaponesRuedaI_dano" id=""></th>
+                            <td colspan="4">ALARMA</td>
+                            <th colspan="1"><input type="radio" name="Alarma" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Alarma" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Alarma_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">ASIENTOS TRASEROS</td>
+                            <th colspan="1"><input type="radio" name="AsientosTraseros" id="" required></th>
+                            <th colspan="1"><input type="radio" name="AsientosTraseros" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="AsientosTraseros_dano" id=""></th>
+                            <td colspan="4">HERRAMIENTAS</td>
+                            <th colspan="1"><input type="radio" name="Herramientas" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Herramientas" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Herramientas_dano" id=""></th>
+                            <th colspan="4" class="th2">FRENTE</th>
+                            <th colspan="1" class="th2">SI</th>
+                            <th colspan="1" class="th2">NO</th>
+                            <th colspan="1" class="th2">DAÑOS</th>
+                            <td colspan="4">TAPÓN GASOLINA</td>
+                            <th colspan="1"><input type="radio" name="TaponGasolina" id="" required></th>
+                            <th colspan="1"><input type="radio" name="TaponGasolina" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="TaponGasolina_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">BOCINA RADIO</td>
+                            <th colspan="1"><input type="radio" name="BocinaRadio" id="" required></th>
+                            <th colspan="1"><input type="radio" name="BocinaRadio" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="BocinaRadio_dano" id=""></th>
+                            <td colspan="4">LLAVE RUEDA</td>
+                            <th colspan="1"><input type="radio" name="LlaveRueda" id="" required></th>
+                            <th colspan="1"><input type="radio" name="LlaveRueda" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="LlaveRueda_dano" id=""></th>
+                            <td colspan="4">BISEL</td>
+                            <th colspan="1"><input type="radio" name="Bisel" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Bisel" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Bisel_dano" id=""></th>
+                            <th colspan="4" class="th2">OTROS</th>
+                            <th colspan="1" class="th2">SI</th>
+                            <th colspan="1" class="th2">NO</th>
+                            <th colspan="1" class="th2">DAÑOS</th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">BOTONES DE PUERTA</td>
+                            <th colspan="1"><input type="radio" name="BotonesDePuerta" id="" required></th>
+                            <th colspan="1"><input type="radio" name="BotonesDePuerta" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="BotonesDePuerta_dano" id=""></th>
+                            <td colspan="4">SEÑALES DE CARRETERA</td>
+                            <th colspan="1"><input type="radio" name="SeñalesCarretera" id="" required></th>
+                            <th colspan="1"><input type="radio" name="SeñalesCarretera" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="SeñalesCarretera_dano" id=""></th>
+                            <td colspan="4">BRAZOS LIMPIADORES</td>
+                            <th colspan="1"><input type="radio" name="BrazosLimpiadores" id="" required></th>
+                            <th colspan="1"><input type="radio" name="BrazosLimpiadores" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="BrazosLimpiadores_dano" id=""></th>
+                            <td colspan="4">QUEMACOCOS</td>
+                            <th colspan="1"><input type="radio" name="Quemacocos" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Quemacocos" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Quemacocos_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">BOTONES RADIO O ESTEREO</td>
+                            <th colspan="1"><input type="radio" name="BotonesRadioEstereo" id="" required></th>
+                            <th colspan="1"><input type="radio" name="BotonesRadioEstereo" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="BotonesRadioEstereo_dano" id=""></th>
+                            <td colspan="4">TAPETE CUBRE LLANTA</td>
+                            <th colspan="1"><input type="radio" name="TapeteCubreLlanta" id="" required></th>
+                            <th colspan="1"><input type="radio" name="TapeteCubreLlanta" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="TapeteCubreLlanta_dano" id=""></th>
+                            <td colspan="4">COFRE</td>
+                            <th colspan="1"><input type="radio" name="Cofre" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Cofre" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Cofre_dano" id=""></th>
+                            <td colspan="4">COMPAC DISC</td>
+                            <th colspan="1"><input type="radio" name="CompacDisc" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CompacDisc" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CompacDisc_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">CABECERAS</td>
+                            <th colspan="1"><input type="radio" name="Cabeceras" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Cabeceras" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Cabeceras_dano" id=""></th>
+                            <th colspan="4" class="th2">LADO DERECHO</th>
+                            <th colspan="1" class="th2">SI</th>
+                            <th colspan="1" class="th2">NO</th>
+                            <th colspan="1" class="th2">DAÑOS</th>
+                            <td colspan="4">CUARTOS DE LUZ</td>
+                            <th colspan="1"><input type="radio" name="CuartosLuz" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CuartosLuz" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CuartosLuz_dano" id=""></th>
+                            <td colspan="4">ANTENA</td>
+                            <th colspan="1"><input type="radio" name="Antena" id="" required></th>
+                            <th colspan="1"><input type="radio" name="Antena" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="Antena_dano" id=""></th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">SEGUROS</td>
+                            <th colspan="1"><input type="radio" name="xxx" id="" required></th>
+                            <th colspan="1"><input type="radio" name="xxx" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="xxx_dano" id=""></th>
+                            <td colspan="4">CISTAL PUERTA DELANTERA</td>
+                            <th colspan="1"><input type="radio" name="CristalPDelantera2" id="" required></th>
+                            <th colspan="1"><input type="radio" name="CristalPDelantera2" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="CristalPDelantera2_dano" id=""></th>
+                            <td colspan="4">EMBLEMAS</td>
+                            <th colspan="1"><input type="radio" name="EmblemasFrente" id="" required></th>
+                            <th colspan="1"><input type="radio" name="EmblemasFrente" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="EmblemasFrente_dano" id=""></th>
+                            <td colspan="4">ESTEREO/TOCACINTAS</td>
+                            <th colspan="1"><input type="radio" name="EstereoTocacintas" id="" required></th>
+                            <th colspan="1"><input type="radio" name="EstereoTocacintas" id="" required></th>
+                            <th colspan="1"><input type="checkbox" name="EstereoTocacintas_dano" id=""></th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="grid-container">
+                <div class="grid-item preexistentes">
+                    <div class="section-title">DAÑOS PREEXISTENTES</div>
+
+                    <!-- Barra de herramientas (se oculta en PDF por la clase no-pdf) -->
+                    <div class="draw-toolbar no-pdf" data-html2canvas-ignore="true">
+                        <label>
+                            Color:
+                            <input type="color" id="pen-color" value="#d00000">
+                        </label>
+
+                        <label>
+                            Grosor:
+                            <input type="range" id="pen-size" min="1" max="20" value="9">
+                            <span id="pen-size-val">9</span> px
+                        </label>
+
+                        <button type="button" id="tool-pen" class="tool-btn active">✏️ Pluma</button>
+                        <button type="button" id="tool-eraser" class="tool-btn">🧽 Borrador</button>
+                        <button type="button" id="undo-stroke" class="tool-btn">↩️ Deshacer</button>
+                        <button type="button" id="clear-canvas" class="tool-btn">🗑️ Limpiar</button>
+                    </div>
+
+                    <!-- Wrapper con IMG + CANVAS (IDs que usa tu JS) -->
+                    <div id="preexistentes-wrapper" class="draw-wrapper">
+                        <!-- Usa slashes normales en la ruta, no backslashes -->
+                        <img id="preexistentes-img" src="images/daños_preexistentes.jpeg" alt="Daños Preexistentes">
+                        <canvas id="preexistentes-canvas"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid-item">
+                    <div>
+                        <table>
+                            <tr>
+                                <th colspan="4">
+                                    <div class="section-title2">
+                                        REFACCIÓN
+                                        <input type="checkbox" name="Refaccion">
+                                    </div>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    NUEVA
+                                    <input type="radio" name="refaccion">
+
+                                    1/2 VIDA
+                                    <input type="radio" name="refaccion">
+
+                                    MUY USADA
+                                    <input type="radio" name="refaccion">
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="section-title">MARCA Y MEDIDA</div>
+                        <div class="caucho1">
+                            <div class="caucho-item">
+                                <div>
+                                    <h4>IZQUIERDA</h4>
+                                    NUEVA
+                                    <input type="radio" name="nueva_izquierda_delantera"><br>
+                                    1/2 VIDA
+                                    <input type="radio" name="media_vida_izquierda_delantera"><br>
+                                    MUY USADA
+                                    <input type="radio" name="muy_usada_izquierda_delantera"><br>
+                                    MARCA Y MEDIDA
+                                </div>
+                                <img src="images/icons/rueda_izquierda_delantera.jpeg" alt="">
+                            </div>
+                            <div class="caucho-item">
+                                <div>
+                                    <h4>DERECHA</h4>
+                                    NUEVA
+                                    <input type="radio" name="nueva_izquierda_trasera"><br>
+                                    1/2 VIDA
+                                    <input type="radio" name="media_vida_izquierda_trasera"><br>
+                                    MUY USADA
+                                    <input type="radio" name="muy_usada_izquierda_trasera"><br>
+                                    MARCA Y MEDIDA
+                                </div>
+                                <img src="images/icons/rueda_izquierda_trasera.jpeg" alt="">
+                            </div>
+                        </div>
+
+                        <div class="caucho2">
+                            <div class="caucho-item">
+                                <div>
+                                    NUEVA
+                                    <input type="radio" name="nueva_derecha_delantera"><br>
+                                    1/2 VIDA
+                                    <input type="radio" name="media_vida_derecha_delantera"><br>
+                                    MUY USADA
+                                    <input type="radio" name="muy_usada_derecha_delantera"><br>
+                                    MARCA Y MEDIDA
+                                </div>
+                                <img src="images/icons/rueda_derecha_delantera.jpeg" alt="">
+                            </div>
+                            <div class="caucho-item">
+                                <div>
+                                    NUEVA
+                                    <input type="radio" name="nueva_derecha_delantera_trasera"><br>
+                                    1/2 VIDA
+                                    <input type="radio" name="media_vida_derecha_delantera_trasera"><br>
+                                    MUY USADA
+                                    <input type="radio" name="muy_usada_derecha_delantera_trasera"><br>
+                                    MARCA Y MEDIDA
+                                </div>
+                                <img src="images/icons/rueda_derecha_trasera.jpeg" alt="">
+                            </div>
+                        </div>
+
+                        <center><h3>FRENTE</h3></center>
+
+                        <div class="section-title">RINES</div>
+                        <center>
+                            <label>ALUMINIO<input type="radio" name="rines"></label>
+                            <label>ACERO<input type="radio" name="rines"></label>
+                        </center>
+                    </div>
+                </div>
+
+                <div class="grid-item">
+                    <div class="section-title">NIVELES DE LÍQUIDOS</div>
+                    <table class="tabla_liquido">
+                        <tr>
+                            <th></th>
+                            <th>Si</th>
+                            <th>No</th>
+                            <th>% Nivel</th>
+                        </tr>
+                        <tr>
+                            <td>ANTICONGELANTE</td>
+                            <td><input type="radio" name="anticongelante" value="si"></td>
+                            <td><input type="radio" name="anticongelante" value="no"></td>
+                            <td>
+                                <input type="radio" name="nivel_anticongelante" value="0"> 0%
+                                <input type="radio" name="nivel_anticongelante" value="25"> 25%
+                                <input type="radio" name="nivel_anticongelante" value="50"> 50%
+                                <input type="radio" name="nivel_anticongelante" value="100"> 100%
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>ACEITE DE MOTOR</td>
+                            <td><input type="radio" name="aceite_motor" value="si"></td>
+                            <td><input type="radio" name="aceite_motor" value="no"></td>
+                            <td>
+                                <input type="radio" name="nivel_aceite_motor" value="0"> 0%
+                                <input type="radio" name="nivel_aceite_motor" value="25"> 25%
+                                <input type="radio" name="nivel_aceite_motor" value="50"> 50%
+                                <input type="radio" name="nivel_aceite_motor" value="100"> 100%
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>ACEITE DE TRANSMISIÓN</td>
+                            <td><input type="radio" name="aceite_transmision" value="si"></td>
+                            <td><input type="radio" name="aceite_transmision" value="no"></td>
+                            <td>
+                                <input type="radio" name="nivel_aceite_transmision" value="0"> 0%
+                                <input type="radio" name="nivel_aceite_transmision" value="25"> 25%
+                                <input type="radio" name="nivel_aceite_transmision" value="50"> 50%
+                                <input type="radio" name="nivel_aceite_transmision" value="100"> 100%
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>LÍQUIDO DE FRENOS</td>
+                            <td><input type="radio" name="liquido_frenos" value="si"></td>
+                            <td><input type="radio" name="liquido_frenos" value="no"></td>
+                            <td>
+                                <input type="radio" name="nivel_liquido_frenos" value="0"> 0%
+                                <input type="radio" name="nivel_liquido_frenos" value="25"> 25%
+                                <input type="radio" name="nivel_liquido_frenos" value="50"> 50%
+                                <input type="radio" name="nivel_liquido_frenos" value="100"> 100%
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="bateria-info">
+                        <label>Batería (Marca): <input type="text" name="bateria_marca"></label><br>
+                        <label>Nivel de Carga: <input type="text" name="bateria_nivel_carga"></label>
+                    </div>
+
+                    <!-- === SECCIÓN DE OBSERVACIONES INTEGRADA === -->
+                    <div class="observaciones-section" style="margin-top: 20px;">
+                        <div class="section-title">OBSERVACIONES:</div>
+                        <textarea class="input-textarea"
+                                  name="observaciones"
+                                  style="width:50%; height:50px; display:block; margin:0 auto;"
+                                  placeholder="Escriba aquí sus observaciones..."></textarea>
+
+
+
+                        <p style="margin-top: 10px;">
+                            TERMINADA LA REPARACIÓN Y AVISADO EL ASEGURADO O CLIENTE, ESTE TIENE DE PLAZO 2 DÍAS PARA RECOGER LA UNIDAD.
+                            A PARTIR DEL 3er DÍA <b>EL ALMACENAJE CAUSARÁ CARGO A RAZÓN DE $150.00 POR DÍA</b>.
+                        </p>
+                        <p>
+                            ESTIMADO CLIENTE, HACEMOS DE SU CONOCIMIENTO NUESTRA EXCLUSIÓN EN LA RESPONSABILIDAD POR DAÑOS EN PIEZAS
+                            ELÉCTRICAS Y MECÁNICAS NO DERIVADAS DEL SINIESTRO.
+                        </p>
+                        <p class="note">
+                            NOTA: La empresa por ningún motivo será responsable de los objetos no señalados en este inventario.
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="grid-item ">
+                    <div class="section-title">REVISIÓN DE NIVELES Y TESTIGOS</div>
+                    <div class="icon-grid">
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/1.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_1"> 1
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/2.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_2"> 2
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/3.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_3"> 3
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/4.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_4"> 4
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/5.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_5"> 5
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/6.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_6"> 6
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/7.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_7"> 7
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/8.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_8"> 8
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/9.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_9"> 9
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/10.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_10"> 10
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/11.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_11"> 11
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/12.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_12"> 12
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/13.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_13"> 13
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/14.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_14"> 14
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/15.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_15"> 15
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/16.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_16"> 16
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/17.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_17"> 17
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/18.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_18"> 18
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/19.jpeg" alt="Revision de niveles y testigos" style="width: 75%;">
+                                <input type="checkbox" name="icono_19"> 19
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/20.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_20"> 20
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/21.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_21"> 21
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/22.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_22"> 22
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/23.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_23"> 23
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/24.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_24"> 24
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/25.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_25"> 25
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/26.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_26"> 26
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/27.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_27"> 27
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/28.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_28"> 28
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/29.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_29"> 29
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/30.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_30"> 30
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/31.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_31"> 31
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/32.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_32"> 32
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/33.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_33"> 33
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/34.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_34"> 34
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/35.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_35"> 35
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/36.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_36"> 36
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/37.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_37"> 37
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/38.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_38"> 38
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/39.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_39"> 39
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/40.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_40"> 40
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/41.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_41"> 41
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/42.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_43"> 42
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/43.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_43"> 43
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/44.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_44"> 44
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/45.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_45"> 45
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/46.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_46"> 46
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/47.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_47"> 47
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/48.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_48"> 48
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/49.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_49"> 49
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/50.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_50"> 50
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/51.jpeg" alt="Revision de niveles y testigos" style="width: 60%;">
+                                <input type="checkbox" name="icono_51"> 51
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/52.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_52"> 52
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/53.jpeg" alt="Revision de niveles y testigos" style="width: 60%;">
+                                <input type="checkbox" name="icono_53"> 53
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/54.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_54"> 54
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/55.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_55"> 55
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/56.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_56"> 56
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/57.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_57"> 57
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/58.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_58"> 58
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/59.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_59"> 59
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/60.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_60"> 60
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/61.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_62"> 61
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/62.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_62"> 62
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/63.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_63"> 63
+                            </label>
+                        </div>
+                        <div class="icon-item">
+                            <label>
+                                <img src="images/icons/64.jpeg" alt="Revision de niveles y testigos" style="width: 80%;">
+                                <input type="checkbox" name="icono_64"> 64
+                            </label>
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+
+
+                <!-- === SECCIÓN DE FIRMAS ALINEADAS HORIZONTALMENTE === -->
+                <div class="firmas-horizontal">
+                    <div class="firma-box">
+                        <div class="firma-title">FIRMA DEL CLIENTE</div>
+                        <div class="firma-rectangulo">
+                            <canvas id="firmaCliente" class="firma-canvas"></canvas>
+                        </div>
+
+
+                    </div>
+                    <div class="firma-box">
+                        <div class="firma-title">FIRMA DEL ASESOR</div>
+                        <div class="firma-rectangulo">
+                            <canvas id="firmaOperador" class="firma-canvas"></canvas>
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+
+
+                <!-- <button type="submit">Enviar</button>
+                <button type="button" id="download-pdf">Descargar PDF</button> -->
+        </form>
+    </div>
+
+
+
+
+
+
+    <!-- Contenedor de botones que se ocultará en el PDF -->
+    <!-- Contenedor de botones que se ocultará en el PDF -->
+    <div class="buttons-container no-pdf">
+        <button type="button" id="download-pdf">📄 Descargar PDF</button>
+
+        <!-- 👇 NUEVO botón iTextSharp -->
+        <button type="button" id="download-itext-pdf">🖨️ Generar PDF (iTextSharp)</button>
+
+        <button type="submit">📤 Enviar Formulario</button>
+    </div>
+
+    <script>
+        /* ===== Helpers de inyección ===== */
+        function setByName(name, value) {
+            const el = document.querySelector(`[name="${name}"]`);
+            if (!el || value == null || value === '') return;
+
+            // Todo en MAYÚSCULAS EXCEPTO correo_electronico
+            if (name === 'correo_electronico') {
+                el.value = String(value);                 // sin upper
+                el.style.textTransform = 'none';          // sin forzar vista
+            } else {
+                const v = String(value).toUpperCase();    // fuerza MAYÚSCULAS
+                el.value = v;
+                el.style.textTransform = 'uppercase';     // apariencia en mayúsculas
+            }
+        }
+
+        function fillFields(data) {
+            if (!data) return;
+
+            // 1) Campos directos 1:1
+            const direct = [
+                'fecha', 'orden', 'siniestro', 'auto_color', 'marca',
+                'num_serie', 'placas', 'kilometraje', 'anio', 'modelo',
+                'cliente', 'taller', 'telefonos', 'cel', 'nombre_taller', 'correo_electronico'
+            ];
+            direct.forEach(k => { if (k in data) setByName(k, data[k]); });
+
+            // 2) Alias hoja.aspx → inventario.html (solo si destino está vacío)
+            const aliasMap = [
+                ['reporte', 'orden'],
+                ['asegurado', 'cliente'],
+                ['expediente', 'expedientee'],   // asegúrate que exista name="expedientee"
+                ['telefono', 'telefonos'],
+                ['correo', 'correo_electronico']
+            ];
+            aliasMap.forEach(([src, dst]) => {
+                const dstEl = document.querySelector(`[name="${dst}"]`);
+                if (dstEl && (!dstEl.value || dstEl.value.trim() === '') && data[src]) {
+                    setByName(dst, data[src]);
+                }
+            });
+
+            // 3) Vehículo: intentar parsear a marca/modelo/año si viene en un texto
+            if (data.vehiculo) {
+                const marcaEl = document.querySelector('[name="marca"]');
+                const modeloEl = document.querySelector('[name="modelo"]');
+                const anioEl = document.querySelector('[name="anio"]');
+
+                const veh = String(data.vehiculo).trim();
+
+                // Si vienen por separado, respétalos primero
+                if (!marcaEl?.value && data.marca) setByName('marca', data.marca);
+                if (!modeloEl?.value && data.modelo) setByName('modelo', data.modelo);
+                if (!anioEl?.value && data.anio) setByName('anio', data.anio);
+
+                // Si faltan, inferir
+                if ((!marcaEl?.value || !modeloEl?.value || !anioEl?.value) && veh) {
+                    const yearMatch = veh.match(/(19|20)\d{2}/);
+                    const year = yearMatch ? yearMatch[0] : '';
+                    const sinAnio = veh.replace(/(19|20)\d{2}/, '').trim();
+                    const parts = sinAnio.split(/\s+/);
+                    const marca = parts[0] || '';
+                    const modelo = parts.slice(1).join(' ').trim();
+
+                    if (anioEl && !anioEl.value && year) setByName('anio', year);
+                    if (marcaEl && !marcaEl.value && marca) setByName('marca', marca);
+                    if (modeloEl && !modeloEl.value && modelo) setByName('modelo', modelo);
+                }
+            }
+
+            // 4) Fecha por defecto (yyyy-mm-dd) si está vacío y no llegó en data
+            const fechaEl = document.querySelector('[name="fecha"]');
+            if (fechaEl && (!fechaEl.value || fechaEl.value.trim() === '') && !data.fecha) {
+                const d = new Date();
+                const iso = d.toISOString().slice(0, 10);
+                fechaEl.value = iso;
+            }
+        }
+
+        /* ===== Recepción por postMessage ===== */
+        window.addEventListener('message', (e) => {
+            if (e.origin !== window.location.origin) return; // Seguridad
+            const msg = e.data || {};
+            if (msg.type === 'INV_PREFILL') {
+                fillFields(msg.payload || {});
+            }
+        });
+
+        /* ===== Fallback: datos por query-string ===== */
+        function dataFromQuery() {
+            const q = new URLSearchParams(location.search);
+            const out = {};
+            [
+                'fecha', 'orden', 'siniestro', 'auto_color', 'marca',
+                'num_serie', 'placas', 'kilometraje', 'anio', 'modelo',
+                'cliente', 'taller', 'telefonos', 'cel', 'nombre_taller', 'correo_electronico',
+                'reporte', 'asegurado', 'telefono', 'correo', 'vehiculo'
+            ].forEach(k => { if (q.has(k)) out[k] = q.get(k); });
+            return out;
+        }
+
+        /* ===== Handshake y fallback con query ===== */
+        document.addEventListener('DOMContentLoaded', () => {
+            const qd = dataFromQuery();
+            if (Object.keys(qd).length) fillFields(qd);
+            try { window.parent.postMessage({ type: 'INV_REQUEST' }, window.location.origin); } catch { }
+        });
+    </script>
+
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Habilitar jsPDF desde UMD
+            window.jsPDF = window.jspdf.jsPDF;
+
+            // Prellenar fecha (hoy) si está vacía
+            const fechaInput = document.querySelector('input[type="date"]');
+            if (fechaInput && !fechaInput.value) {
+                fechaInput.value = new Date().toISOString().split('T')[0];
+            }
+
+            const downloadButton = document.getElementById('download-pdf');
+            if (downloadButton) {
+                downloadButton.addEventListener('click', generatePDF);
+            }
+
+            function generatePDF() {
+                const element = document.getElementById('form-content');
+                if (!element) {
+                    alert('¡Error! No se encontró el contenido del formulario.');
+                    return;
+                }
+
+                const originalText = downloadButton ? downloadButton.innerHTML : '';
+                const buttonsContainer = document.querySelector('.buttons-container');
+                if (downloadButton) { downloadButton.innerHTML = '🔄 Generando PDF...'; downloadButton.disabled = true; }
+                if (buttonsContainer) buttonsContainer.style.display = 'none';
+
+                html2canvas(element, {
+                    scale: 4,
+                    useCORS: true,
+                    logging: false,
+                    onclone: function (clonedDoc) {
+                        const btns = clonedDoc.querySelector('.buttons-container');
+                        if (btns) btns.style.display = 'none';
+                    }
+                }).then(canvas => {
+                    // Crear PDF A4 y pegar imagen del canvas
+                    const pdfDoc = new jsPDF('p', 'mm', 'a4');
+                    const pageWidth = pdfDoc.internal.pageSize.getWidth();
+                    const pageHeight = pdfDoc.internal.pageSize.getHeight();
+
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    const ratio = canvas.height / canvas.width;
+
+                    let finalWidth = pageWidth - 10;
+                    let finalHeight = finalWidth * ratio;
+                    let x = (pageWidth - finalWidth) / 2;
+                    let y = (pageHeight - finalHeight) / 2;
+
+                    if (finalHeight > pageHeight) {
+                        finalHeight = pageHeight;
+                        finalWidth = finalHeight / ratio;
+                        x = (pageWidth - finalWidth) / 2;
+                        y = 0;
+                    }
+                    pdfDoc.addImage(imgData, 'JPEG', x, y, finalWidth, finalHeight);
+
+                    // Descarga local (opcional)
+                    const fileName = `inspeccion_${new Date().toISOString().split('T')[0]}.pdf`;
+                    pdfDoc.save(fileName);
+
+                    // Envío al servidor para guardar como INV.pdf
+                    const params = new URLSearchParams(window.location.search);
+                    const id = params.get('id');
+                    if (!id) {
+                        console.warn('No se encontró ?id= en la URL; no se enviará al servidor.');
+                        return restoreUI();
+                    }
+
+                    const pdfDataUrl = pdfDoc.output('datauristring'); // data:application/pdf;base64,...
+
+                    fetch('SaveInventario.ashx', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                        body: new URLSearchParams({ id: id, pdfDataUrl: pdfDataUrl })
+                    })
+                        .then(r => r.ok ? r.json() : r.json().then(j => Promise.reject(j)))
+                        .then(json => {
+                            if (!json.ok) throw json.error || 'Error al guardar en servidor.';
+                            alert('Inventario guardado en el expediente (INV.pdf).');
+                            restoreUI();
+                        })
+                        .catch(err => {
+                            console.error('Error al guardar en servidor:', err);
+                            alert('Se descargó el PDF localmente, pero no se pudo guardar en el servidor.');
+                            restoreUI();
+                        });
+
+                    function restoreUI() {
+                        if (downloadButton) { downloadButton.innerHTML = originalText; downloadButton.disabled = false; }
+                        if (buttonsContainer) buttonsContainer.style.display = 'block';
+                    }
+                }).catch(error => {
+                    console.error('Error al generar PDF:', error);
+                    alert('Hubo un error al generar el PDF. Por favor, intente de nuevo.');
+                    if (downloadButton) { downloadButton.innerHTML = originalText; downloadButton.disabled = false; }
+                    const buttonsContainer = document.querySelector('.buttons-container');
+                    if (buttonsContainer) buttonsContainer.style.display = 'block';
+                });
+            }
+        });
+    </script>
+
+    <!-- ===== JS: Dibujo sobre imagen (preexistentes) ===== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const img = document.getElementById('preexistentes-img');
+            const cvs = document.getElementById('preexistentes-canvas');
+            const wrapper = document.getElementById('preexistentes-wrapper');
+            if (!img || !cvs || !wrapper) return;
+
+            const ctx = cvs.getContext('2d');
+            const penColorEl = document.getElementById('pen-color');
+            const penSizeEl = document.getElementById('pen-size');
+            const penSizeVal = document.getElementById('pen-size-val');
+            const btnPen = document.getElementById('tool-pen');
+            const btnEraser = document.getElementById('tool-eraser');
+            const btnUndo = document.getElementById('undo-stroke');
+            const btnClear = document.getElementById('clear-canvas');
+
+            let drawing = false, currentTool = 'pen', currentStroke = null;
+            const strokes = [];
+
+            function cssSize() {
+                const r = wrapper.getBoundingClientRect();
+                return { w: Math.round(r.width), h: Math.round(r.height) };
+            }
+            function resizeCanvas() {
+                const dpr = window.devicePixelRatio || 1;
+                const { w, h } = cssSize();
+                cvs.width = Math.max(1, w * dpr);
+                cvs.height = Math.max(1, h * dpr);
+                cvs.style.width = w + 'px';
+                cvs.style.height = h + 'px';
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.scale(dpr, dpr);
+                redrawAll();
+            }
+
+            function startStroke(x, y) {
+                drawing = true;
+                const { w, h } = cssSize();
+                currentStroke = {
+                    tool: currentTool,
+                    color: penColorEl.value,
+                    size: parseInt(penSizeEl.value, 10) || 3,
+                    pts: [{ x: x / w, y: y / h }]
+                };
+            }
+            function addPoint(x, y) {
+                if (!drawing) return;
+                const { w, h } = cssSize();
+                currentStroke.pts.push({ x: x / w, y: y / h });
+                drawStrokeSegment(currentStroke, currentStroke.pts.length - 2);
+            }
+
+
+            function drawDot(stroke) {
+                const { w, h } = cssSize();
+                const p = stroke.pts[0];
+                const cx = p.x * w;
+                const cy = p.y * h;
+                const r = Math.max(1, stroke.size / 2);
+
+                ctx.save();
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.globalCompositeOperation = stroke.tool === 'eraser' ? 'destination-out' : 'source-over';
+                ctx.fillStyle = stroke.tool === 'eraser' ? 'rgba(0,0,0,1)' : stroke.color;
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+
+
+
+            function endStroke() {
+                if (drawing && currentStroke) {
+                    if (currentStroke.pts.length === 1) {
+                        // Clic sin movimiento -> pinta un punto
+                        drawDot(currentStroke);
+                    } else {
+                        // Trazo normal ya se fue dibujando por segmentos
+                    }
+                    strokes.push(currentStroke);
+                }
+                drawing = false;
+                currentStroke = null;
+            }
+
+            function drawStrokeSegment(stroke, idx) {
+                const { w, h } = cssSize();
+                const p0 = stroke.pts[idx], p1 = stroke.pts[idx + 1];
+                ctx.save();
+                ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+                ctx.lineWidth = stroke.size;
+                ctx.strokeStyle = stroke.tool === 'eraser' ? 'rgba(0,0,0,1)' : stroke.color;
+                ctx.globalCompositeOperation = stroke.tool === 'eraser' ? 'destination-out' : 'source-over';
+                ctx.beginPath();
+                ctx.moveTo(p0.x * w, p0.y * h);
+                ctx.lineTo(p1.x * w, p1.y * h);
+                ctx.stroke();
+                ctx.restore();
+            }
+            function redrawAll() {
+                const { w, h } = cssSize();
+                ctx.clearRect(0, 0, w, h);
+                for (const s of strokes)
+                    for (let i = 0; i < s.pts.length - 1; i++) drawStrokeSegment(s, i);
+            }
+            function getPos(evt) {
+                const rect = cvs.getBoundingClientRect();
+                const p = evt.touches ? evt.touches[0] : evt;
+                return { x: p.clientX - rect.left, y: p.clientY - rect.top };
+            }
+
+            cvs.addEventListener('mousedown', e => { const { x, y } = getPos(e); startStroke(x, y); });
+            cvs.addEventListener('mousemove', e => { if (drawing) { const { x, y } = getPos(e); addPoint(x, y); } });
+            window.addEventListener('mouseup', endStroke);
+
+            cvs.addEventListener('touchstart', e => { e.preventDefault(); const { x, y } = getPos(e); startStroke(x, y); }, { passive: false });
+            cvs.addEventListener('touchmove', e => { e.preventDefault(); const { x, y } = getPos(e); addPoint(x, y); }, { passive: false });
+            cvs.addEventListener('touchend', endStroke, { passive: false });
+
+            penSizeEl.addEventListener('input', () => penSizeVal.textContent = penSizeEl.value);
+            btnPen.addEventListener('click', () => { currentTool = 'pen'; btnPen.classList.add('active'); btnEraser.classList.remove('active'); });
+            btnEraser.addEventListener('click', () => { currentTool = 'eraser'; btnEraser.classList.add('active'); btnPen.classList.remove('active'); });
+            btnClear.addEventListener('click', () => { strokes.length = 0; redrawAll(); });
+            btnUndo.addEventListener('click', () => { strokes.pop(); redrawAll(); });
+
+            if (img.complete) resizeCanvas(); else img.addEventListener('load', resizeCanvas, { once: true });
+            window.addEventListener('resize', resizeCanvas);
+        });
+    </script>
+    <script>
+        function setupSignature(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            let drawing = false;
+
+            function resizeCanvas() {
+                // tamaño visual actual del canvas (en px CSS)
+                const rect = canvas.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+
+                // ajusta el "backing store" a DPR (alta resolución)
+                canvas.width = Math.round(rect.width * dpr);
+                canvas.height = Math.round(rect.height * dpr);
+
+                // dibuja usando coordenadas en px CSS (no en pixeles físicos)
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // equivalente a reset + scale(dpr)
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.lineWidth = 2;          // grosor en px CSS
+                ctx.strokeStyle = '#000';
+            }
+
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                // coordenadas en px CSS relativas al canvas
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                return { x, y };
+            }
+
+            // Eventos unificados (mouse, lápiz, touch)
+            canvas.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                canvas.setPointerCapture(e.pointerId);
+                drawing = true;
+                const { x, y } = getPos(e);
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+            });
+
+            canvas.addEventListener('pointermove', (e) => {
+                if (!drawing) return;
+                const { x, y } = getPos(e);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            });
+
+            const stop = () => { drawing = false; };
+            canvas.addEventListener('pointerup', stop);
+            canvas.addEventListener('pointercancel', stop);
+            canvas.addEventListener('pointerleave', stop);
+
+            // Recalcula si cambia el layout o el zoom de pantalla
+            window.addEventListener('resize', resizeCanvas);
+            // Inicializa al cargar
+            resizeCanvas();
+        }
+
+        // Inicializa tus dos firmas
+        document.addEventListener('DOMContentLoaded', () => {
+            setupSignature('firmaCliente');
+            setupSignature('firmaOperador');
+        });
+
+        // Limpieza (si ya tienes botones "Limpiar")
+        function limpiarFirma(idCanvas) {
+            const c = document.getElementById(idCanvas);
+            const ctx = c.getContext('2d');
+            // Limpia respetando transform actual
+            ctx.save();
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, c.width, c.height);
+            ctx.restore();
+        }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const si = document.getElementById('llaves_si');
+            const no = document.getElementById('llaves_no');
+            const cantidades = document.querySelectorAll('input[name="llaves_cantidad"]');
+
+            function toggleCantidad() {
+                const enable = si.checked;
+                cantidades.forEach(r => {
+                    r.disabled = !enable;
+                    r.required = enable;   // pide cantidad solo si hay llaves
+                    if (!enable) r.checked = false;
+                });
+            }
+
+            si.addEventListener('change', toggleCantidad);
+            no.addEventListener('change', toggleCantidad);
+            toggleCantidad(); // estado inicial
+        });
+    </script>
+
+    <script>
+        /* ============================ iTextSharp client-side helper ============================ */
+        /* Convierte el #form-content a HTML estático (texto/☑/☐) y manda al servidor (GeneratePdfIText.ashx) */
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnItext = document.getElementById('download-itext-pdf');
+            if (!btnItext) return;
+
+            btnItext.addEventListener('click', async () => {
+                const original = btnItext.innerHTML;
+                btnItext.disabled = true;
+                btnItext.innerHTML = '🔄 Generando con iTextSharp...';
+
+                try {
+                    const html = await buildPrintableHtml();
+
+                    // Lee ?id=... si existe (para guardado opcional en servidor)
+                    const params = new URLSearchParams(location.search);
+                    const id = params.get('id') || '';
+
+                    const res = await fetch('GeneratePdfIText.ashx', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json; charset=utf-8', 'Accept': 'application/pdf' },
+                        body: JSON.stringify({ html: html, id: id })
+                    });
+
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    const blob = await res.blob();
+
+                    // descarga
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const ts = new Date().toISOString().split('T')[0];
+                    a.download = `inspeccion_itext_${ts}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                } catch (err) {
+                    console.error(err);
+                    alert('No se pudo generar el PDF con iTextSharp. Revisa la consola para más detalle.');
+                } finally {
+                    btnItext.disabled = false;
+                    btnItext.innerHTML = original;
+                }
+            });
+
+            /* ---- Helpers ---- */
+
+            async function buildPrintableHtml() {
+                const root = document.getElementById('form-content');
+                if (!root) throw new Error('No se encontró #form-content');
+
+                // Clonar sin tocar el DOM original
+                const clone = root.cloneNode(true);
+
+                // Quitar cualquier cosa marcada como "no-pdf" dentro del clon
+                clone.querySelectorAll('.no-pdf').forEach(el => el.remove());
+
+                // Reemplazar inputs/selects/textareas por valores estáticos
+                controlsToStatic(clone);
+
+                // Convertir CANVAS (firmas) a <img>
+                replaceSignatureCanvasWithImages(clone);
+
+                // Hacer un raster del bloque de "Daños preexistentes" (imagen base + trazos canvas) y meterlo como <img>
+                await replacePreexistentesWithSnapshot(clone);
+
+                // HTML completo (usa tu css1.css + estilos mínimos)
+                const fullHtml =
+                    `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Inventario PDF</title>
+<link rel="stylesheet" href="css1.css">
+<style>
+          @page { size: A4; margin: 10mm; }
+          body { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; }
+          .print-input { border-bottom: 1px dotted #555; padding: 2px 4px; display:inline-block; min-width: 60px; }
+          .print-check { font-family: Arial, Helvetica, sans-serif; font-size: 11pt; line-height: 1; }
+          .no-pdf { display: none !important; }
+          table { border-collapse: collapse; }
+          th, td { vertical-align: top; }
+          img { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+${clone.outerHTML}
+</body>
+</html>`;
+
+                return fullHtml;
+            }
+
+            function controlsToStatic(root) {
+                // Inputs
+                root.querySelectorAll('input').forEach(inp => {
+                    const type = (inp.getAttribute('type') || 'text').toLowerCase();
+                    let replacement;
+
+                    if (type === 'radio' || type === 'checkbox') {
+                        const mark = inp.checked ? '☑' : '☐';
+                        replacement = document.createElement('span');
+                        replacement.className = 'print-check';
+                        replacement.textContent = mark;
+                    } else {
+                        replacement = document.createElement('span');
+                        replacement.className = 'print-input';
+                        const v = (inp.value || '').trim();
+                        replacement.textContent = v || ' ';
+                    }
+                    inp.parentNode.replaceChild(replacement, inp);
+                });
+
+                // Textareas
+                root.querySelectorAll('textarea').forEach(tx => {
+                    const val = (tx.value || '').replace(/\n/g, '<br>');
+                    const span = document.createElement('span');
+                    span.className = 'print-input';
+                    span.innerHTML = val || ' ';
+                    tx.parentNode.replaceChild(span, tx);
+                });
+
+                // Selects (si algún día agregas)
+                root.querySelectorAll('select').forEach(sel => {
+                    const span = document.createElement('span');
+                    span.className = 'print-input';
+                    const opt = sel.options[sel.selectedIndex];
+                    span.textContent = opt ? (opt.text || opt.value || '') : '';
+                    sel.parentNode.replaceChild(span, sel);
+                });
+            }
+
+            function replaceSignatureCanvasWithImages(cloneRoot) {
+                ['firmaCliente', 'firmaOperador'].forEach(id => {
+                    const originalCanvas = document.getElementById(id);
+                    const cloneCanvas = cloneRoot.querySelector('#' + CSS.escape(id));
+                    if (!originalCanvas || !cloneCanvas) return;
+
+                    try {
+                        const dataUrl = originalCanvas.toDataURL('image/png');
+                        const img = document.createElement('img');
+                        img.src = dataUrl;
+                        img.style.width = '100%';
+                        img.style.height = 'auto';
+                        cloneCanvas.parentNode.replaceChild(img, cloneCanvas);
+                    } catch (e) {
+                        console.warn('No se pudo exportar firma', id, e);
+                    }
+                });
+            }
+
+            async function replacePreexistentesWithSnapshot(cloneRoot) {
+                const originalWrapper = document.getElementById('preexistentes-wrapper');
+                const originalImg = document.getElementById('preexistentes-img');
+                const originalCanvas = document.getElementById('preexistentes-canvas');
+                const cloneWrapper = cloneRoot.querySelector('#preexistentes-wrapper');
+
+                if (!originalWrapper || !originalImg || !originalCanvas || !cloneWrapper) return;
+
+                if (!originalImg.complete || originalImg.naturalWidth === 0) {
+                    await new Promise(res => originalImg.addEventListener('load', res, { once: true }));
+                }
+
+                const rect = originalWrapper.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+                const off = document.createElement('canvas');
+                off.width = Math.max(1, Math.round(rect.width * dpr));
+                off.height = Math.max(1, Math.round(rect.height * dpr));
+                const ctx = off.getContext('2d');
+
+                ctx.scale(dpr, dpr);
+                ctx.drawImage(originalImg, 0, 0, rect.width, rect.height);
+                ctx.drawImage(originalCanvas, 0, 0, rect.width, rect.height);
+
+                const dataUrl = off.toDataURL('image/png');
+                const img = document.createElement('img');
+                img.src = dataUrl;
+                img.alt = 'Daños Preexistentes';
+                img.style.width = '100%';
+                img.style.height = 'auto';
+
+                cloneWrapper.innerHTML = '';
+                cloneWrapper.appendChild(img);
+            }
+        });
+    </script>
+
+</body>
+
+</html>
+
+
