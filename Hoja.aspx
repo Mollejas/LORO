@@ -2131,7 +2131,7 @@
                   stream = null;
               }
           }
-          function takeSnapshot() {
+          async function takeSnapshot() {
               if (!$video.videoWidth || !$video.videoHeight) {
                   setTimeout(takeSnapshot, 40);
                   return;
@@ -2148,12 +2148,15 @@
               const ctx = $canvas.getContext('2d');
               ctx.drawImage($video, 0, 0, tw, th);
 
-              $preview.src = $canvas.toDataURL('image/jpeg', 0.9);
-              $preview.style.display = 'block';
-              $video.style.display = 'none';
-              $btnCap.classList.add('d-none');
-              $btnUsar.classList.remove('d-none');
-              $btnRep.classList.remove('d-none');
+              // Agregar foto directamente al preview sin paso intermedio
+              const dataURL = $canvas.toDataURL('image/jpeg', 0.9);
+              const blob = await (await fetch(dataURL)).blob();
+              const index = ($fuMain.files?.length || 0) + 1;
+              const file = new File([blob], `presup${index}.jpg`, { type: 'image/jpeg' });
+
+              if (typeof window.__appendFotoIngreso === 'function') {
+                  window.__appendFotoIngreso(file);
+              }
           }
           async function useSnapshot() {
               const dataURL = $canvas.toDataURL('image/jpeg', 0.9);
@@ -2186,14 +2189,17 @@
           async function toggleCamera(force) {
               if (typeof force === 'boolean') camOpen = force; else camOpen = !camOpen;
               const block = document.getElementById('camBlockPresup');
+              const dropZone = document.getElementById('dropZonePresup');
 
               if (camOpen) {
                   block?.classList.remove('d-none');
+                  dropZone?.classList.add('d-none');
                   $btnToggle.textContent = 'Cerrar cámara';
                   await startCamera();
               } else {
                   stopCamera();
                   block?.classList.add('d-none');
+                  dropZone?.classList.remove('d-none');
                   $btnToggle.textContent = 'Abrir cámara';
                   repeatShot();
               }
