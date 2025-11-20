@@ -2012,11 +2012,13 @@
         showProgress30();
       }
 
-      // File picker
+      // File picker - acumular archivos en lugar de reemplazar
       input.addEventListener('change', () => {
-        rebuildThumbs(input.files);
-        enableSave();
-        showProgress30();
+        const newFiles = Array.from(input.files || []);
+        if (newFiles.length === 0) return;
+
+        // Usar appendFiles para acumular con los existentes
+        appendFiles(newFiles);
       });
 
       // DnD Global (evitar que el navegador abra la imagen)
