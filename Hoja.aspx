@@ -304,14 +304,17 @@
   padding: 20px;
 }
 .fullscreen-overlay #fsImage {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 90vw;
+  max-height: 85vh;
   object-fit: contain;
   cursor: grab;
-  transition: transform 0.1s ease;
+  transform-origin: center center;
 }
 .fullscreen-overlay #fsImage.dragging {
   cursor: grabbing;
+}
+.fullscreen-overlay #fsImage.zoomed {
+  cursor: move;
 }
 .fullscreen-overlay .fs-zoom-controls {
   position: absolute;
@@ -2534,11 +2537,12 @@
 
             function apply() {
                 fsImage.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+                fsImage.classList.toggle('zoomed', scale > 1);
             }
 
             function reset() {
                 scale = 1; tx = 0; ty = 0; dragging = false;
-                fsImage.classList.remove('dragging');
+                fsImage.classList.remove('dragging', 'zoomed');
                 fsImage.style.transform = '';
                 if (fsZoomRange) fsZoomRange.value = '1';
             }
