@@ -1403,18 +1403,8 @@
                 ty = Math.max(-maxY, Math.min(maxY, ty));
             }
 
-            // ---- Fullscreen toggle por doble click ----
-            img.addEventListener('dblclick', (e) => {
-                e.preventDefault();
-                const fs = fsElement();
-                if (!fs) {
-                    // puedes querer fullscreen del contenedor principal:
-                    // reqFs(document.querySelector('.gallery-big') || img);
-                    reqFs(img);
-                } else {
-                    exitFs();
-                }
-            });
+            // ---- Doble click abre modal de pantalla completa ----
+            // (El evento se maneja en el otro script de zoom)
 
             // Actualiza cursor estado FS
             function updateFsClass() {
