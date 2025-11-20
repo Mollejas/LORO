@@ -2487,10 +2487,12 @@
                 }
             }, { passive: false });
 
-            // Doble click: alterna 1x / 2x
+            // Doble click: abrir modal de pantalla completa
             img.addEventListener('dblclick', (e) => {
                 e.preventDefault();
-                setScaleAbs(scale > 1 ? 1 : 2);
+                if (typeof window.openFullscreenOverlay === 'function') {
+                    window.openFullscreenOverlay(img.src);
+                }
             });
 
             // Manejar cambios de fullscreen
