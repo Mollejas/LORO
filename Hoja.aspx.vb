@@ -359,13 +359,11 @@ END"
 
         UpdateBottomWidgets()
 
-        ' Reabrir modal y mostrar 100%
+        ' Cerrar modal y mostrar alert de éxito
         Dim js As String =
-          "(function(){var el=document.getElementById('modalMultiplesPresup');if(!el)return;var m=bootstrap.Modal.getOrCreateInstance(el);m.show();" &
-          "var wrap=document.getElementById('fotosPresupProgressWrap');var bar=document.getElementById('fotosPresupProgressBar');var msg=document.getElementById('fotosPresupStatus');" &
-          "if(wrap)wrap.classList.remove('d-none');if(bar){bar.classList.remove('progress-bar-animated');bar.style.width='100%';bar.setAttribute('aria-valuenow','100');bar.textContent='100%';}" &
-          "if(msg){msg.classList.remove('d-none');msg.textContent='Fotos guardadas exitosamente';}" &
-          "var inpt=document.getElementById('fuMultiplesPresup');if(inpt)inpt.value='';var thumbs=document.getElementById('thumbsPresup');if(thumbs)thumbs.innerHTML='';})();"
+          "(function(){var el=document.getElementById('modalMultiplesPresup');if(!el)return;var m=bootstrap.Modal.getInstance(el);if(m)m.hide();" &
+          "var inpt=document.getElementById('fuMultiplesPresup');if(inpt)inpt.value='';var thumbs=document.getElementById('thumbsPresup');if(thumbs)thumbs.innerHTML='';" &
+          "setTimeout(function(){alert('FOTOS GUARDADAS EXITOSAMENTE');},300);})();"
         EmitStartupScript("fotosPresupSaved", js)
     End Sub
 
