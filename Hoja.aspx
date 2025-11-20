@@ -263,6 +263,86 @@
 #galleryBigImg.zooming{ cursor: grab; }
 #galleryBigImg.dragging{ cursor: grabbing; }
 
+/* Overlay de pantalla completa */
+.fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+.fullscreen-overlay .fs-header {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10001;
+}
+.fullscreen-overlay .fs-close-btn {
+  background: rgba(255,255,255,0.9);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.fullscreen-overlay .fs-close-btn:hover {
+  background: #fff;
+  transform: scale(1.1);
+}
+.fullscreen-overlay .fs-image-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 20px;
+}
+.fullscreen-overlay #fsImage {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  cursor: grab;
+  transition: transform 0.1s ease;
+}
+.fullscreen-overlay #fsImage.dragging {
+  cursor: grabbing;
+}
+.fullscreen-overlay .fs-zoom-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: rgba(255,255,255,0.9);
+  border-radius: 999px;
+  padding: 10px 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.fullscreen-overlay .fs-zoom-btn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  cursor: pointer;
+}
+.fullscreen-overlay .fs-zoom-btn:hover {
+  background: #0056b3;
+}
+.fullscreen-overlay #fsZoomRange {
+  width: 150px;
+}
+
   </style>
     <style>
   .zoom-toolbar{
@@ -871,8 +951,21 @@
   </div>
 </div>
 
-
-  <!-- Modal: visor PDF genérico -->
+<!-- Overlay de pantalla completa con zoom -->
+<div id="fullscreenOverlay" class="fullscreen-overlay d-none">
+  <div class="fs-header">
+    <button type="button" class="fs-close-btn" id="fsCloseBtn" title="Cerrar">✕</button>
+  </div>
+  <div class="fs-image-container">
+    <img id="fsImage" alt="Imagen en pantalla completa" />
+  </div>
+  <div class="fs-zoom-controls">
+    <button type="button" class="fs-zoom-btn" data-action="out">−</button>
+    <input type="range" id="fsZoomRange" min="1" max="6" step="0.1" value="1" />
+    <button type="button" class="fs-zoom-btn" data-action="in">+</button>
+    <button type="button" class="fs-zoom-btn" data-action="reset">⟳</button>
+  </div>
+</div>
   <div class="modal fade" id="viewerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width:95vw;">
       <div class="modal-content">
@@ -2326,14 +2419,8 @@
                     case 'out': setScaleRelative(-0.2); break;
                     case 'reset': reset(); break;
                     case 'fs': {
-                        const isFS = document.fullscreenElement || document.webkitFullscreenElement;
-                        if (!isFS) {
-                            const req = img.requestFullscreen || img.webkitRequestFullscreen || img.msRequestFullscreen;
-                            if (req) req.call(img);
-                        } else {
-                            const ex = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
-                            if (ex) ex.call(document);
-                        }
+                        // Abrir overlay de pantalla completa
+                        openFullscreenOverlay(img.src);
                         break;
                     }
                 }
@@ -2429,6 +2516,156 @@
             });
         })();
     </script>
+
+    <!-- Overlay de pantalla completa con zoom -->
+    <script>
+        (function() {
+            const overlay = document.getElementById('fullscreenOverlay');
+            const fsImage = document.getElementById('fsImage');
+            const fsCloseBtn = document.getElementById('fsCloseBtn');
+            const fsZoomRange = document.getElementById('fsZoomRange');
+            const fsZoomControls = document.querySelector('.fs-zoom-controls');
+
+            if (!overlay || !fsImage) return;
+
+            let scale = 1, tx = 0, ty = 0;
+            const MIN = 1, MAX = 6;
+            let dragging = false, lastX = 0, lastY = 0;
+
+            function apply() {
+                fsImage.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+            }
+
+            function reset() {
+                scale = 1; tx = 0; ty = 0; dragging = false;
+                fsImage.classList.remove('dragging');
+                fsImage.style.transform = '';
+                if (fsZoomRange) fsZoomRange.value = '1';
+            }
+
+            function clampPan() {
+                const rect = fsImage.getBoundingClientRect();
+                const cont = fsImage.parentElement.getBoundingClientRect();
+                const baseW = rect.width / scale, baseH = rect.height / scale;
+                const maxX = Math.max(0, (baseW * scale - cont.width) / 2);
+                const maxY = Math.max(0, (baseH * scale - cont.height) / 2);
+                tx = Math.max(-maxX, Math.min(maxX, tx));
+                ty = Math.max(-maxY, Math.min(maxY, ty));
+            }
+
+            function setScale(val) {
+                scale = Math.max(MIN, Math.min(MAX, val));
+                if (scale <= 1.0001) { tx = 0; ty = 0; }
+                clampPan(); apply();
+                if (fsZoomRange) fsZoomRange.value = String(scale);
+            }
+
+            // Abrir overlay
+            window.openFullscreenOverlay = function(src) {
+                fsImage.src = src;
+                reset();
+                overlay.classList.remove('d-none');
+                document.body.style.overflow = 'hidden';
+            };
+
+            // Cerrar overlay
+            function closeOverlay() {
+                overlay.classList.add('d-none');
+                document.body.style.overflow = '';
+                reset();
+            }
+
+            fsCloseBtn?.addEventListener('click', closeOverlay);
+
+            // Cerrar con Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !overlay.classList.contains('d-none')) {
+                    closeOverlay();
+                }
+            });
+
+            // Slider de zoom
+            fsZoomRange?.addEventListener('input', () => setScale(parseFloat(fsZoomRange.value || "1")));
+
+            // Botones de zoom
+            fsZoomControls?.addEventListener('click', (e) => {
+                const btn = e.target.closest('.fs-zoom-btn');
+                if (!btn) return;
+                const action = btn.getAttribute('data-action');
+                switch (action) {
+                    case 'in': setScale(scale + 0.3); break;
+                    case 'out': setScale(scale - 0.3); break;
+                    case 'reset': reset(); break;
+                }
+            });
+
+            // Zoom con rueda del mouse
+            fsImage.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                setScale(scale + (e.deltaY > 0 ? -0.3 : 0.3));
+            }, { passive: false });
+
+            // Pan con mouse
+            fsImage.addEventListener('mousedown', (e) => {
+                if (scale <= 1) return;
+                dragging = true;
+                lastX = e.clientX; lastY = e.clientY;
+                fsImage.classList.add('dragging');
+                e.preventDefault();
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                tx += (e.clientX - lastX);
+                ty += (e.clientY - lastY);
+                lastX = e.clientX; lastY = e.clientY;
+                clampPan(); apply();
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (dragging) {
+                    dragging = false;
+                    fsImage.classList.remove('dragging');
+                }
+            });
+
+            // Doble click para zoom 2x
+            fsImage.addEventListener('dblclick', (e) => {
+                e.preventDefault();
+                setScale(scale > 1 ? 1 : 2);
+            });
+
+            // Touch: pinch + pan
+            let tStartDist = 0, startScale = 1, tLastX = 0, tLastY = 0;
+            function dist(p1, p2) {
+                return Math.hypot(p1.clientX - p2.clientX, p1.clientY - p2.clientY);
+            }
+
+            fsImage.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    tLastX = e.touches[0].clientX;
+                    tLastY = e.touches[0].clientY;
+                } else if (e.touches.length >= 2) {
+                    tStartDist = dist(e.touches[0], e.touches[1]);
+                    startScale = scale;
+                }
+            }, { passive: true });
+
+            fsImage.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (e.touches.length === 1 && scale > 1) {
+                    const x = e.touches[0].clientX, y = e.touches[0].clientY;
+                    tx += (x - tLastX); ty += (y - tLastY);
+                    tLastX = x; tLastY = y;
+                    clampPan(); apply();
+                } else if (e.touches.length >= 2) {
+                    const d = dist(e.touches[0], e.touches[1]);
+                    setScale(startScale * (d / tStartDist));
+                }
+            }, { passive: false });
+        })();
+    </script>
+
     <script>
         /* === MEC/HOJA: UI, persistencia y bloqueo === */
         (function () {
