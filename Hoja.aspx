@@ -201,11 +201,11 @@
     }
 
     /* OVERRIDE para thumbs: más compactos y consistentes */
-    #thumbsPresup { --thumb-size: 96px; gap: 10px; }
+    #thumbsPresup { --thumb-size: 96px; gap: 10px; overflow: visible; }
     @media (min-width: 992px){
       #thumbsPresup { --thumb-size: 120px; }
     }
-    #thumbsPresup .thumb-wrap { width: var(--thumb-size); position: relative; }
+    #thumbsPresup .thumb-wrap { width: var(--thumb-size); position: relative; overflow: visible; }
     #thumbsPresup img.thumb {
       display: block;
       width: var(--thumb-size);
@@ -217,24 +217,26 @@
     }
     #thumbsPresup .thumb-delete {
       position: absolute;
-      top: -8px;
-      right: -8px;
-      width: 22px;
-      height: 22px;
+      top: 2px;
+      right: 2px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
-      background: #dc3545;
+      background: rgba(220, 53, 69, 0.9);
       color: #fff;
-      border: 2px solid #fff;
-      font-size: 14px;
-      line-height: 16px;
+      border: none;
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 22px;
       text-align: center;
       cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
       z-index: 10;
+      transition: all 0.2s ease;
     }
     #thumbsPresup .thumb-delete:hover {
-      background: #c82333;
-      transform: scale(1.1);
+      background: rgba(200, 35, 51, 1);
+      transform: scale(1.15);
     }
     #thumbsPresup .thumb-name{
       margin-top: 6px;
