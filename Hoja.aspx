@@ -954,19 +954,25 @@
   </div>
 </div>
 
-<!-- Overlay de pantalla completa con zoom -->
-<div id="fullscreenOverlay" class="fullscreen-overlay d-none">
-  <div class="fs-header">
-    <button type="button" class="fs-close-btn" id="fsCloseBtn" title="Cerrar">✕</button>
-  </div>
-  <div class="fs-image-container">
-    <img id="fsImage" alt="Imagen en pantalla completa" />
-  </div>
-  <div class="fs-zoom-controls">
-    <button type="button" class="fs-zoom-btn" data-action="out">−</button>
-    <input type="range" id="fsZoomRange" min="1" max="6" step="0.1" value="1" />
-    <button type="button" class="fs-zoom-btn" data-action="in">+</button>
-    <button type="button" class="fs-zoom-btn" data-action="reset">⟳</button>
+<!-- Modal de pantalla completa con zoom -->
+<div class="modal fade" id="fullscreenModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content" style="background: rgba(0,0,0,0.95);">
+      <div class="modal-header border-0 position-absolute" style="top:10px; right:10px; z-index:10;">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body d-flex align-items-center justify-content-center p-0" id="fsImageContainer" style="overflow:hidden;">
+        <img id="fsImage" alt="Imagen en pantalla completa" style="max-width:90vw; max-height:85vh; object-fit:contain; transform-origin:center center; cursor:grab;" />
+      </div>
+      <div class="modal-footer border-0 justify-content-center position-absolute" style="bottom:10px; left:0; right:0;">
+        <div class="d-flex gap-2 align-items-center bg-white rounded-pill px-3 py-2 shadow">
+          <button type="button" class="btn btn-primary btn-sm rounded-circle" style="width:36px;height:36px;" id="fsZoomOut">−</button>
+          <input type="range" id="fsZoomRange" min="1" max="6" step="0.1" value="1" style="width:120px;" />
+          <button type="button" class="btn btn-primary btn-sm rounded-circle" style="width:36px;height:36px;" id="fsZoomIn">+</button>
+          <button type="button" class="btn btn-secondary btn-sm rounded-circle" style="width:36px;height:36px;" id="fsZoomReset">⟳</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
   <div class="modal fade" id="viewerModal" tabindex="-1" aria-hidden="true">
@@ -2520,16 +2526,17 @@
         })();
     </script>
 
-    <!-- Overlay de pantalla completa con zoom -->
+    <!-- Modal de pantalla completa con zoom -->
     <script>
         (function() {
-            const overlay = document.getElementById('fullscreenOverlay');
+            const modal = document.getElementById('fullscreenModal');
             const fsImage = document.getElementById('fsImage');
-            const fsCloseBtn = document.getElementById('fsCloseBtn');
             const fsZoomRange = document.getElementById('fsZoomRange');
-            const fsZoomControls = document.querySelector('.fs-zoom-controls');
+            const fsZoomIn = document.getElementById('fsZoomIn');
+            const fsZoomOut = document.getElementById('fsZoomOut');
+            const fsZoomReset = document.getElementById('fsZoomReset');
 
-            if (!overlay || !fsImage) return;
+            if (!modal || !fsImage) return;
 
             let scale = 1, tx = 0, ty = 0;
             const MIN = 1, MAX = 6;
@@ -2537,13 +2544,13 @@
 
             function apply() {
                 fsImage.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
-                fsImage.classList.toggle('zoomed', scale > 1);
+                fsImage.style.cursor = scale > 1 ? 'move' : 'grab';
             }
 
             function reset() {
                 scale = 1; tx = 0; ty = 0; dragging = false;
-                fsImage.classList.remove('dragging', 'zoomed');
                 fsImage.style.transform = '';
+                fsImage.style.cursor = 'grab';
                 if (fsZoomRange) fsZoomRange.value = '1';
             }
 
@@ -2564,44 +2571,24 @@
                 if (fsZoomRange) fsZoomRange.value = String(scale);
             }
 
-            // Abrir overlay
+            // Abrir modal
             window.openFullscreenOverlay = function(src) {
                 fsImage.src = src;
                 reset();
-                overlay.classList.remove('d-none');
-                document.body.style.overflow = 'hidden';
+                const bsModal = new bootstrap.Modal(modal);
+                bsModal.show();
             };
 
-            // Cerrar overlay
-            function closeOverlay() {
-                overlay.classList.add('d-none');
-                document.body.style.overflow = '';
-                reset();
-            }
+            // Reset al cerrar
+            modal.addEventListener('hidden.bs.modal', reset);
 
-            fsCloseBtn?.addEventListener('click', closeOverlay);
-
-            // Cerrar con Escape
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && !overlay.classList.contains('d-none')) {
-                    closeOverlay();
-                }
-            });
+            // Botones de zoom
+            fsZoomIn?.addEventListener('click', () => setScale(scale + 0.5));
+            fsZoomOut?.addEventListener('click', () => setScale(scale - 0.5));
+            fsZoomReset?.addEventListener('click', reset);
 
             // Slider de zoom
             fsZoomRange?.addEventListener('input', () => setScale(parseFloat(fsZoomRange.value || "1")));
-
-            // Botones de zoom
-            fsZoomControls?.addEventListener('click', (e) => {
-                const btn = e.target.closest('.fs-zoom-btn');
-                if (!btn) return;
-                const action = btn.getAttribute('data-action');
-                switch (action) {
-                    case 'in': setScale(scale + 0.3); break;
-                    case 'out': setScale(scale - 0.3); break;
-                    case 'reset': reset(); break;
-                }
-            });
 
             // Zoom con rueda del mouse
             fsImage.addEventListener('wheel', (e) => {
@@ -2614,7 +2601,7 @@
                 if (scale <= 1) return;
                 dragging = true;
                 lastX = e.clientX; lastY = e.clientY;
-                fsImage.classList.add('dragging');
+                fsImage.style.cursor = 'grabbing';
                 e.preventDefault();
             });
 
@@ -2629,14 +2616,14 @@
             window.addEventListener('mouseup', () => {
                 if (dragging) {
                     dragging = false;
-                    fsImage.classList.remove('dragging');
+                    fsImage.style.cursor = scale > 1 ? 'move' : 'grab';
                 }
             });
 
             // Doble click para zoom 2x
             fsImage.addEventListener('dblclick', (e) => {
                 e.preventDefault();
-                setScale(scale > 1 ? 1 : 2);
+                setScale(scale > 1 ? 1 : 2.5);
             });
 
             // Touch: pinch + pan
