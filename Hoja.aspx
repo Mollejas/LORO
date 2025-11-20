@@ -201,11 +201,11 @@
     }
 
     /* OVERRIDE para thumbs: más compactos y consistentes */
-    #thumbsPresup { --thumb-size: 96px; gap: 10px; }
+    #thumbsPresup { --thumb-size: 96px; gap: 10px; overflow: visible; }
     @media (min-width: 992px){
       #thumbsPresup { --thumb-size: 120px; }
     }
-    #thumbsPresup .thumb-wrap { width: var(--thumb-size); }
+    #thumbsPresup .thumb-wrap { width: var(--thumb-size); position: relative; overflow: visible; }
     #thumbsPresup img.thumb {
       display: block;
       width: var(--thumb-size);
@@ -214,6 +214,29 @@
       border-radius: 6px;
       border: 1px solid var(--neutral-300);
       box-shadow: var(--shadow-sm);
+    }
+    #thumbsPresup .thumb-delete {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(220, 53, 69, 0.9);
+      color: #fff;
+      border: none;
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 22px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+      z-index: 10;
+      transition: all 0.2s ease;
+    }
+    #thumbsPresup .thumb-delete:hover {
+      background: rgba(200, 35, 51, 1);
+      transform: scale(1.15);
     }
     #thumbsPresup .thumb-name{
       margin-top: 6px;
@@ -1921,6 +1944,16 @@
         progressWrap.classList.add('d-none');
         statusOk?.classList.add('d-none');
       }
+      function removeFileAtIndex(index) {
+        const dt = new DataTransfer();
+        Array.from(input.files || []).forEach((f, i) => {
+          if (i !== index) dt.items.add(f);
+        });
+        input.files = dt.files;
+        rebuildThumbs(input.files);
+        enableSave();
+        if (input.files.length === 0) resetProgress();
+      }
       function rebuildThumbs(fileList) {
         thumbs.innerHTML = '';
         Array.from(fileList || []).forEach((file, i) => {
@@ -1928,6 +1961,15 @@
 
           const wrap = document.createElement('div');
           wrap.className = 'thumb-wrap';
+
+          const deleteBtn = document.createElement('span');
+          deleteBtn.className = 'thumb-delete';
+          deleteBtn.innerHTML = '&times;';
+          deleteBtn.title = 'Eliminar';
+          deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            removeFileAtIndex(i);
+          };
 
           const img = document.createElement('img');
           img.className = 'thumb';
@@ -1939,6 +1981,7 @@
           name.className = 'thumb-name';
           name.textContent = file.name || `presup${i + 1}.jpg`;
 
+          wrap.appendChild(deleteBtn);
           wrap.appendChild(img);
           wrap.appendChild(name);
           thumbs.appendChild(wrap);
