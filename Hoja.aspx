@@ -2397,6 +2397,22 @@
                 setScaleAbs(scale > 1 ? 1 : 2);
             });
 
+            // Manejar cambios de fullscreen
+            function onFullscreenChange() {
+                const isFS = document.fullscreenElement || document.webkitFullscreenElement;
+                if (isFS === img) {
+                    img.classList.add('fs');
+                    // Mantener el zoom actual en fullscreen
+                    apply();
+                } else {
+                    img.classList.remove('fs');
+                    // Resetear al salir de fullscreen
+                    reset();
+                }
+            }
+            document.addEventListener('fullscreenchange', onFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+
             // Al abrir/cerrar el modal resetea el zoom para la siguiente foto
             document.getElementById('fotosModal')?.addEventListener('shown.bs.modal', () => {
                 reset();
