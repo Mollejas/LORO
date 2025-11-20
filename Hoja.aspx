@@ -2065,34 +2065,19 @@
         appendFiles([file]);
       };
 
-      // Detectar cuando las fotos se guardaron exitosamente
-      const checkSaveSuccess = () => {
-        if (statusOk && !statusOk.classList.contains('d-none')) {
-          // Cerrar modal y mostrar alert
+      // Detectar cuando las fotos se guardaron exitosamente (después del postback)
+      if (statusOk && !statusOk.classList.contains('d-none')) {
+        // Ocultar el status inmediatamente para evitar re-disparos
+        statusOk.classList.add('d-none');
+
+        // Cerrar modal si está abierto
+        setTimeout(() => {
           const modalInstance = bootstrap.Modal.getInstance(modal);
           if (modalInstance) {
             modalInstance.hide();
           }
           alert('FOTOS GUARDADAS EXITOSAMENTE');
-        }
-      };
-
-      // Verificar al cargar la página (después de postback)
-      document.addEventListener('DOMContentLoaded', checkSaveSuccess);
-
-      // También observar cambios en el status
-      if (statusOk) {
-        const observer = new MutationObserver(() => {
-          if (!statusOk.classList.contains('d-none')) {
-            const modalInstance = bootstrap.Modal.getInstance(modal);
-            if (modalInstance) {
-              modalInstance.hide();
-            }
-            alert('FOTOS GUARDADAS EXITOSAMENTE');
-            observer.disconnect();
-          }
-        });
-        observer.observe(statusOk, { attributes: true, attributeFilter: ['class'] });
+        }, 100);
       }
     })();
   </script>
