@@ -1944,15 +1944,22 @@
         progressWrap.classList.add('d-none');
         statusOk?.classList.add('d-none');
       }
-      function removeFileAtIndex(index) {
+
+      // Acumulador de archivos
+      let accumulatedFiles = [];
+
+      function updateInputFromAccumulator() {
         const dt = new DataTransfer();
-        Array.from(input.files || []).forEach((f, i) => {
-          if (i !== index) dt.items.add(f);
-        });
+        accumulatedFiles.forEach(f => dt.items.add(f));
         input.files = dt.files;
-        rebuildThumbs(input.files);
+      }
+
+      function removeFileAtIndex(index) {
+        accumulatedFiles.splice(index, 1);
+        updateInputFromAccumulator();
+        rebuildThumbs(accumulatedFiles);
         enableSave();
-        if (input.files.length === 0) resetProgress();
+        if (accumulatedFiles.length === 0) resetProgress();
       }
       function rebuildThumbs(fileList) {
         thumbs.innerHTML = '';
@@ -2001,23 +2008,21 @@
         return Array.from(dt.files || []);
       }
       function appendFiles(newFiles) {
-        const dt = new DataTransfer();
-        Array.from(input.files || []).forEach(f => dt.items.add(f));
         Array.from(newFiles || []).forEach(f => {
-          if (f && f.type && f.type.startsWith('image/')) dt.items.add(f);
+          if (f && f.type && f.type.startsWith('image/')) {
+            accumulatedFiles.push(f);
+          }
         });
-        input.files = dt.files;
-        rebuildThumbs(input.files);
+        updateInputFromAccumulator();
+        rebuildThumbs(accumulatedFiles);
         enableSave();
         showProgress30();
       }
 
-      // File picker - acumular archivos en lugar de reemplazar
+      // File picker - acumular archivos
       input.addEventListener('change', () => {
         const newFiles = Array.from(input.files || []);
         if (newFiles.length === 0) return;
-
-        // Usar appendFiles para acumular con los existentes
         appendFiles(newFiles);
       });
 
@@ -2045,6 +2050,7 @@
       // Limpieza al cerrar
       modal?.addEventListener('hidden.bs.modal', () => {
         thumbs.innerHTML = '';
+        accumulatedFiles = [];
         resetProgress();
         input.value = '';
         enableSave();
