@@ -627,8 +627,8 @@
           <button type="button" class="btn btn-outline-light btn-sm ms-auto" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
         </div>
       </div>
-      <div class="modal-body p-0 overflow-hidden position-relative" id="zoomContainer" style="cursor:grab;height:calc(100vh - 60px);">
-        <img id="zoomImage" src="" alt="Zoom" style="position:absolute;top:0;left:0;max-width:none;transform-origin:0 0;transition:transform 0.1s ease;">
+      <div class="modal-body p-0 d-flex align-items-center justify-content-center" id="zoomContainer" style="cursor:grab;height:calc(100vh - 60px);overflow:auto;">
+        <img id="zoomImage" src="" alt="Zoom" style="max-width:100%;max-height:100%;object-fit:contain;transition:transform 0.1s ease;">
       </div>
     </div>
   </div>
@@ -1038,24 +1038,23 @@
   const zoomModal = new bootstrap.Modal(zoomModalEl);
   const galeriaModalEl = document.getElementById('galeriaModal');
   const $zoomImg = document.getElementById('zoomImage');
-  const $zoomContainer = document.getElementById('zoomContainer');
   const $zoomRange = document.getElementById('zoomRange');
   const $zoomLevel = document.getElementById('zoomLevel');
   const $zoomIn = document.getElementById('zoomIn');
   const $zoomOut = document.getElementById('zoomOut');
+  const $zoomContainer = document.getElementById('zoomContainer');
 
-  let scale = 100, posX = 0, posY = 0;
-  let isDragging = false, startX = 0, startY = 0;
+  let scale = 100;
 
-  function updateTransform(){
-    $zoomImg.style.transform = `translate(${posX}px, ${posY}px) scale(${scale/100})`;
+  function updateZoom(){
+    $zoomImg.style.transform = 'scale(' + (scale/100) + ')';
     $zoomLevel.textContent = scale + '%';
     $zoomRange.value = scale;
   }
 
   function resetZoom(){
-    scale = 100; posX = 0; posY = 0;
-    updateTransform();
+    scale = 100;
+    updateZoom();
   }
 
   window.openZoomModal = function(src){
@@ -1064,38 +1063,23 @@
     var cleanSrc = src.split('?')[0];
     $zoomImg.src = cleanSrc;
     resetZoom();
-    // Hide gallery modal backdrop
+    // Hide gallery modal
     galeriaModalEl.style.display = 'none';
     zoomModal.show();
-    // Center image after load
-    $zoomImg.onload = function(){
-      setTimeout(function(){
-        const cw = $zoomContainer.clientWidth, ch = $zoomContainer.clientHeight;
-        const iw = $zoomImg.naturalWidth, ih = $zoomImg.naturalHeight;
-        if(iw === 0 || ih === 0) return;
-        const r = Math.min(cw/iw, ch/ih, 1);
-        const imgW = iw * r, imgH = ih * r;
-        $zoomImg.style.width = imgW + 'px';
-        $zoomImg.style.height = imgH + 'px';
-        posX = (cw - imgW) / 2;
-        posY = (ch - imgH) / 2;
-        updateTransform();
-      }, 50);
-    };
   };
 
   // Zoom controls
   $zoomIn.addEventListener('click', function(){
     scale = Math.min(500, scale + 25);
-    updateTransform();
+    updateZoom();
   });
   $zoomOut.addEventListener('click', function(){
     scale = Math.max(100, scale - 25);
-    updateTransform();
+    updateZoom();
   });
   $zoomRange.addEventListener('input', function(){
     scale = parseInt(this.value, 10);
-    updateTransform();
+    updateZoom();
   });
 
   // Mouse wheel zoom
@@ -1103,45 +1087,8 @@
     e.preventDefault();
     const delta = e.deltaY < 0 ? 25 : -25;
     scale = Math.min(500, Math.max(100, scale + delta));
-    updateTransform();
+    updateZoom();
   }, {passive: false});
-
-  // Pan with drag
-  $zoomContainer.addEventListener('mousedown', function(e){
-    if(scale <= 100) return;
-    isDragging = true;
-    startX = e.clientX - posX;
-    startY = e.clientY - posY;
-    $zoomContainer.style.cursor = 'grabbing';
-  });
-  document.addEventListener('mousemove', function(e){
-    if(!isDragging) return;
-    posX = e.clientX - startX;
-    posY = e.clientY - startY;
-    updateTransform();
-  });
-  document.addEventListener('mouseup', function(){
-    isDragging = false;
-    $zoomContainer.style.cursor = 'grab';
-  });
-
-  // Touch support for mobile
-  let touchStartX = 0, touchStartY = 0;
-  $zoomContainer.addEventListener('touchstart', function(e){
-    if(scale <= 100 || e.touches.length !== 1) return;
-    isDragging = true;
-    touchStartX = e.touches[0].clientX - posX;
-    touchStartY = e.touches[0].clientY - posY;
-  }, {passive: true});
-  $zoomContainer.addEventListener('touchmove', function(e){
-    if(!isDragging || e.touches.length !== 1) return;
-    posX = e.touches[0].clientX - touchStartX;
-    posY = e.touches[0].clientY - touchStartY;
-    updateTransform();
-  }, {passive: true});
-  $zoomContainer.addEventListener('touchend', function(){
-    isDragging = false;
-  });
 
   // Reset and show gallery modal on close
   zoomModalEl.addEventListener('hidden.bs.modal', function(){
