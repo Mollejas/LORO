@@ -8,7 +8,11 @@ Partial Public Class Site1
     ' === Propiedades públicas para que las páginas hijas puedan saber si el usuario es admin y su nombre ===
     Public ReadOnly Property IsAdmin As Boolean
         Get
-            Return (ViewState("IsAdminFlag") IsNot Nothing AndAlso CBool(ViewState("IsAdminFlag")))
+            ' Usar directamente Session("EsAdmin") que se establece en Login.aspx
+            If Session("EsAdmin") IsNot Nothing Then
+                Return CBool(Session("EsAdmin"))
+            End If
+            Return False
         End Get
     End Property
 
