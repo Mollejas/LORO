@@ -1036,6 +1036,7 @@
 (function(){
   const zoomModalEl = document.getElementById('zoomModal');
   const zoomModal = new bootstrap.Modal(zoomModalEl);
+  const galeriaModalEl = document.getElementById('galeriaModal');
   const $zoomImg = document.getElementById('zoomImage');
   const $zoomContainer = document.getElementById('zoomContainer');
   const $zoomRange = document.getElementById('zoomRange');
@@ -1059,14 +1060,19 @@
 
   window.openZoomModal = function(src){
     if(!src) return;
-    $zoomImg.src = src;
+    // Remove cache buster parameters for clean URL
+    var cleanSrc = src.split('?')[0];
+    $zoomImg.src = cleanSrc;
     resetZoom();
+    // Hide gallery modal backdrop
+    galeriaModalEl.style.display = 'none';
     zoomModal.show();
     // Center image after load
     $zoomImg.onload = function(){
       setTimeout(function(){
         const cw = $zoomContainer.clientWidth, ch = $zoomContainer.clientHeight;
         const iw = $zoomImg.naturalWidth, ih = $zoomImg.naturalHeight;
+        if(iw === 0 || ih === 0) return;
         const r = Math.min(cw/iw, ch/ih, 1);
         const imgW = iw * r, imgH = ih * r;
         $zoomImg.style.width = imgW + 'px';
@@ -1137,8 +1143,11 @@
     isDragging = false;
   });
 
-  // Reset on modal close
-  zoomModalEl.addEventListener('hidden.bs.modal', resetZoom);
+  // Reset and show gallery modal on close
+  zoomModalEl.addEventListener('hidden.bs.modal', function(){
+    resetZoom();
+    galeriaModalEl.style.display = '';
+  });
 })();
 </script>
 
