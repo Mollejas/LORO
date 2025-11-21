@@ -600,7 +600,7 @@
       <div class="modal-body">
         <div class="gal-wrap">
           <div class="gal-stage">
-            <img id="galBig" class="gal-big" alt="imagen" />
+            <img id="galBig" class="gal-big" alt="imagen" title="Doble clic para zoom pantalla completa" />
             <div class="gal-arrows">
               <button class="btn btn-light btn-sm" id="galPrev" type="button"><i class="bi bi-chevron-left"></i></button>
               <button class="btn btn-light btn-sm" id="galNext" type="button"><i class="bi bi-chevron-right"></i></button>
@@ -609,6 +609,26 @@
           <div class="gal-thumbs" id="galThumbs"></div>
         </div>
         <div class="small mt-2 text-muted" id="galInfo"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: ZOOM FULLSCREEN ===================== -->
+<div class="modal fade" id="zoomModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content bg-dark">
+      <div class="modal-header border-0 py-2">
+        <div class="d-flex align-items-center gap-3 w-100">
+          <button type="button" class="btn btn-outline-light btn-sm" id="zoomOut"><i class="bi bi-zoom-out"></i></button>
+          <input type="range" id="zoomRange" min="100" max="500" value="100" class="form-range flex-grow-1" style="max-width:200px;">
+          <button type="button" class="btn btn-outline-light btn-sm" id="zoomIn"><i class="bi bi-zoom-in"></i></button>
+          <span id="zoomLevel" class="text-white small ms-2">100%</span>
+          <button type="button" class="btn btn-outline-light btn-sm ms-auto" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
+        </div>
+      </div>
+      <div class="modal-body p-0 overflow-hidden position-relative" id="zoomContainer" style="cursor:grab;">
+        <img id="zoomImage" src="" alt="Zoom" style="position:absolute;transform-origin:center;transition:transform 0.1s ease;">
       </div>
     </div>
   </div>
@@ -951,10 +971,11 @@
       $big.style.cursor = (_scale > 1) ? 'zoom-out' : 'zoom-in';
     }, { passive: false });
 
+    // Doble clic abre modal de zoom fullscreen
     $big.addEventListener('dblclick', function () {
-      _scale = (_scale > 1) ? 1 : 2;
-      $big.style.transform = 'scale(' + _scale + ')';
-      $big.style.cursor = (_scale > 1) ? 'zoom-out' : 'zoom-in';
+      if ($big.src) {
+        openZoomModal($big.src);
+      }
     });
 
     $thumbs.addEventListener('click', function (e) {
@@ -1008,6 +1029,114 @@
             galModal.show();
         };
     })();
+</script>
+
+<!-- ===== ZOOM FULLSCREEN ===== -->
+<script>
+(function(){
+  const zoomModalEl = document.getElementById('zoomModal');
+  const zoomModal = new bootstrap.Modal(zoomModalEl);
+  const $zoomImg = document.getElementById('zoomImage');
+  const $zoomContainer = document.getElementById('zoomContainer');
+  const $zoomRange = document.getElementById('zoomRange');
+  const $zoomLevel = document.getElementById('zoomLevel');
+  const $zoomIn = document.getElementById('zoomIn');
+  const $zoomOut = document.getElementById('zoomOut');
+
+  let scale = 100, posX = 0, posY = 0;
+  let isDragging = false, startX = 0, startY = 0;
+
+  function updateTransform(){
+    $zoomImg.style.transform = `translate(${posX}px, ${posY}px) scale(${scale/100})`;
+    $zoomLevel.textContent = scale + '%';
+    $zoomRange.value = scale;
+  }
+
+  function resetZoom(){
+    scale = 100; posX = 0; posY = 0;
+    updateTransform();
+  }
+
+  window.openZoomModal = function(src){
+    if(!src) return;
+    $zoomImg.src = src;
+    resetZoom();
+    zoomModal.show();
+    // Center image after load
+    $zoomImg.onload = function(){
+      const cw = $zoomContainer.clientWidth, ch = $zoomContainer.clientHeight;
+      const iw = $zoomImg.naturalWidth, ih = $zoomImg.naturalHeight;
+      const r = Math.min(cw/iw, ch/ih, 1);
+      $zoomImg.style.width = (iw*r) + 'px';
+      $zoomImg.style.height = (ih*r) + 'px';
+      posX = (cw - iw*r)/2;
+      posY = (ch - ih*r)/2;
+      updateTransform();
+    };
+  };
+
+  // Zoom controls
+  $zoomIn.addEventListener('click', function(){
+    scale = Math.min(500, scale + 25);
+    updateTransform();
+  });
+  $zoomOut.addEventListener('click', function(){
+    scale = Math.max(100, scale - 25);
+    updateTransform();
+  });
+  $zoomRange.addEventListener('input', function(){
+    scale = parseInt(this.value, 10);
+    updateTransform();
+  });
+
+  // Mouse wheel zoom
+  $zoomContainer.addEventListener('wheel', function(e){
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 25 : -25;
+    scale = Math.min(500, Math.max(100, scale + delta));
+    updateTransform();
+  }, {passive: false});
+
+  // Pan with drag
+  $zoomContainer.addEventListener('mousedown', function(e){
+    if(scale <= 100) return;
+    isDragging = true;
+    startX = e.clientX - posX;
+    startY = e.clientY - posY;
+    $zoomContainer.style.cursor = 'grabbing';
+  });
+  document.addEventListener('mousemove', function(e){
+    if(!isDragging) return;
+    posX = e.clientX - startX;
+    posY = e.clientY - startY;
+    updateTransform();
+  });
+  document.addEventListener('mouseup', function(){
+    isDragging = false;
+    $zoomContainer.style.cursor = 'grab';
+  });
+
+  // Touch support for mobile
+  let touchStartX = 0, touchStartY = 0;
+  $zoomContainer.addEventListener('touchstart', function(e){
+    if(scale <= 100 || e.touches.length !== 1) return;
+    isDragging = true;
+    touchStartX = e.touches[0].clientX - posX;
+    touchStartY = e.touches[0].clientY - posY;
+  }, {passive: true});
+  $zoomContainer.addEventListener('touchmove', function(e){
+    if(!isDragging || e.touches.length !== 1) return;
+    posX = e.touches[0].clientX - touchStartX;
+    posY = e.touches[0].clientY - touchStartY;
+    updateTransform();
+  }, {passive: true});
+  $zoomContainer.addEventListener('touchend', function(){
+    isDragging = false;
+  });
+
+  // Reset on modal close
+  zoomModalEl.addEventListener('hidden.bs.modal', resetZoom);
+})();
 </script>
 
 </body>
