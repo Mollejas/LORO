@@ -1873,9 +1873,19 @@
       };
     }
     function openDiagPage(pageUrl) {
+      // Cerrar todos los modales abiertos antes de abrir diagModal
+      document.querySelectorAll('.modal.show').forEach(function(m) {
+        var instance = bootstrap.Modal.getInstance(m);
+        if (instance) instance.hide();
+      });
+      // Limpiar backdrops huérfanos
+      document.querySelectorAll('.modal-backdrop').forEach(function(b) { b.remove(); });
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+
       const iframe = document.getElementById('diagFrame');
       const modalEl = document.getElementById('diagModal');
-      // Usar getOrCreateInstance para evitar crear múltiples instancias
       const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
 
       const d = getExpedienteData();
@@ -2722,10 +2732,15 @@
 
    <script>
        document.addEventListener('DOMContentLoaded', function () {
-           const modalEl = document.getElementById('diagModal'); // id real de tu modal
+           const modalEl = document.getElementById('diagModal');
            if (!modalEl) return;
            modalEl.addEventListener('hidden.bs.modal', function () {
-               // recarga completa => vuelve a correr Page_Load normal
+               // Limpiar todos los modales y backdrops antes de recargar
+               document.querySelectorAll('.modal-backdrop').forEach(function(b) { b.remove(); });
+               document.body.classList.remove('modal-open');
+               document.body.style.overflow = '';
+               document.body.style.paddingRight = '';
+               // recarga completa
                window.location.reload();
            });
 
