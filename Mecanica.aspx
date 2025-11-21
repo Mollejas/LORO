@@ -160,42 +160,13 @@
       </div>
     </div>
 
-    <!-- Datos expediente -->
-    <div class="panel mb-2 compact">
-      <div class="panel-head">
-        <i class="bi bi-info-circle text-primary fs-5"></i>
-        <h2 class="ttl">Datos del expediente</h2>
-      </div>
-      <div class="panel-body">
-        <asp:HiddenField ID="hfId" runat="server" />
-        <asp:HiddenField ID="hfExpediente" runat="server" />
-        <asp:HiddenField ID="hfCarpetaRel" runat="server" ClientIDMode="Static" />
-
-        <div class="row g-3">
-          <div class="col-md-4">
-            <label class="label-strong mb-1">Expediente</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-folder2-open"></i></span>
-              <asp:TextBox ID="txtExpediente" runat="server" CssClass="form-control" ReadOnly="true" />
-            </div>
-          </div>
-          <div class="col-md-4">
-            <label class="label-strong mb-1">Siniestro</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-shield-check"></i></span>
-              <asp:TextBox ID="txtSiniestro" runat="server" CssClass="form-control" ReadOnly="true" />
-            </div>
-          </div>
-          <div class="col-md-4">
-            <label class="label-strong mb-1">Vehículo</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-car-front"></i></span>
-              <asp:TextBox ID="txtVehiculo" runat="server" CssClass="form-control" ReadOnly="true" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Hidden fields necesarios -->
+    <asp:HiddenField ID="hfId" runat="server" />
+    <asp:HiddenField ID="hfExpediente" runat="server" />
+    <asp:HiddenField ID="hfCarpetaRel" runat="server" ClientIDMode="Static" />
+    <asp:TextBox ID="txtExpediente" runat="server" CssClass="d-none" />
+    <asp:TextBox ID="txtSiniestro" runat="server" CssClass="d-none" />
+    <asp:TextBox ID="txtVehiculo" runat="server" CssClass="d-none" />
 
     <!-- Paneles principales (Sustitución / Reparación) -->
     <div class="row g-3">
