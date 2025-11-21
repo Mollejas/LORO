@@ -729,7 +729,9 @@
 
       // Cerrar modal automáticamente después de subir
       setTimeout(function() {
-        bootstrap.Modal.getInstance(document.getElementById('fotosModal'))?.hide();
+        const modalEl = document.getElementById('fotosModal');
+        const modal = bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.hide();
       }, 800);
 
     } catch(err){
