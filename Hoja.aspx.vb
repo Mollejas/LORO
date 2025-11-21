@@ -801,10 +801,15 @@ END"
         ' Si el usuario es admin, no deshabilitar nada en JavaScript
         Dim isAdmin As Boolean = IsCurrentUserAdmin
 
+        ' DEBUG: Mostrar en consola el estado de admin
+        Dim jsDebug As String = "console.log('DEBUG: isAdmin=" & If(isAdmin, "true", "false") & "');"
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "debugAdmin", jsDebug, True)
+
         Dim jsUploadControl As New Text.StringBuilder()
         jsUploadControl.Append("(function(){")
         ' Definir isAdmin directamente aquí para asegurar que esté disponible
         jsUploadControl.Append("var isAdmin=").Append(If(isAdmin, "true", "false")).Append(";")
+        jsUploadControl.Append("console.log('Upload Control: isAdmin=' + isAdmin);")
         jsUploadControl.Append("if(isAdmin) return;") ' Admin siempre tiene todo habilitado
         jsUploadControl.Append("var disable=function(id){var el=document.getElementById(id);if(el){el.classList.add('disabled');el.style.pointerEvents='none';el.style.opacity='0.5';}};")
         ' INE - si existe, deshabilitar subida
