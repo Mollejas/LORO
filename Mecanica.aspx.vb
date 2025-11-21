@@ -245,6 +245,84 @@ Public Class Mecanica
         End If
     End Sub
 
+    ' ====== Edición Inline: Sustitución ======
+    Protected Sub gvSust_RowEditing(sender As Object, e As GridViewEditEventArgs)
+        gvSust.EditIndex = e.NewEditIndex
+        BindGrid(gvSust, "SUSTITUCION")
+    End Sub
+
+    Protected Sub gvSust_RowCancelingEdit(sender As Object, e As GridViewCancelEditEventArgs)
+        gvSust.EditIndex = -1
+        BindGrid(gvSust, "SUSTITUCION")
+    End Sub
+
+    Protected Sub gvSust_RowUpdating(sender As Object, e As GridViewUpdateEventArgs)
+        Dim id As Integer = Convert.ToInt32(gvSust.DataKeys(e.RowIndex).Values("Id"))
+        Dim row As GridViewRow = gvSust.Rows(e.RowIndex)
+
+        Dim txtCantidad As TextBox = TryCast(row.FindControl("txtCantidad"), TextBox)
+        Dim txtDescripcion As TextBox = TryCast(row.FindControl("txtDescripcion"), TextBox)
+        Dim txtNumParte As TextBox = TryCast(row.FindControl("txtNumParte"), TextBox)
+
+        Dim cantidad As Integer = 0
+        Integer.TryParse(txtCantidad.Text.Trim(), cantidad)
+        Dim descripcion As String = txtDescripcion.Text.Trim()
+        Dim numParte As String = txtNumParte.Text.Trim()
+
+        Using cn As New SqlConnection(CS)
+            Using cmd As New SqlCommand("UPDATE dbo.Refacciones SET Cantidad=@Cantidad, Descripcion=@Descripcion, NumParte=@NumParte WHERE Id=@Id", cn)
+                cmd.Parameters.AddWithValue("@Cantidad", cantidad)
+                cmd.Parameters.AddWithValue("@Descripcion", descripcion)
+                cmd.Parameters.AddWithValue("@NumParte", numParte)
+                cmd.Parameters.AddWithValue("@Id", id)
+                cn.Open()
+                cmd.ExecuteNonQuery()
+            End Using
+        End Using
+
+        gvSust.EditIndex = -1
+        BindGrid(gvSust, "SUSTITUCION")
+    End Sub
+
+    ' ====== Edición Inline: Reparación ======
+    Protected Sub gvRep_RowEditing(sender As Object, e As GridViewEditEventArgs)
+        gvRep.EditIndex = e.NewEditIndex
+        BindGrid(gvRep, "REPARACION")
+    End Sub
+
+    Protected Sub gvRep_RowCancelingEdit(sender As Object, e As GridViewCancelEditEventArgs)
+        gvRep.EditIndex = -1
+        BindGrid(gvRep, "REPARACION")
+    End Sub
+
+    Protected Sub gvRep_RowUpdating(sender As Object, e As GridViewUpdateEventArgs)
+        Dim id As Integer = Convert.ToInt32(gvRep.DataKeys(e.RowIndex).Values("Id"))
+        Dim row As GridViewRow = gvRep.Rows(e.RowIndex)
+
+        Dim txtCantidad As TextBox = TryCast(row.FindControl("txtCantidad"), TextBox)
+        Dim txtDescripcion As TextBox = TryCast(row.FindControl("txtDescripcion"), TextBox)
+        Dim txtObserv1 As TextBox = TryCast(row.FindControl("txtObserv1"), TextBox)
+
+        Dim cantidad As Integer = 0
+        Integer.TryParse(txtCantidad.Text.Trim(), cantidad)
+        Dim descripcion As String = txtDescripcion.Text.Trim()
+        Dim observ1 As String = txtObserv1.Text.Trim()
+
+        Using cn As New SqlConnection(CS)
+            Using cmd As New SqlCommand("UPDATE dbo.Refacciones SET Cantidad=@Cantidad, Descripcion=@Descripcion, Observ1=@Observ1 WHERE Id=@Id", cn)
+                cmd.Parameters.AddWithValue("@Cantidad", cantidad)
+                cmd.Parameters.AddWithValue("@Descripcion", descripcion)
+                cmd.Parameters.AddWithValue("@Observ1", observ1)
+                cmd.Parameters.AddWithValue("@Id", id)
+                cn.Open()
+                cmd.ExecuteNonQuery()
+            End Using
+        End Using
+
+        gvRep.EditIndex = -1
+        BindGrid(gvRep, "REPARACION")
+    End Sub
+
     ' ====== Eliminar ======
     Private Sub DeleteRefaccion(id As Integer)
         If Not IsCurrentUserAdmin() Then
