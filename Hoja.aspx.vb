@@ -788,7 +788,49 @@ END"
         jsFlags.Append("};")
         jsFlags.Append("window.__forceDiagVisible=").Append(If(diagOk, "true", "false")).Append(";"c)
 
+        ' ====== Control de botones de subida para no-admin ======
+        ' Verificar si existen complementos
+        Dim complFolder As String = ObtenerSubcarpetaDestinoFisica()
+        Dim anyComplExists As Boolean = False
+        If Not String.IsNullOrWhiteSpace(hidCarpeta.Value) AndAlso System.IO.Directory.Exists(complFolder) Then
+            anyComplExists = System.IO.File.Exists(System.IO.Path.Combine(complFolder, "inetransito.pdf")) OrElse
+                            System.IO.File.Exists(System.IO.Path.Combine(complFolder, "transitoaseg.pdf")) OrElse
+                            System.IO.File.Exists(System.IO.Path.Combine(complFolder, "comple.pdf"))
+        End If
+
+        Dim jsUploadControl As New Text.StringBuilder()
+        jsUploadControl.Append("(function(){")
+        jsUploadControl.Append("if(window.__isAdmin) return;") ' Admin siempre tiene todo habilitado
+        jsUploadControl.Append("var disable=function(id){var el=document.getElementById(id);if(el){el.classList.add('disabled');el.style.pointerEvents='none';el.style.opacity='0.5';}};")
+        ' INE - si existe, deshabilitar subida
+        If enableVerIne Then
+            jsUploadControl.Append("disable('btnSubirInePdf');disable('btnSubirIneCamara');")
+        End If
+        ' CT - si existe, deshabilitar subida
+        If enableVerCT Then
+            jsUploadControl.Append("disable('btnSubirCt');")
+        End If
+        ' Complementos - si alguno existe, deshabilitar subida (pero no el botón de ver)
+        If anyComplExists Then
+            jsUploadControl.Append("disable('btnSubirComplementos');")
+        End If
+        ' Fotos ingreso - siempre habilitado para todos
+        ' INV - los LinkButtons se controlan en el servidor
+        jsUploadControl.Append("})();")
+
         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "diagStateFlags_" & Guid.NewGuid().ToString("N"), jsFlags.ToString(), True)
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "uploadControl_" & Guid.NewGuid().ToString("N"), jsUploadControl.ToString(), True)
+
+        ' ====== Control de botones INV (LinkButtons) para no-admin ======
+        If Not IsCurrentUserAdmin Then
+            ' Si INV existe (inv.pdf o grúa), deshabilitar botones de subida
+            If enableVerInv OrElse invGruaOk Then
+                btnInvHtml.Enabled = False
+                ToggleCss(btnInvHtml, "disabled", True)
+                btnInvGrua.Enabled = False
+                ToggleCss(btnInvGrua, "disabled", True)
+            End If
+        End If
 
         ' ====== Mostrar/Ocultar “Tira de Diagnóstico” (robusto para postback parcial) ======
         Dim showStr As String = If(diagOk, "true", "false")
