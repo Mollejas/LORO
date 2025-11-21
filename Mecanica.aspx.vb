@@ -12,6 +12,8 @@ Imports System.Text.RegularExpressions
 Imports System.Security.Cryptography
 Imports System.Web.Services
 Imports System.Web.Script.Services
+Imports iTextSharp.text
+Imports iTextSharp.text.pdf
 
 Public Class Mecanica
     Inherits System.Web.UI.Page
@@ -976,5 +978,218 @@ Public Class Mecanica
         End Using
     End Function
 
+    ' ====== Generar PDF con iTextSharp ======
+    Protected Sub btnDescargarPDF_Click(sender As Object, e As EventArgs)
+        Dim expediente = GetExpediente()
+        Dim siniestro = txtSiniestro.Text
+        Dim vehiculo = txtVehiculo.Text
+
+        ' Obtener datos de los grids
+        Dim dtSust As New DataTable()
+        Dim dtRep As New DataTable()
+
+        Using cn As New SqlConnection(CS)
+            Using cmd As New SqlCommand("SELECT Cantidad, Descripcion, NumParte FROM dbo.Refacciones WHERE Area=@Area AND Categoria='SUSTITUCION' AND Expediente=@Expediente ORDER BY Id DESC;", cn)
+                cmd.Parameters.AddWithValue("@Area", AREA)
+                cmd.Parameters.AddWithValue("@Expediente", expediente)
+                Using da As New SqlDataAdapter(cmd)
+                    da.Fill(dtSust)
+                End Using
+            End Using
+
+            Using cmd As New SqlCommand("SELECT Cantidad, Descripcion, Observ1 FROM dbo.Refacciones WHERE Area=@Area AND Categoria='REPARACION' AND Expediente=@Expediente ORDER BY Id DESC;", cn)
+                cmd.Parameters.AddWithValue("@Area", AREA)
+                cmd.Parameters.AddWithValue("@Expediente", expediente)
+                Using da As New SqlDataAdapter(cmd)
+                    da.Fill(dtRep)
+                End Using
+            End Using
+        End Using
+
+        ' Crear PDF
+        Using ms As New MemoryStream()
+            Dim doc As New Document(PageSize.LETTER, 40, 40, 40, 40)
+            Dim writer = PdfWriter.GetInstance(doc, ms)
+            doc.Open()
+
+            ' Colores
+            Dim brandColor As New BaseColor(30, 73, 118) ' #1e4976
+            Dim headerBg As New BaseColor(241, 245, 249) ' #f1f5f9
+
+            ' Fuentes
+            Dim fontTitle = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18, brandColor)
+            Dim fontSubtitle = FontFactory.GetFont(FontFactory.HELVETICA, 10, BaseColor.DARK_GRAY)
+            Dim fontSectionTitle = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, brandColor)
+            Dim fontLabel = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9, BaseColor.DARK_GRAY)
+            Dim fontValue = FontFactory.GetFont(FontFactory.HELVETICA, 9, BaseColor.BLACK)
+            Dim fontTableHeader = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9, BaseColor.WHITE)
+            Dim fontTableCell = FontFactory.GetFont(FontFactory.HELVETICA, 8, BaseColor.BLACK)
+
+            ' === Encabezado ===
+            Dim headerTable As New PdfPTable(1)
+            headerTable.WidthPercentage = 100
+            headerTable.SpacingAfter = 15
+
+            Dim titleCell As New PdfPCell(New Phrase("Diagnóstico – Mecánica", fontTitle))
+            titleCell.Border = Rectangle.NO_BORDER
+            titleCell.PaddingBottom = 5
+            headerTable.AddCell(titleCell)
+
+            Dim subtitleCell As New PdfPCell(New Phrase("Captura y control de refacciones por sustitución y reparación", fontSubtitle))
+            subtitleCell.Border = Rectangle.NO_BORDER
+            headerTable.AddCell(subtitleCell)
+
+            doc.Add(headerTable)
+
+            ' === Datos del expediente ===
+            Dim infoTable As New PdfPTable(3)
+            infoTable.WidthPercentage = 100
+            infoTable.SetWidths(New Single() {1, 1, 1})
+            infoTable.SpacingAfter = 20
+
+            ' Expediente
+            Dim cellExp As New PdfPCell()
+            cellExp.Border = Rectangle.BOX
+            cellExp.BorderColor = BaseColor.LIGHT_GRAY
+            cellExp.Padding = 8
+            cellExp.BackgroundColor = headerBg
+            cellExp.AddElement(New Phrase("Expediente", fontLabel))
+            cellExp.AddElement(New Phrase(If(String.IsNullOrEmpty(expediente), "—", expediente), fontValue))
+            infoTable.AddCell(cellExp)
+
+            ' Siniestro
+            Dim cellSin As New PdfPCell()
+            cellSin.Border = Rectangle.BOX
+            cellSin.BorderColor = BaseColor.LIGHT_GRAY
+            cellSin.Padding = 8
+            cellSin.BackgroundColor = headerBg
+            cellSin.AddElement(New Phrase("Siniestro", fontLabel))
+            cellSin.AddElement(New Phrase(If(String.IsNullOrEmpty(siniestro), "—", siniestro), fontValue))
+            infoTable.AddCell(cellSin)
+
+            ' Vehículo
+            Dim cellVeh As New PdfPCell()
+            cellVeh.Border = Rectangle.BOX
+            cellVeh.BorderColor = BaseColor.LIGHT_GRAY
+            cellVeh.Padding = 8
+            cellVeh.BackgroundColor = headerBg
+            cellVeh.AddElement(New Phrase("Vehículo", fontLabel))
+            cellVeh.AddElement(New Phrase(If(String.IsNullOrEmpty(vehiculo), "—", vehiculo), fontValue))
+            infoTable.AddCell(cellVeh)
+
+            doc.Add(infoTable)
+
+            ' === Tabla Sustitución ===
+            doc.Add(New Phrase("Sustitución", fontSectionTitle))
+            doc.Add(New Paragraph(" "))
+
+            Dim tableSust As New PdfPTable(3)
+            tableSust.WidthPercentage = 100
+            tableSust.SetWidths(New Single() {1, 4, 2})
+            tableSust.SpacingAfter = 20
+
+            ' Headers
+            For Each header As String In {"Cant.", "Descripción", "Num. Parte"}
+                Dim cell As New PdfPCell(New Phrase(header, fontTableHeader))
+                cell.BackgroundColor = brandColor
+                cell.Padding = 6
+                cell.HorizontalAlignment = Element.ALIGN_CENTER
+                tableSust.AddCell(cell)
+            Next
+
+            ' Filas
+            If dtSust.Rows.Count > 0 Then
+                Dim alt As Boolean = False
+                For Each row As DataRow In dtSust.Rows
+                    Dim bgColor = If(alt, headerBg, BaseColor.WHITE)
+
+                    Dim c1 As New PdfPCell(New Phrase(Convert.ToString(row("Cantidad")), fontTableCell))
+                    c1.BackgroundColor = bgColor : c1.Padding = 5 : c1.HorizontalAlignment = Element.ALIGN_CENTER
+                    tableSust.AddCell(c1)
+
+                    Dim c2 As New PdfPCell(New Phrase(Convert.ToString(row("Descripcion")), fontTableCell))
+                    c2.BackgroundColor = bgColor : c2.Padding = 5
+                    tableSust.AddCell(c2)
+
+                    Dim c3 As New PdfPCell(New Phrase(Convert.ToString(row("NumParte")), fontTableCell))
+                    c3.BackgroundColor = bgColor : c3.Padding = 5
+                    tableSust.AddCell(c3)
+
+                    alt = Not alt
+                Next
+            Else
+                Dim emptyCell As New PdfPCell(New Phrase("Sin registros", fontTableCell))
+                emptyCell.Colspan = 3
+                emptyCell.Padding = 10
+                emptyCell.HorizontalAlignment = Element.ALIGN_CENTER
+                tableSust.AddCell(emptyCell)
+            End If
+
+            doc.Add(tableSust)
+
+            ' === Tabla Reparación ===
+            doc.Add(New Phrase("Reparación", fontSectionTitle))
+            doc.Add(New Paragraph(" "))
+
+            Dim tableRep As New PdfPTable(3)
+            tableRep.WidthPercentage = 100
+            tableRep.SetWidths(New Single() {1, 4, 2})
+            tableRep.SpacingAfter = 20
+
+            ' Headers
+            For Each header As String In {"Cant.", "Descripción", "Observaciones"}
+                Dim cell As New PdfPCell(New Phrase(header, fontTableHeader))
+                cell.BackgroundColor = brandColor
+                cell.Padding = 6
+                cell.HorizontalAlignment = Element.ALIGN_CENTER
+                tableRep.AddCell(cell)
+            Next
+
+            ' Filas
+            If dtRep.Rows.Count > 0 Then
+                Dim alt As Boolean = False
+                For Each row As DataRow In dtRep.Rows
+                    Dim bgColor = If(alt, headerBg, BaseColor.WHITE)
+
+                    Dim c1 As New PdfPCell(New Phrase(Convert.ToString(row("Cantidad")), fontTableCell))
+                    c1.BackgroundColor = bgColor : c1.Padding = 5 : c1.HorizontalAlignment = Element.ALIGN_CENTER
+                    tableRep.AddCell(c1)
+
+                    Dim c2 As New PdfPCell(New Phrase(Convert.ToString(row("Descripcion")), fontTableCell))
+                    c2.BackgroundColor = bgColor : c2.Padding = 5
+                    tableRep.AddCell(c2)
+
+                    Dim c3 As New PdfPCell(New Phrase(Convert.ToString(row("Observ1")), fontTableCell))
+                    c3.BackgroundColor = bgColor : c3.Padding = 5
+                    tableRep.AddCell(c3)
+
+                    alt = Not alt
+                Next
+            Else
+                Dim emptyCell As New PdfPCell(New Phrase("Sin registros", fontTableCell))
+                emptyCell.Colspan = 3
+                emptyCell.Padding = 10
+                emptyCell.HorizontalAlignment = Element.ALIGN_CENTER
+                tableRep.AddCell(emptyCell)
+            End If
+
+            doc.Add(tableRep)
+
+            ' Pie de página
+            Dim footer As New Paragraph($"Generado el {DateTime.Now:dd/MM/yyyy HH:mm}", fontSubtitle)
+            footer.Alignment = Element.ALIGN_RIGHT
+            doc.Add(footer)
+
+            doc.Close()
+
+            ' Enviar al navegador
+            Dim bytes = ms.ToArray()
+            Response.Clear()
+            Response.ContentType = "application/pdf"
+            Response.AddHeader("Content-Disposition", $"attachment; filename=Mecanica_{expediente}_{DateTime.Now:yyyyMMdd}.pdf")
+            Response.BinaryWrite(bytes)
+            Response.End()
+        End Using
+    End Sub
 
 End Class
