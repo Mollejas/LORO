@@ -1874,7 +1874,9 @@
     }
     function openDiagPage(pageUrl) {
       const iframe = document.getElementById('diagFrame');
-      const modal = new bootstrap.Modal(document.getElementById('diagModal'));
+      const modalEl = document.getElementById('diagModal');
+      // Usar getOrCreateInstance para evitar crear múltiples instancias
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
 
       const d = getExpedienteData();
       const qs = new URLSearchParams(d).toString();
