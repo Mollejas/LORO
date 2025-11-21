@@ -617,18 +617,20 @@
 <!-- ===================== MODAL: ZOOM FULLSCREEN ===================== -->
 <div class="modal fade" id="zoomModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-fullscreen">
-    <div class="modal-content bg-dark">
-      <div class="modal-header border-0 py-2">
-        <div class="d-flex align-items-center gap-3 w-100">
-          <button type="button" class="btn btn-outline-light btn-sm" id="zoomOut"><i class="bi bi-zoom-out"></i></button>
-          <input type="range" id="zoomRange" min="100" max="500" value="100" class="form-range flex-grow-1" style="max-width:200px;">
-          <button type="button" class="btn btn-outline-light btn-sm" id="zoomIn"><i class="bi bi-zoom-in"></i></button>
-          <span id="zoomLevel" class="text-white small ms-2">100%</span>
-          <button type="button" class="btn btn-outline-light btn-sm ms-auto" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
-        </div>
+    <div class="modal-content" style="background: rgba(0,0,0,0.95);">
+      <div class="modal-header border-0 position-absolute" style="top:10px; right:10px; z-index:10;">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
-      <div class="modal-body p-0 d-flex align-items-center justify-content-center" id="zoomContainer" style="cursor:grab;height:calc(100vh - 60px);overflow:auto;">
-        <img id="zoomImage" src="" alt="Zoom" style="max-width:100%;max-height:100%;object-fit:contain;transition:transform 0.1s ease;">
+      <div class="modal-body d-flex align-items-center justify-content-center p-0" id="zoomContainer" style="overflow:hidden;">
+        <img id="zoomImage" alt="Imagen en pantalla completa" style="max-width:90vw; max-height:85vh; object-fit:contain; transform-origin:center center; cursor:grab;" />
+      </div>
+      <div class="modal-footer border-0 justify-content-center position-absolute" style="bottom:10px; left:0; right:0;">
+        <div class="d-flex gap-2 align-items-center bg-white rounded-pill px-3 py-2 shadow">
+          <button type="button" class="btn btn-primary btn-sm rounded-circle" style="width:36px;height:36px;" id="zoomOut">−</button>
+          <input type="range" id="zoomRange" min="1" max="6" step="0.1" value="1" style="width:120px;" />
+          <button type="button" class="btn btn-primary btn-sm rounded-circle" style="width:36px;height:36px;" id="zoomIn">+</button>
+          <button type="button" class="btn btn-secondary btn-sm rounded-circle" style="width:36px;height:36px;" id="zoomReset">⟳</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1034,66 +1036,95 @@
 <!-- ===== ZOOM FULLSCREEN ===== -->
 <script>
 (function(){
-  const zoomModalEl = document.getElementById('zoomModal');
-  const zoomModal = new bootstrap.Modal(zoomModalEl);
-  const galeriaModalEl = document.getElementById('galeriaModal');
-  const $zoomImg = document.getElementById('zoomImage');
-  const $zoomRange = document.getElementById('zoomRange');
-  const $zoomLevel = document.getElementById('zoomLevel');
-  const $zoomIn = document.getElementById('zoomIn');
-  const $zoomOut = document.getElementById('zoomOut');
-  const $zoomContainer = document.getElementById('zoomContainer');
+  const modal = document.getElementById('zoomModal');
+  const zoomImage = document.getElementById('zoomImage');
+  const zoomRange = document.getElementById('zoomRange');
+  const zoomIn = document.getElementById('zoomIn');
+  const zoomOut = document.getElementById('zoomOut');
+  const zoomReset = document.getElementById('zoomReset');
 
-  let scale = 100;
+  if (!modal || !zoomImage) return;
 
-  function updateZoom(){
-    $zoomImg.style.transform = 'scale(' + (scale/100) + ')';
-    $zoomLevel.textContent = scale + '%';
-    $zoomRange.value = scale;
+  let scale = 1, tx = 0, ty = 0;
+  const MIN = 1, MAX = 6;
+  let dragging = false, lastX = 0, lastY = 0;
+
+  function apply() {
+    zoomImage.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+    zoomImage.style.cursor = scale > 1 ? 'move' : 'grab';
   }
 
-  function resetZoom(){
-    scale = 100;
-    updateZoom();
+  function reset() {
+    scale = 1; tx = 0; ty = 0; dragging = false;
+    zoomImage.style.transform = '';
+    zoomImage.style.cursor = 'grab';
+    if (zoomRange) zoomRange.value = '1';
   }
 
-  window.openZoomModal = function(src){
-    if(!src) return;
-    // Remove cache buster parameters for clean URL
-    var cleanSrc = src.split('?')[0];
-    $zoomImg.src = cleanSrc;
-    resetZoom();
-    // Hide gallery modal
-    galeriaModalEl.style.display = 'none';
-    zoomModal.show();
+  function clampPan() {
+    const rect = zoomImage.getBoundingClientRect();
+    const cont = zoomImage.parentElement.getBoundingClientRect();
+    const baseW = rect.width / scale, baseH = rect.height / scale;
+    const maxX = Math.max(0, (baseW * scale - cont.width) / 2);
+    const maxY = Math.max(0, (baseH * scale - cont.height) / 2);
+    tx = Math.max(-maxX, Math.min(maxX, tx));
+    ty = Math.max(-maxY, Math.min(maxY, ty));
+  }
+
+  function setScale(val) {
+    scale = Math.max(MIN, Math.min(MAX, val));
+    if (scale <= 1.0001) { tx = 0; ty = 0; }
+    clampPan(); apply();
+    if (zoomRange) zoomRange.value = String(scale);
+  }
+
+  // Abrir modal
+  window.openZoomModal = function(src) {
+    zoomImage.src = src;
+    reset();
+    const bsModal = bootstrap.Modal.getOrCreateInstance(modal);
+    bsModal.show();
   };
 
-  // Zoom controls
-  $zoomIn.addEventListener('click', function(){
-    scale = Math.min(500, scale + 25);
-    updateZoom();
-  });
-  $zoomOut.addEventListener('click', function(){
-    scale = Math.max(100, scale - 25);
-    updateZoom();
-  });
-  $zoomRange.addEventListener('input', function(){
-    scale = parseInt(this.value, 10);
-    updateZoom();
-  });
+  // Reset al cerrar
+  modal.addEventListener('hidden.bs.modal', reset);
 
-  // Mouse wheel zoom
-  $zoomContainer.addEventListener('wheel', function(e){
+  // Botones de zoom
+  zoomIn?.addEventListener('click', () => setScale(scale + 0.5));
+  zoomOut?.addEventListener('click', () => setScale(scale - 0.5));
+  zoomReset?.addEventListener('click', reset);
+
+  // Slider de zoom
+  zoomRange?.addEventListener('input', () => setScale(parseFloat(zoomRange.value || "1")));
+
+  // Zoom con rueda del mouse
+  zoomImage.addEventListener('wheel', (e) => {
     e.preventDefault();
-    const delta = e.deltaY < 0 ? 25 : -25;
-    scale = Math.min(500, Math.max(100, scale + delta));
-    updateZoom();
-  }, {passive: false});
+    setScale(scale + (e.deltaY > 0 ? -0.3 : 0.3));
+  }, { passive: false });
 
-  // Reset and show gallery modal on close
-  zoomModalEl.addEventListener('hidden.bs.modal', function(){
-    resetZoom();
-    galeriaModalEl.style.display = '';
+  // Pan con mouse
+  zoomImage.addEventListener('mousedown', (e) => {
+    if (scale <= 1) return;
+    dragging = true;
+    lastX = e.clientX; lastY = e.clientY;
+    zoomImage.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    tx += (e.clientX - lastX);
+    ty += (e.clientY - lastY);
+    lastX = e.clientX; lastY = e.clientY;
+    clampPan(); apply();
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (dragging) {
+      dragging = false;
+      zoomImage.style.cursor = scale > 1 ? 'move' : 'grab';
+    }
   });
 })();
 </script>
