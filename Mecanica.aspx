@@ -894,6 +894,7 @@
     const $selNone = document.getElementById('btnSelNone');
 
     var __folder = "", __prefix = "", __files = [], __idx = 0, _scale = 1;
+    var __currentRefId = null, __currentDesc = "";  // Para restaurar highlighting
 
     function bust(u) {
       if (!u) return '';
@@ -1004,10 +1005,41 @@
             __folder = virtualFolder || '';
             __prefix = prefix || '';
             __files = (filesCsv || '').split('|').filter(Boolean);
+
+            // Extraer refId y descripción del prefix (formato: "id-desc")
+            var parts = prefix.split('-');
+            __currentRefId = parts[0] || null;
+            __currentDesc = parts.slice(1).join('-') || '';
+
             renderThumbs();
             showAt(0);
             galModal.show();
         };
+
+        // Restaurar highlighting al cerrar el modal de galería
+        document.getElementById('galeriaModal').addEventListener('hidden.bs.modal', function () {
+            if (!__currentRefId) return;
+
+            var expediente = (document.getElementById('hfExpediente') && document.getElementById('hfExpediente').value) || '';
+            if (!expediente) return;
+
+            // Buscar la fila correspondiente y restaurar su highlighting
+            var fotosBtn = document.querySelector('.btn-fotos[data-ref-id="' + CSS.escape(__currentRefId) + '"]');
+            if (!fotosBtn) return;
+
+            var row = fotosBtn.closest('tr');
+            var descripcion = fotosBtn.getAttribute('data-descripcion') || '';
+
+            // Re-verificar si cumple con el mínimo de fotos
+            PageMethods.HasMinFotos(expediente, parseInt(__currentRefId, 10), descripcion, 3,
+                function(ok) {
+                    if (row) {
+                        row.classList.toggle('row-photos-ok', !!ok);
+                    }
+                },
+                function() { /* no-op */ }
+            );
+        });
     })();
 </script>
 
