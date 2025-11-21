@@ -2742,23 +2742,13 @@
            const modalEl = document.getElementById('diagModal');
            if (!modalEl) return;
            modalEl.addEventListener('hidden.bs.modal', function () {
-               // Limpiar TODOS los modales y sus instancias
-               document.querySelectorAll('.modal').forEach(function(m) {
-                   var instance = bootstrap.Modal.getInstance(m);
-                   if (instance) {
-                       instance.dispose();
-                   }
-                   m.classList.remove('show');
-                   m.style.display = 'none';
-               });
-               // Limpiar backdrops
+               // Limpiar backdrops huérfanos
                document.querySelectorAll('.modal-backdrop').forEach(function(b) { b.remove(); });
                // Limpiar body
                document.body.classList.remove('modal-open');
                document.body.style.overflow = '';
                document.body.style.paddingRight = '';
-               // Forzar recarga completa
-               window.location.href = window.location.pathname + window.location.search;
+               // NO recargar la página - quedarse donde está
            });
 
            // (opcional) si el hijo avisa:
