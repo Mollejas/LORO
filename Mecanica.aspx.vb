@@ -377,7 +377,7 @@ Public Class Mecanica
     Private Sub BindAdminDDL(ddl As DropDownList, dt As DataTable)
         ddl.Items.Clear()
         ddl.AppendDataBoundItems = True
-        ddl.Items.Add(New ListItem("-- Selecciona usuario --", ""))
+        ddl.Items.Add(New System.Web.UI.WebControls.ListItem("-- Selecciona usuario --", ""))
         ddl.DataSource = dt
         ddl.DataTextField = "Nombre"
         ddl.DataValueField = "UsuarioId"
