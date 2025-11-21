@@ -59,8 +59,9 @@ Partial Public Class Site1
 
         Using cn As New SqlConnection(cs.ConnectionString)
             cn.Open()
-            Using cmd As New SqlCommand("SELECT esadmin FROM usuarios WHERE nombre = @n", cn)
-                cmd.Parameters.AddWithValue("@n", nombre)
+            ' Búsqueda case-insensitive usando UPPER
+            Using cmd As New SqlCommand("SELECT esadmin FROM usuarios WHERE UPPER(nombre) = UPPER(@n)", cn)
+                cmd.Parameters.AddWithValue("@n", nombre.Trim())
                 Dim o = cmd.ExecuteScalar()
                 If o Is Nothing OrElse o Is DBNull.Value Then Return False
                 ' Manejar tanto BIT (boolean) como INT

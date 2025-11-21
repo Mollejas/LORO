@@ -801,8 +801,8 @@ END"
         ' Si el usuario es admin, no deshabilitar nada en JavaScript
         Dim isAdmin As Boolean = IsCurrentUserAdmin
 
-        ' DEBUG: Mostrar en consola el estado de admin
-        Dim jsDebug As String = "console.log('DEBUG: isAdmin=" & If(isAdmin, "true", "false") & "');"
+        ' DEBUG: Mostrar alert con estado de admin
+        Dim jsDebug As String = "alert('DEBUG: isAdmin=" & If(isAdmin, "true", "false") & "');"
         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "debugAdmin", jsDebug, True)
 
         Dim jsUploadControl As New Text.StringBuilder()
