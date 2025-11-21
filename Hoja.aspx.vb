@@ -991,7 +991,7 @@ $"(function(){{
         Dim js As String =
             "var first=document.querySelector('#fotosGrid .grid-thumb');" &
             "if(first){document.getElementById('galleryBigImg').src=first.getAttribute('data-full')||first.src;}" &
-            "new bootstrap.Modal(document.getElementById('fotosModal')).show();"
+            "bootstrap.Modal.getOrCreateInstance(document.getElementById('fotosModal')).show();"
         EmitStartupScript("openGaleria", js)
     End Sub
 

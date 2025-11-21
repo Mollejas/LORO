@@ -2735,13 +2735,23 @@
            const modalEl = document.getElementById('diagModal');
            if (!modalEl) return;
            modalEl.addEventListener('hidden.bs.modal', function () {
-               // Limpiar todos los modales y backdrops antes de recargar
+               // Limpiar TODOS los modales y sus instancias
+               document.querySelectorAll('.modal').forEach(function(m) {
+                   var instance = bootstrap.Modal.getInstance(m);
+                   if (instance) {
+                       instance.dispose();
+                   }
+                   m.classList.remove('show');
+                   m.style.display = 'none';
+               });
+               // Limpiar backdrops
                document.querySelectorAll('.modal-backdrop').forEach(function(b) { b.remove(); });
+               // Limpiar body
                document.body.classList.remove('modal-open');
                document.body.style.overflow = '';
                document.body.style.paddingRight = '';
-               // recarga completa
-               window.location.reload();
+               // Forzar recarga completa
+               window.location.href = window.location.pathname + window.location.search;
            });
 
            // (opcional) si el hijo avisa:
