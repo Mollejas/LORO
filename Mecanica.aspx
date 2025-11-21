@@ -231,20 +231,41 @@
                 CssClass="table table-sm table-striped table-hover table-sticky table-fixed"
                 DataKeyNames="Id,Descripcion,NumParte,Observ1"
                 OnRowCommand="gvSust_RowCommand"
-                OnRowDataBound="gvSust_RowDataBound">
+                OnRowDataBound="gvSust_RowDataBound"
+                OnRowEditing="gvSust_RowEditing"
+                OnRowUpdating="gvSust_RowUpdating"
+                OnRowCancelingEdit="gvSust_RowCancelingEdit">
                 <Columns>
-                  <asp:BoundField DataField="Cantidad" HeaderText="Cant.">
+                  <asp:TemplateField HeaderText="Cant.">
+                    <ItemTemplate>
+                      <asp:Label ID="lblCantidad" runat="server" Text='<%# Eval("Cantidad") %>'></asp:Label>
+                    </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:TextBox ID="txtCantidad" runat="server" Text='<%# Bind("Cantidad") %>' CssClass="form-control form-control-sm" style="width:60px;"></asp:TextBox>
+                    </EditItemTemplate>
                     <ItemStyle CssClass="col-cant" />
                     <HeaderStyle CssClass="col-cant" />
-                  </asp:BoundField>
-                  <asp:BoundField DataField="Descripcion" HeaderText="Descripción">
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="Descripción">
+                    <ItemTemplate>
+                      <asp:Label ID="lblDescripcion" runat="server" Text='<%# Eval("Descripcion") %>'></asp:Label>
+                    </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:TextBox ID="txtDescripcion" runat="server" Text='<%# Bind("Descripcion") %>' CssClass="form-control form-control-sm"></asp:TextBox>
+                    </EditItemTemplate>
                     <ItemStyle CssClass="col-desc" />
                     <HeaderStyle CssClass="col-desc" />
-                  </asp:BoundField>
-                  <asp:BoundField DataField="NumParte" HeaderText="Num. parte">
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="Num. parte">
+                    <ItemTemplate>
+                      <asp:Label ID="lblNumParte" runat="server" Text='<%# Eval("NumParte") %>'></asp:Label>
+                    </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:TextBox ID="txtNumParte" runat="server" Text='<%# Bind("NumParte") %>' CssClass="form-control form-control-sm"></asp:TextBox>
+                    </EditItemTemplate>
                     <ItemStyle CssClass="col-np" />
                     <HeaderStyle CssClass="col-np" />
-                  </asp:BoundField>
+                  </asp:TemplateField>
 
                   <asp:TemplateField>
                     <HeaderTemplate><i class="bi bi-cloud-upload" title="Subir fotos"></i></HeaderTemplate>
@@ -273,14 +294,26 @@
                   </asp:TemplateField>
 
                   <asp:TemplateField>
-                    <HeaderTemplate><i class="bi bi-pencil-square" title="Editar descripción"></i></HeaderTemplate>
+                    <HeaderTemplate><i class="bi bi-pencil-square" title="Modificar"></i></HeaderTemplate>
                     <ItemTemplate>
-                      <button type="button" class="btn btn-outline-secondary btn-sm btn-icon btn-edit-desc"
-                              title="Editar" aria-label="Editar"
-                              data-ref-id='<%# Eval("Id") %>' data-descripcion='<%# Eval("Descripcion") %>'>
+                      <asp:LinkButton ID="btnEditSust" runat="server" CommandName="Edit"
+                        CssClass="btn btn-outline-secondary btn-sm btn-icon"
+                        CausesValidation="false" ToolTip="Modificar" aria-label="Modificar">
                         <i class="bi bi-pencil-square"></i>
-                      </button>
+                      </asp:LinkButton>
                     </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:LinkButton ID="btnUpdateSust" runat="server" CommandName="Update"
+                        CssClass="btn btn-outline-success btn-sm btn-icon"
+                        CausesValidation="false" ToolTip="Guardar" aria-label="Guardar">
+                        <i class="bi bi-check-lg"></i>
+                      </asp:LinkButton>
+                      <asp:LinkButton ID="btnCancelSust" runat="server" CommandName="Cancel"
+                        CssClass="btn btn-outline-secondary btn-sm btn-icon"
+                        CausesValidation="false" ToolTip="Cancelar" aria-label="Cancelar">
+                        <i class="bi bi-x-lg"></i>
+                      </asp:LinkButton>
+                    </EditItemTemplate>
                     <ItemStyle CssClass="col-act" /><HeaderStyle CssClass="col-act" />
                   </asp:TemplateField>
 
@@ -336,17 +369,38 @@
                 CssClass="table table-sm table-striped table-hover table-sticky table-fixed"
                 DataKeyNames="Id,Descripcion,NumParte,Observ1"
                 OnRowCommand="gvRep_RowCommand"
-                OnRowDataBound="gvRep_RowDataBound">
+                OnRowDataBound="gvRep_RowDataBound"
+                OnRowEditing="gvRep_RowEditing"
+                OnRowUpdating="gvRep_RowUpdating"
+                OnRowCancelingEdit="gvRep_RowCancelingEdit">
                 <Columns>
-                  <asp:BoundField DataField="Cantidad" HeaderText="Cant.">
+                  <asp:TemplateField HeaderText="Cant.">
+                    <ItemTemplate>
+                      <asp:Label ID="lblCantidad" runat="server" Text='<%# Eval("Cantidad") %>'></asp:Label>
+                    </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:TextBox ID="txtCantidad" runat="server" Text='<%# Bind("Cantidad") %>' CssClass="form-control form-control-sm" style="width:60px;"></asp:TextBox>
+                    </EditItemTemplate>
                     <ItemStyle CssClass="col-cant" /><HeaderStyle CssClass="col-cant" />
-                  </asp:BoundField>
-                  <asp:BoundField DataField="Descripcion" HeaderText="Descripción">
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="Descripción">
+                    <ItemTemplate>
+                      <asp:Label ID="lblDescripcion" runat="server" Text='<%# Eval("Descripcion") %>'></asp:Label>
+                    </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:TextBox ID="txtDescripcion" runat="server" Text='<%# Bind("Descripcion") %>' CssClass="form-control form-control-sm"></asp:TextBox>
+                    </EditItemTemplate>
                     <ItemStyle CssClass="col-desc" /><HeaderStyle CssClass="col-desc" />
-                  </asp:BoundField>
-                  <asp:BoundField DataField="Observ1" HeaderText="Observaciones">
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="Observaciones">
+                    <ItemTemplate>
+                      <asp:Label ID="lblObserv1" runat="server" Text='<%# Eval("Observ1") %>'></asp:Label>
+                    </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:TextBox ID="txtObserv1" runat="server" Text='<%# Bind("Observ1") %>' CssClass="form-control form-control-sm"></asp:TextBox>
+                    </EditItemTemplate>
                     <ItemStyle CssClass="col-obs" /><HeaderStyle CssClass="col-obs" />
-                  </asp:BoundField>
+                  </asp:TemplateField>
 
                   <asp:TemplateField>
                     <HeaderTemplate><i class="bi bi-cloud-upload" title="Subir fotos"></i></HeaderTemplate>
@@ -375,14 +429,26 @@
                   </asp:TemplateField>
 
                   <asp:TemplateField>
-                    <HeaderTemplate><i class="bi bi-pencil-square" title="Editar descripción"></i></HeaderTemplate>
+                    <HeaderTemplate><i class="bi bi-pencil-square" title="Modificar"></i></HeaderTemplate>
                     <ItemTemplate>
-                      <button type="button" class="btn btn-outline-secondary btn-sm btn-icon btn-edit-desc"
-                              title="Editar" aria-label="Editar"
-                              data-ref-id='<%# Eval("Id") %>' data-descripcion='<%# Eval("Descripcion") %>'>
+                      <asp:LinkButton ID="btnEditRep" runat="server" CommandName="Edit"
+                        CssClass="btn btn-outline-secondary btn-sm btn-icon"
+                        CausesValidation="false" ToolTip="Modificar" aria-label="Modificar">
                         <i class="bi bi-pencil-square"></i>
-                      </button>
+                      </asp:LinkButton>
                     </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:LinkButton ID="btnUpdateRep" runat="server" CommandName="Update"
+                        CssClass="btn btn-outline-success btn-sm btn-icon"
+                        CausesValidation="false" ToolTip="Guardar" aria-label="Guardar">
+                        <i class="bi bi-check-lg"></i>
+                      </asp:LinkButton>
+                      <asp:LinkButton ID="btnCancelRep" runat="server" CommandName="Cancel"
+                        CssClass="btn btn-outline-secondary btn-sm btn-icon"
+                        CausesValidation="false" ToolTip="Cancelar" aria-label="Cancelar">
+                        <i class="bi bi-x-lg"></i>
+                      </asp:LinkButton>
+                    </EditItemTemplate>
                     <ItemStyle CssClass="col-act" /><HeaderStyle CssClass="col-act" />
                   </asp:TemplateField>
 
