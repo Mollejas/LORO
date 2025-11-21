@@ -676,8 +676,21 @@
 
   // ---------- Previsualización (input nativo) ----------
   fm.input().addEventListener('change', function () {
-    __fmFiles = Array.from(this.files || []).filter(f => f.type.startsWith('image/'));
+    // Acumular fotos en lugar de reemplazar
+    const newFiles = Array.from(this.files || []).filter(f => f.type.startsWith('image/'));
+    __fmFiles = __fmFiles.concat(newFiles);
+    this.value = ''; // Limpiar input para permitir seleccionar el mismo archivo de nuevo
     refreshThumbs();
+  });
+
+  // Limpiar preview al cerrar el modal
+  document.getElementById('fotosModal').addEventListener('hidden.bs.modal', function () {
+    __fmFiles = [];
+    fm.input().value = '';
+    fm.thumbs().innerHTML = '';
+    fm.btn().disabled = true;
+    fm.progWrap().classList.add('d-none');
+    fm.msg().classList.add('d-none');
   });
 
   // ---------- Subir a handler .ashx ----------
