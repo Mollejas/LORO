@@ -1006,9 +1006,9 @@ Public Class Mecanica
             End Using
         End Using
 
-        ' Crear PDF
+        ' Crear PDF en horizontal
         Using ms As New MemoryStream()
-            Dim doc As New Document(PageSize.LETTER, 40, 40, 40, 40)
+            Dim doc As New Document(PageSize.LETTER.Rotate(), 30, 30, 30, 30)
             Dim writer = PdfWriter.GetInstance(doc, ms)
             doc.Open()
 
@@ -1017,26 +1017,26 @@ Public Class Mecanica
             Dim headerBg As New BaseColor(241, 245, 249) ' #f1f5f9
 
             ' Fuentes
-            Dim fontTitle = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18, brandColor)
-            Dim fontSubtitle = FontFactory.GetFont(FontFactory.HELVETICA, 10, BaseColor.DARK_GRAY)
-            Dim fontSectionTitle = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, brandColor)
-            Dim fontLabel = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9, BaseColor.DARK_GRAY)
-            Dim fontValue = FontFactory.GetFont(FontFactory.HELVETICA, 9, BaseColor.BLACK)
-            Dim fontTableHeader = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9, BaseColor.WHITE)
-            Dim fontTableCell = FontFactory.GetFont(FontFactory.HELVETICA, 8, BaseColor.BLACK)
+            Dim fontTitle = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 16, brandColor)
+            Dim fontSubtitle = FontFactory.GetFont(FontFactory.HELVETICA, 9, BaseColor.DARK_GRAY)
+            Dim fontSectionTitle = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 11, brandColor)
+            Dim fontLabel = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 8, BaseColor.DARK_GRAY)
+            Dim fontValue = FontFactory.GetFont(FontFactory.HELVETICA, 8, BaseColor.BLACK)
+            Dim fontTableHeader = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 8, BaseColor.WHITE)
+            Dim fontTableCell = FontFactory.GetFont(FontFactory.HELVETICA, 7, BaseColor.BLACK)
 
             ' === Encabezado ===
             Dim headerTable As New PdfPTable(1)
             headerTable.WidthPercentage = 100
-            headerTable.SpacingAfter = 15
+            headerTable.SpacingAfter = 10
 
             Dim titleCell As New PdfPCell(New Phrase("Diagnóstico – Mecánica", fontTitle))
-            titleCell.Border = Rectangle.NO_BORDER
-            titleCell.PaddingBottom = 5
+            titleCell.Border = iTextSharp.text.Rectangle.NO_BORDER
+            titleCell.PaddingBottom = 3
             headerTable.AddCell(titleCell)
 
             Dim subtitleCell As New PdfPCell(New Phrase("Captura y control de refacciones por sustitución y reparación", fontSubtitle))
-            subtitleCell.Border = Rectangle.NO_BORDER
+            subtitleCell.Border = iTextSharp.text.Rectangle.NO_BORDER
             headerTable.AddCell(subtitleCell)
 
             doc.Add(headerTable)
@@ -1045,13 +1045,13 @@ Public Class Mecanica
             Dim infoTable As New PdfPTable(3)
             infoTable.WidthPercentage = 100
             infoTable.SetWidths(New Single() {1, 1, 1})
-            infoTable.SpacingAfter = 20
+            infoTable.SpacingAfter = 15
 
             ' Expediente
             Dim cellExp As New PdfPCell()
-            cellExp.Border = Rectangle.BOX
+            cellExp.Border = iTextSharp.text.Rectangle.BOX
             cellExp.BorderColor = BaseColor.LIGHT_GRAY
-            cellExp.Padding = 8
+            cellExp.Padding = 6
             cellExp.BackgroundColor = headerBg
             cellExp.AddElement(New Phrase("Expediente", fontLabel))
             cellExp.AddElement(New Phrase(If(String.IsNullOrEmpty(expediente), "—", expediente), fontValue))
@@ -1059,9 +1059,9 @@ Public Class Mecanica
 
             ' Siniestro
             Dim cellSin As New PdfPCell()
-            cellSin.Border = Rectangle.BOX
+            cellSin.Border = iTextSharp.text.Rectangle.BOX
             cellSin.BorderColor = BaseColor.LIGHT_GRAY
-            cellSin.Padding = 8
+            cellSin.Padding = 6
             cellSin.BackgroundColor = headerBg
             cellSin.AddElement(New Phrase("Siniestro", fontLabel))
             cellSin.AddElement(New Phrase(If(String.IsNullOrEmpty(siniestro), "—", siniestro), fontValue))
@@ -1069,9 +1069,9 @@ Public Class Mecanica
 
             ' Vehículo
             Dim cellVeh As New PdfPCell()
-            cellVeh.Border = Rectangle.BOX
+            cellVeh.Border = iTextSharp.text.Rectangle.BOX
             cellVeh.BorderColor = BaseColor.LIGHT_GRAY
-            cellVeh.Padding = 8
+            cellVeh.Padding = 6
             cellVeh.BackgroundColor = headerBg
             cellVeh.AddElement(New Phrase("Vehículo", fontLabel))
             cellVeh.AddElement(New Phrase(If(String.IsNullOrEmpty(vehiculo), "—", vehiculo), fontValue))
@@ -1079,20 +1079,30 @@ Public Class Mecanica
 
             doc.Add(infoTable)
 
-            ' === Tabla Sustitución ===
-            doc.Add(New Phrase("Sustitución", fontSectionTitle))
-            doc.Add(New Paragraph(" "))
+            ' === Contenedor principal: 2 columnas lado a lado ===
+            Dim mainTable As New PdfPTable(2)
+            mainTable.WidthPercentage = 100
+            mainTable.SetWidths(New Single() {1, 1})
 
+            ' --- Columna izquierda: Sustitución ---
+            Dim leftCell As New PdfPCell()
+            leftCell.Border = iTextSharp.text.Rectangle.NO_BORDER
+            leftCell.PaddingRight = 8
+
+            ' Título Sustitución
+            leftCell.AddElement(New Phrase("Sustitución", fontSectionTitle))
+            leftCell.AddElement(New Paragraph(" "))
+
+            ' Tabla Sustitución
             Dim tableSust As New PdfPTable(3)
             tableSust.WidthPercentage = 100
             tableSust.SetWidths(New Single() {1, 4, 2})
-            tableSust.SpacingAfter = 20
 
             ' Headers
             For Each header As String In {"Cant.", "Descripción", "Num. Parte"}
                 Dim cell As New PdfPCell(New Phrase(header, fontTableHeader))
                 cell.BackgroundColor = brandColor
-                cell.Padding = 6
+                cell.Padding = 5
                 cell.HorizontalAlignment = Element.ALIGN_CENTER
                 tableSust.AddCell(cell)
             Next
@@ -1104,15 +1114,15 @@ Public Class Mecanica
                     Dim bgColor = If(alt, headerBg, BaseColor.WHITE)
 
                     Dim c1 As New PdfPCell(New Phrase(Convert.ToString(row("Cantidad")), fontTableCell))
-                    c1.BackgroundColor = bgColor : c1.Padding = 5 : c1.HorizontalAlignment = Element.ALIGN_CENTER
+                    c1.BackgroundColor = bgColor : c1.Padding = 4 : c1.HorizontalAlignment = Element.ALIGN_CENTER
                     tableSust.AddCell(c1)
 
                     Dim c2 As New PdfPCell(New Phrase(Convert.ToString(row("Descripcion")), fontTableCell))
-                    c2.BackgroundColor = bgColor : c2.Padding = 5
+                    c2.BackgroundColor = bgColor : c2.Padding = 4
                     tableSust.AddCell(c2)
 
                     Dim c3 As New PdfPCell(New Phrase(Convert.ToString(row("NumParte")), fontTableCell))
-                    c3.BackgroundColor = bgColor : c3.Padding = 5
+                    c3.BackgroundColor = bgColor : c3.Padding = 4
                     tableSust.AddCell(c3)
 
                     alt = Not alt
@@ -1120,27 +1130,33 @@ Public Class Mecanica
             Else
                 Dim emptyCell As New PdfPCell(New Phrase("Sin registros", fontTableCell))
                 emptyCell.Colspan = 3
-                emptyCell.Padding = 10
+                emptyCell.Padding = 8
                 emptyCell.HorizontalAlignment = Element.ALIGN_CENTER
                 tableSust.AddCell(emptyCell)
             End If
 
-            doc.Add(tableSust)
+            leftCell.AddElement(tableSust)
+            mainTable.AddCell(leftCell)
 
-            ' === Tabla Reparación ===
-            doc.Add(New Phrase("Reparación", fontSectionTitle))
-            doc.Add(New Paragraph(" "))
+            ' --- Columna derecha: Reparación ---
+            Dim rightCell As New PdfPCell()
+            rightCell.Border = iTextSharp.text.Rectangle.NO_BORDER
+            rightCell.PaddingLeft = 8
 
+            ' Título Reparación
+            rightCell.AddElement(New Phrase("Reparación", fontSectionTitle))
+            rightCell.AddElement(New Paragraph(" "))
+
+            ' Tabla Reparación
             Dim tableRep As New PdfPTable(3)
             tableRep.WidthPercentage = 100
             tableRep.SetWidths(New Single() {1, 4, 2})
-            tableRep.SpacingAfter = 20
 
             ' Headers
             For Each header As String In {"Cant.", "Descripción", "Observaciones"}
                 Dim cell As New PdfPCell(New Phrase(header, fontTableHeader))
                 cell.BackgroundColor = brandColor
-                cell.Padding = 6
+                cell.Padding = 5
                 cell.HorizontalAlignment = Element.ALIGN_CENTER
                 tableRep.AddCell(cell)
             Next
@@ -1152,15 +1168,15 @@ Public Class Mecanica
                     Dim bgColor = If(alt, headerBg, BaseColor.WHITE)
 
                     Dim c1 As New PdfPCell(New Phrase(Convert.ToString(row("Cantidad")), fontTableCell))
-                    c1.BackgroundColor = bgColor : c1.Padding = 5 : c1.HorizontalAlignment = Element.ALIGN_CENTER
+                    c1.BackgroundColor = bgColor : c1.Padding = 4 : c1.HorizontalAlignment = Element.ALIGN_CENTER
                     tableRep.AddCell(c1)
 
                     Dim c2 As New PdfPCell(New Phrase(Convert.ToString(row("Descripcion")), fontTableCell))
-                    c2.BackgroundColor = bgColor : c2.Padding = 5
+                    c2.BackgroundColor = bgColor : c2.Padding = 4
                     tableRep.AddCell(c2)
 
                     Dim c3 As New PdfPCell(New Phrase(Convert.ToString(row("Observ1")), fontTableCell))
-                    c3.BackgroundColor = bgColor : c3.Padding = 5
+                    c3.BackgroundColor = bgColor : c3.Padding = 4
                     tableRep.AddCell(c3)
 
                     alt = Not alt
@@ -1168,16 +1184,20 @@ Public Class Mecanica
             Else
                 Dim emptyCell As New PdfPCell(New Phrase("Sin registros", fontTableCell))
                 emptyCell.Colspan = 3
-                emptyCell.Padding = 10
+                emptyCell.Padding = 8
                 emptyCell.HorizontalAlignment = Element.ALIGN_CENTER
                 tableRep.AddCell(emptyCell)
             End If
 
-            doc.Add(tableRep)
+            rightCell.AddElement(tableRep)
+            mainTable.AddCell(rightCell)
+
+            doc.Add(mainTable)
 
             ' Pie de página
             Dim footer As New Paragraph($"Generado el {DateTime.Now:dd/MM/yyyy HH:mm}", fontSubtitle)
             footer.Alignment = Element.ALIGN_RIGHT
+            footer.SpacingBefore = 10
             doc.Add(footer)
 
             doc.Close()
