@@ -1556,15 +1556,24 @@
             if (stripEl.id === 'stripDiag') {
                 ok = getDiagOk();
             } else if (stripEl.id === 'strip') {
-                // Para el strip de proceso de recepción, usar las mismas condiciones que getDiagOk
-                if (window.__isTransito) {
-                    // TRANSITO: ODA + FOTOS + INE + CT
-                    ok = areEnabled(['#btnVerODA', '#btnVerFotosPresup', '#btnVerINE', '#btnVerCT']);
+                // Usar los valores del servidor si están disponibles
+                if (window.__diagSrv) {
+                    if (window.__isTransito) {
+                        // TRANSITO: ODA + FOTOS + INE + CT
+                        ok = window.__diagSrv.oda && window.__diagSrv.fotos && window.__diagSrv.ine && window.__diagSrv.ct;
+                    } else {
+                        // PISO: ODA + FOTOS + INE + INV (sin CT)
+                        ok = window.__diagSrv.oda && window.__diagSrv.fotos && window.__diagSrv.ine && window.__diagSrv.inv;
+                    }
                 } else {
-                    // PISO: ODA + FOTOS + INE + (INV o InvGrua) - sin CT
-                    const baseOk = areEnabled(['#btnVerODA', '#btnVerFotosPresup', '#btnVerINE']);
-                    const invOk = isBtnEnabledById('#btnVerINV') || isBtnEnabledById('#btnVerInvGrua');
-                    ok = baseOk && invOk;
+                    // Fallback desde DOM
+                    if (window.__isTransito) {
+                        ok = areEnabled(['#btnVerODA', '#btnVerFotosPresup', '#btnVerINE', '#btnVerCT']);
+                    } else {
+                        const baseOk = areEnabled(['#btnVerODA', '#btnVerFotosPresup', '#btnVerINE']);
+                        const invOk = isBtnEnabledById('#btnVerINV') || isBtnEnabledById('#btnVerInvGrua');
+                        ok = baseOk && invOk;
+                    }
                 }
             } else {
                 ok = eyesAllEnabled(stripEl);
