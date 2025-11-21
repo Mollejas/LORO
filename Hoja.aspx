@@ -1552,7 +1552,21 @@
         // ---------- Indicadores ----------
         function refreshIndicatorsFor(stripEl, btnEl) {
             if (!stripEl || !btnEl) return;
-            const ok = (stripEl.id === 'stripDiag') ? getDiagOk() : eyesAllEnabled(stripEl);
+            let ok;
+            if (stripEl.id === 'stripDiag') {
+                ok = getDiagOk();
+            } else if (stripEl.id === 'strip') {
+                // Para el strip de proceso de recepción, usar las mismas condiciones que getDiagOk
+                if (window.__isTransito) {
+                    // TRANSITO: ODA + FOTOS + INE + CT
+                    ok = areEnabled(['#btnVerODA', '#btnVerFotosPresup', '#btnVerINE', '#btnVerCT']);
+                } else {
+                    // PISO: ODA + FOTOS + INE + INV (sin CT)
+                    ok = areEnabled(['#btnVerODA', '#btnVerFotosPresup', '#btnVerINE', '#btnVerINV']);
+                }
+            } else {
+                ok = eyesAllEnabled(stripEl);
+            }
             stripEl.classList.toggle('alert-pulse', !ok);
             btnEl.classList.toggle('danger', !ok);
             btnEl.title = ok ? 'Todos los visores habilitados' : 'Faltan visores por habilitar';
