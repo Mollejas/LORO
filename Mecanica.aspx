@@ -627,8 +627,8 @@
           <button type="button" class="btn btn-outline-light btn-sm ms-auto" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
         </div>
       </div>
-      <div class="modal-body p-0 overflow-hidden position-relative" id="zoomContainer" style="cursor:grab;">
-        <img id="zoomImage" src="" alt="Zoom" style="position:absolute;transform-origin:center;transition:transform 0.1s ease;">
+      <div class="modal-body p-0 overflow-hidden position-relative" id="zoomContainer" style="cursor:grab;height:calc(100vh - 60px);">
+        <img id="zoomImage" src="" alt="Zoom" style="position:absolute;top:0;left:0;max-width:none;transform-origin:0 0;transition:transform 0.1s ease;">
       </div>
     </div>
   </div>
@@ -1064,14 +1064,17 @@
     zoomModal.show();
     // Center image after load
     $zoomImg.onload = function(){
-      const cw = $zoomContainer.clientWidth, ch = $zoomContainer.clientHeight;
-      const iw = $zoomImg.naturalWidth, ih = $zoomImg.naturalHeight;
-      const r = Math.min(cw/iw, ch/ih, 1);
-      $zoomImg.style.width = (iw*r) + 'px';
-      $zoomImg.style.height = (ih*r) + 'px';
-      posX = (cw - iw*r)/2;
-      posY = (ch - ih*r)/2;
-      updateTransform();
+      setTimeout(function(){
+        const cw = $zoomContainer.clientWidth, ch = $zoomContainer.clientHeight;
+        const iw = $zoomImg.naturalWidth, ih = $zoomImg.naturalHeight;
+        const r = Math.min(cw/iw, ch/ih, 1);
+        const imgW = iw * r, imgH = ih * r;
+        $zoomImg.style.width = imgW + 'px';
+        $zoomImg.style.height = imgH + 'px';
+        posX = (cw - imgW) / 2;
+        posY = (ch - imgH) / 2;
+        updateTransform();
+      }, 50);
     };
   };
 
