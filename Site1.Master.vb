@@ -63,7 +63,12 @@ Partial Public Class Site1
                 cmd.Parameters.AddWithValue("@n", nombre)
                 Dim o = cmd.ExecuteScalar()
                 If o Is Nothing OrElse o Is DBNull.Value Then Return False
-                Return Convert.ToInt32(o) = 1
+                ' Manejar tanto BIT (boolean) como INT
+                If TypeOf o Is Boolean Then
+                    Return CBool(o)
+                Else
+                    Return Convert.ToInt32(o) = 1
+                End If
             End Using
         End Using
     End Function
