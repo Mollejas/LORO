@@ -444,6 +444,13 @@
       </div>
     </div>
 
+    <!-- Botón descargar PDF -->
+    <div class="text-center my-3">
+      <asp:Button ID="btnDescargarPDF" runat="server" CssClass="btn btn-brand btn-lg"
+                  Text="Descargar Hoja" OnClick="btnDescargarPDF_Click" UseSubmitBehavior="false">
+      </asp:Button>
+    </div>
+
     <!-- Autorizaciones -->
     <div id="autPanel" class="panel mt-3">
       <div class="panel-head">
