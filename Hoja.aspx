@@ -587,7 +587,7 @@
     <div id="TileFotos" runat="server" class="tile compacto">
       <div class="title">Fotos ingreso</div>
       <div class="icon-row compacto">
-        <a href="#" class="icon-btn compacto" data-bs-toggle="modal" data-bs-target="#modalMultiplesPresup" title="Subir varias fotos de ingreso">
+        <a href="#" class="icon-btn compacto" id="btnSubirFotosIngreso" data-bs-toggle="modal" data-bs-target="#modalMultiplesPresup" title="Subir varias fotos de ingreso">
           <i class="bi bi-cloud-upload"></i>
         </a>
         <asp:LinkButton ID="btnVerFotosPresup" runat="server" CssClass="icon-btn compacto" ToolTip="Ver galería ingreso" OnClick="btnVerFotosPresup_Click">
@@ -600,10 +600,10 @@
     <div id="tileINE" runat="server" class="tile compacto">
       <div class="title">INE</div>
       <div class="icon-row compacto">
-        <a href="#" class="icon-btn compacto" id="btnInePdfOpen" data-bs-toggle="modal" data-bs-target="#modalInePdf" title="Subir INE.pdf">
+        <a href="#" class="icon-btn compacto" id="btnSubirInePdf" data-bs-toggle="modal" data-bs-target="#modalInePdf" title="Subir INE.pdf">
           <i class="bi bi-cloud-upload"></i>
         </a>
-        <a href="#" class="icon-btn compacto" data-bs-toggle="modal" data-bs-target="#modalIneCamara" title="Tomar/Subir 2 fotos del INE">
+        <a href="#" class="icon-btn compacto" id="btnSubirIneCamara" data-bs-toggle="modal" data-bs-target="#modalIneCamara" title="Tomar/Subir 2 fotos del INE">
           <i class="bi bi-camera"></i>
         </a>
         <asp:LinkButton ID="btnVerINE" runat="server" CssClass="icon-btn compacto" ToolTip="Ver INE.pdf" OnClick="btnVerINE_Click">
@@ -616,7 +616,7 @@
     <div id="tileCT" runat="server" class="tile compacto">
       <div class="title">CT</div>
       <div class="icon-row compacto">
-        <a href="#" class="icon-btn compacto" data-bs-toggle="modal" data-bs-target="#modalCt" title="Llenar y firmar CT">
+        <a href="#" class="icon-btn compacto" id="btnSubirCt" data-bs-toggle="modal" data-bs-target="#modalCt" title="Llenar y firmar CT">
           <i class="bi bi-cloud-upload"></i>
         </a>
         <asp:LinkButton ID="btnVerCT" runat="server" CssClass="icon-btn compacto" ToolTip="Ver CT.pdf" OnClick="btnVerCT_Click">
@@ -647,12 +647,12 @@
       </div>
     </div>
 
-  
+
     <div id="tileComplementos" runat="server" class="tile compacto">
       <div class="title">Complementos</div>
       <div class="icon-row compacto">
 
-        <a href="#" class="icon-btn compacto" data-bs-toggle="modal" data-bs-target="#modalComplementos" title="Subir PDFs Complementos">
+        <a href="#" class="icon-btn compacto" id="btnSubirComplementos" data-bs-toggle="modal" data-bs-target="#modalComplementos" title="Subir PDFs Complementos">
           <i class="bi bi-cloud-upload"></i>
         </a>
 
