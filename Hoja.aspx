@@ -1300,7 +1300,7 @@
       }
       function abrirInventarioPM() {
           const iframe = document.getElementById('invFrame');
-          const modal = new bootstrap.Modal(document.getElementById('invModal'));
+          const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('invModal'));
           iframe.src = 'inventario.html';
           iframe.onload = () => {
               iframe.contentWindow.postMessage(
@@ -1323,7 +1323,7 @@
       function openInvViewer(src) {
           const f = document.getElementById('invFrame');
           f.src = src;
-          const m = new bootstrap.Modal(document.getElementById('invModal'));
+          const m = bootstrap.Modal.getOrCreateInstance(document.getElementById('invModal'));
           m.show();
           const hid = document.getElementById('hidInvSrc');
           if (hid) hid.value = src;
@@ -1378,7 +1378,7 @@
           f.src = src;
           const hid = document.getElementById('hidViewerSrc');
           if (hid) hid.value = src;
-          const m = new bootstrap.Modal(document.getElementById('viewerModal'));
+          const m = bootstrap.Modal.getOrCreateInstance(document.getElementById('viewerModal'));
           m.show();
       }
 
@@ -2566,7 +2566,7 @@
             window.openFullscreenOverlay = function(src) {
                 fsImage.src = src;
                 reset();
-                const bsModal = new bootstrap.Modal(modal);
+                const bsModal = bootstrap.Modal.getOrCreateInstance(modal);
                 bsModal.show();
             };
 
