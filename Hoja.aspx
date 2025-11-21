@@ -651,49 +651,133 @@
     <div id="tileComplementos" runat="server" class="tile compacto">
       <div class="title">Complementos</div>
       <div class="icon-row compacto">
-      
-        <a href="#" class="icon-btn compacto" data-bs-toggle="modal" data-bs-target="#modalComplementos" title="Subir inetransito.pdf">
+
+        <a href="#" class="icon-btn compacto" data-bs-toggle="modal" data-bs-target="#modalComplementos" title="Subir PDFs Complementos">
           <i class="bi bi-cloud-upload"></i>
         </a>
 
-      
-        <asp:LinkButton ID="btnVerInetransito" runat="server" CssClass="icon-btn compacto disabled"
-                        ToolTip="Ver inetransito.pdf" OnClick="btnVerInetransito_Click" Enabled="False">
+
+        <a href="#" class="icon-btn compacto" data-bs-toggle="modal" data-bs-target="#modalVerComplementos" title="Ver Complementos">
           <i class="bi bi-eye"></i>
-        </asp:LinkButton>
+        </a>
       </div>
     </div>
 
   </div>
 </div>
 
-<!-- ========== MODAL: Complementos (INETRANSITO) ========== -->
+<!-- ========== MODAL: Complementos (3 archivos PDF) ========== -->
 <div class="modal fade" id="modalComplementos" tabindex="-1" aria-labelledby="lblComplementos" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 id="lblComplementos" class="modal-title">Subir PDF de Complementos (inetransito.pdf)</h5>
+        <h5 id="lblComplementos" class="modal-title">Subir PDFs de Complementos</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <div class="mb-3">
-          <label for="fuComplementos" class="form-label">Selecciona un PDF (máx. 10 MB)</label>
-          <asp:FileUpload ID="fuComplementos" runat="server" CssClass="form-control" />
+        <!-- INE TRANSITO -->
+        <div class="card mb-3" id="cardIneTransito" runat="server">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>1. INE TRANSITO</strong>
+            <span id="badgeIneTransito" runat="server" class="badge bg-secondary">Sin archivo</span>
+          </div>
+          <div class="card-body">
+            <asp:FileUpload ID="fuIneTransito" runat="server" CssClass="form-control" accept=".pdf" />
+            <asp:Button ID="btnSubirIneTransito" runat="server" CssClass="btn btn-primary btn-sm mt-2"
+              Text="Subir INE Transito" OnClick="btnSubirIneTransito_Click" UseSubmitBehavior="false" />
+          </div>
         </div>
+
+        <!-- TRANSITO ASEGURADORA -->
+        <div class="card mb-3" id="cardTransitoAseg" runat="server">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>2. TRANSITO ASEGURADORA</strong>
+            <span id="badgeTransitoAseg" runat="server" class="badge bg-secondary">Sin archivo</span>
+          </div>
+          <div class="card-body">
+            <asp:FileUpload ID="fuTransitoAseg" runat="server" CssClass="form-control" accept=".pdf" />
+            <asp:Button ID="btnSubirTransitoAseg" runat="server" CssClass="btn btn-primary btn-sm mt-2"
+              Text="Subir Transito Aseguradora" OnClick="btnSubirTransitoAseg_Click" UseSubmitBehavior="false" />
+          </div>
+        </div>
+
+        <!-- COMPLE -->
+        <div class="card mb-3" id="cardComple" runat="server">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>3. COMPLE</strong>
+            <span id="badgeComple" runat="server" class="badge bg-secondary">Sin archivo</span>
+          </div>
+          <div class="card-body">
+            <asp:FileUpload ID="fuComple" runat="server" CssClass="form-control" accept=".pdf" />
+            <asp:Button ID="btnSubirComple" runat="server" CssClass="btn btn-primary btn-sm mt-2"
+              Text="Subir Comple" OnClick="btnSubirComple_Click" UseSubmitBehavior="false" />
+          </div>
+        </div>
+
         <asp:Label ID="lblComplementosMsg" runat="server" CssClass="small" Visible="False"></asp:Label>
       </div>
      <div class="modal-footer">
-    <asp:Button 
-        ID="btnSubirComplementos"
-        runat="server"
-        CssClass="btn btn-primary"
-        Text="Subir"
-        OnClick="btnUploadComplementosGo_Click"
-        UseSubmitBehavior="false" />
-        
     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
         Cerrar
     </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL: Ver Complementos (3 archivos PDF) ========== -->
+<div class="modal fade" id="modalVerComplementos" tabindex="-1" aria-labelledby="lblVerComplementos" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="lblVerComplementos" class="modal-title">Ver PDFs de Complementos</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <!-- INE TRANSITO -->
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>1. INE TRANSITO</strong>
+            <span id="badgeVerIneTransito" runat="server" class="badge bg-secondary">Sin archivo</span>
+          </div>
+          <div class="card-body text-center">
+            <asp:LinkButton ID="btnVerIneTransitoPdf" runat="server" CssClass="btn btn-outline-primary btn-sm"
+              ToolTip="Ver INE Transito" OnClick="btnVerIneTransito_Click">
+              <i class="bi bi-file-pdf me-1"></i> Ver PDF
+            </asp:LinkButton>
+          </div>
+        </div>
+
+        <!-- TRANSITO ASEGURADORA -->
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>2. TRANSITO ASEGURADORA</strong>
+            <span id="badgeVerTransitoAseg" runat="server" class="badge bg-secondary">Sin archivo</span>
+          </div>
+          <div class="card-body text-center">
+            <asp:LinkButton ID="btnVerTransitoAsegPdf" runat="server" CssClass="btn btn-outline-primary btn-sm"
+              ToolTip="Ver Transito Aseguradora" OnClick="btnVerTransitoAseg_Click">
+              <i class="bi bi-file-pdf me-1"></i> Ver PDF
+            </asp:LinkButton>
+          </div>
+        </div>
+
+        <!-- COMPLE -->
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>3. COMPLE</strong>
+            <span id="badgeVerComple" runat="server" class="badge bg-secondary">Sin archivo</span>
+          </div>
+          <div class="card-body text-center">
+            <asp:LinkButton ID="btnVerComplePdf" runat="server" CssClass="btn btn-outline-primary btn-sm"
+              ToolTip="Ver Comple" OnClick="btnVerComple_Click">
+              <i class="bi bi-file-pdf me-1"></i> Ver PDF
+            </asp:LinkButton>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>

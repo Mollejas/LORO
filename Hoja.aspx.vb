@@ -837,6 +837,9 @@ END"
         End If
 
         ' Complementos OK ya seteado al inicio con SetTileOk(tileComplCtrl, enableVerCompl)
+
+        ' Actualizar badges del modal de complementos
+        ActualizarBadgesComplementos()
     End Sub
 
 
@@ -1961,6 +1964,174 @@ Paint:
         End Try
     End Sub
 
+    ' === SUBIR INE TRANSITO (inetransito.pdf) ===
+    Protected Sub btnSubirIneTransito_Click(sender As Object, e As EventArgs)
+        SubirPdfComplemento("fuIneTransito", "inetransito.pdf", "badgeIneTransito", "INE Transito")
+    End Sub
+
+    ' === SUBIR TRANSITO ASEGURADORA (transitoaseg.pdf) ===
+    Protected Sub btnSubirTransitoAseg_Click(sender As Object, e As EventArgs)
+        SubirPdfComplemento("fuTransitoAseg", "transitoaseg.pdf", "badgeTransitoAseg", "Transito Aseguradora")
+    End Sub
+
+    ' === SUBIR COMPLE (comple.pdf) ===
+    Protected Sub btnSubirComple_Click(sender As Object, e As EventArgs)
+        SubirPdfComplemento("fuComple", "comple.pdf", "badgeComple", "Comple")
+    End Sub
+
+    ' === HELPER GENERICO PARA SUBIR COMPLEMENTOS ===
+    Private Sub SubirPdfComplemento(fuId As String, fileName As String, badgeId As String, displayName As String)
+        ' Obtener el badge para mostrar mensajes
+        Dim badge As HtmlGenericControl = TryCast(FindControlRecursive(Me, badgeId), HtmlGenericControl)
+
+        ' Validación de carpeta de expediente
+        If String.IsNullOrWhiteSpace(hidCarpeta.Value) Then
+            If badge IsNot Nothing Then
+                badge.InnerText = "Sin carpeta"
+                badge.Attributes("class") = "badge bg-danger"
+            End If
+            Exit Sub
+        End If
+
+        ' Obtener el FileUpload
+        Dim fu As FileUpload = TryCast(FindControlRecursive(Me, fuId), FileUpload)
+        If fu Is Nothing OrElse Not fu.HasFile Then
+            If badge IsNot Nothing Then
+                badge.InnerText = "Selecciona PDF"
+                badge.Attributes("class") = "badge bg-warning text-dark"
+            End If
+            Exit Sub
+        End If
+
+        ' Validaciones del archivo
+        Dim ext As String = System.IO.Path.GetExtension(fu.FileName).ToLowerInvariant()
+        If ext <> ".pdf" Then
+            If badge IsNot Nothing Then
+                badge.InnerText = "Solo PDF"
+                badge.Attributes("class") = "badge bg-danger"
+            End If
+            Exit Sub
+        End If
+
+        Const MAX_BYTES As Integer = 30 * 1024 * 1024 ' 30 MB
+        If fu.PostedFile.ContentLength <= 0 OrElse fu.PostedFile.ContentLength > MAX_BYTES Then
+            If badge IsNot Nothing Then
+                badge.InnerText = "Tamaño inválido"
+                badge.Attributes("class") = "badge bg-danger"
+            End If
+            Exit Sub
+        End If
+
+        Try
+            ' Asegurar carpeta destino
+            Dim folder As String = ObtenerSubcarpetaDestinoFisica()
+            If Not System.IO.Directory.Exists(folder) Then
+                System.IO.Directory.CreateDirectory(folder)
+            End If
+
+            ' Ruta final
+            Dim savePath As String = System.IO.Path.Combine(folder, fileName)
+
+            ' Reemplazo seguro si ya existe
+            If System.IO.File.Exists(savePath) Then
+                System.IO.File.Delete(savePath)
+            End If
+
+            ' Guardar archivo
+            fu.SaveAs(savePath)
+
+            ' UI: éxito
+            If badge IsNot Nothing Then
+                badge.InnerText = "Guardado"
+                badge.Attributes("class") = "badge bg-success"
+            End If
+
+            UpdateBottomWidgets()
+            ActualizarBadgesComplementos()
+
+        Catch ex As Exception
+            If badge IsNot Nothing Then
+                badge.InnerText = "Error"
+                badge.Attributes("class") = "badge bg-danger"
+            End If
+        End Try
+    End Sub
+
+    ' === ACTUALIZAR BADGES DE COMPLEMENTOS ===
+    Private Sub ActualizarBadgesComplementos()
+        If String.IsNullOrWhiteSpace(hidCarpeta.Value) Then Exit Sub
+
+        Dim folder As String = ObtenerSubcarpetaDestinoFisica()
+
+        ' INE TRANSITO
+        Dim ineExists As Boolean = System.IO.File.Exists(System.IO.Path.Combine(folder, "inetransito.pdf"))
+        Dim badgeIne As HtmlGenericControl = TryCast(FindControlRecursive(Me, "badgeIneTransito"), HtmlGenericControl)
+        If badgeIne IsNot Nothing Then
+            If ineExists Then
+                badgeIne.InnerText = "Archivo OK"
+                badgeIne.Attributes("class") = "badge bg-success"
+            Else
+                badgeIne.InnerText = "Sin archivo"
+                badgeIne.Attributes("class") = "badge bg-secondary"
+            End If
+        End If
+        Dim badgeVerIne As HtmlGenericControl = TryCast(FindControlRecursive(Me, "badgeVerIneTransito"), HtmlGenericControl)
+        If badgeVerIne IsNot Nothing Then
+            If ineExists Then
+                badgeVerIne.InnerText = "Archivo OK"
+                badgeVerIne.Attributes("class") = "badge bg-success"
+            Else
+                badgeVerIne.InnerText = "Sin archivo"
+                badgeVerIne.Attributes("class") = "badge bg-secondary"
+            End If
+        End If
+
+        ' TRANSITO ASEGURADORA
+        Dim asegExists As Boolean = System.IO.File.Exists(System.IO.Path.Combine(folder, "transitoaseg.pdf"))
+        Dim badgeAseg As HtmlGenericControl = TryCast(FindControlRecursive(Me, "badgeTransitoAseg"), HtmlGenericControl)
+        If badgeAseg IsNot Nothing Then
+            If asegExists Then
+                badgeAseg.InnerText = "Archivo OK"
+                badgeAseg.Attributes("class") = "badge bg-success"
+            Else
+                badgeAseg.InnerText = "Sin archivo"
+                badgeAseg.Attributes("class") = "badge bg-secondary"
+            End If
+        End If
+        Dim badgeVerAseg As HtmlGenericControl = TryCast(FindControlRecursive(Me, "badgeVerTransitoAseg"), HtmlGenericControl)
+        If badgeVerAseg IsNot Nothing Then
+            If asegExists Then
+                badgeVerAseg.InnerText = "Archivo OK"
+                badgeVerAseg.Attributes("class") = "badge bg-success"
+            Else
+                badgeVerAseg.InnerText = "Sin archivo"
+                badgeVerAseg.Attributes("class") = "badge bg-secondary"
+            End If
+        End If
+
+        ' COMPLE
+        Dim compleExists As Boolean = System.IO.File.Exists(System.IO.Path.Combine(folder, "comple.pdf"))
+        Dim badgeComple As HtmlGenericControl = TryCast(FindControlRecursive(Me, "badgeComple"), HtmlGenericControl)
+        If badgeComple IsNot Nothing Then
+            If compleExists Then
+                badgeComple.InnerText = "Archivo OK"
+                badgeComple.Attributes("class") = "badge bg-success"
+            Else
+                badgeComple.InnerText = "Sin archivo"
+                badgeComple.Attributes("class") = "badge bg-secondary"
+            End If
+        End If
+        Dim badgeVerComple As HtmlGenericControl = TryCast(FindControlRecursive(Me, "badgeVerComple"), HtmlGenericControl)
+        If badgeVerComple IsNot Nothing Then
+            If compleExists Then
+                badgeVerComple.InnerText = "Archivo OK"
+                badgeVerComple.Attributes("class") = "badge bg-success"
+            Else
+                badgeVerComple.InnerText = "Sin archivo"
+                badgeVerComple.Attributes("class") = "badge bg-secondary"
+            End If
+        End If
+    End Sub
 
     ' === VER COMPLEMENTOS (inetransito.pdf) ===
     Protected Sub btnVerInetransito_Click(sender As Object, e As EventArgs)
@@ -1974,6 +2145,34 @@ Paint:
         Dim baseUrl As String = "~/ViewPdf.ashx?id=" & lblId.Text & "&kind=inetransito"
         Dim url As String = ResolveUrl(baseUrl & If(v <> "", "&v=" & v, ""))
         EmitStartupScript("openInetransitoView", "openSmartViewer('" & url.Replace("'", "\'") & "');")
+    End Sub
+
+    ' === VER TRANSITO ASEGURADORA (transitoaseg.pdf) ===
+    Protected Sub btnVerTransitoAseg_Click(sender As Object, e As EventArgs)
+        If String.IsNullOrWhiteSpace(hidCarpeta.Value) Then Exit Sub
+        Dim folder As String = ObtenerSubcarpetaDestinoFisica()
+        Dim filePath As String = System.IO.Path.Combine(folder, "transitoaseg.pdf")
+        If Not System.IO.File.Exists(filePath) Then
+            UpdateBottomWidgets()
+            Exit Sub
+        End If
+        Dim baseUrl As String = "~/ViewPdf.ashx?id=" & lblId.Text & "&kind=transitoaseg"
+        Dim url As String = ResolveUrl(baseUrl)
+        EmitStartupScript("openTransitoAsegView", "openSmartViewer('" & url.Replace("'", "\'") & "');")
+    End Sub
+
+    ' === VER COMPLE (comple.pdf) ===
+    Protected Sub btnVerComple_Click(sender As Object, e As EventArgs)
+        If String.IsNullOrWhiteSpace(hidCarpeta.Value) Then Exit Sub
+        Dim folder As String = ObtenerSubcarpetaDestinoFisica()
+        Dim filePath As String = System.IO.Path.Combine(folder, "comple.pdf")
+        If Not System.IO.File.Exists(filePath) Then
+            UpdateBottomWidgets()
+            Exit Sub
+        End If
+        Dim baseUrl As String = "~/ViewPdf.ashx?id=" & lblId.Text & "&kind=comple"
+        Dim url As String = ResolveUrl(baseUrl)
+        EmitStartupScript("openCompleView", "openSmartViewer('" & url.Replace("'", "\'") & "');")
     End Sub
     Private Sub PintarTileMecanica(admId As Integer)
         Dim a1 As Boolean = False, a2 As Boolean = False, a3 As Boolean = False

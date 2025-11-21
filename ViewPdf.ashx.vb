@@ -34,6 +34,8 @@ Public Class ViewPdf
             Case "ct" : fileName = "CT.pdf"
             Case "inv" : fileName = "inv.pdf"
             Case "inetransito" : fileName = "inetransito.pdf"
+            Case "transitoaseg" : fileName = "transitoaseg.pdf"
+            Case "comple" : fileName = "comple.pdf"
             Case Else
                     context.Response.StatusCode = 400 : context.Response.Write("Kind inválido.") : Return
             End Select
