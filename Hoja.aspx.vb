@@ -798,9 +798,14 @@ END"
                             System.IO.File.Exists(System.IO.Path.Combine(complFolder, "comple.pdf"))
         End If
 
+        ' Si el usuario es admin, no deshabilitar nada en JavaScript
+        Dim isAdmin As Boolean = IsCurrentUserAdmin
+
         Dim jsUploadControl As New Text.StringBuilder()
         jsUploadControl.Append("(function(){")
-        jsUploadControl.Append("if(window.__isAdmin) return;") ' Admin siempre tiene todo habilitado
+        ' Definir isAdmin directamente aquí para asegurar que esté disponible
+        jsUploadControl.Append("var isAdmin=").Append(If(isAdmin, "true", "false")).Append(";")
+        jsUploadControl.Append("if(isAdmin) return;") ' Admin siempre tiene todo habilitado
         jsUploadControl.Append("var disable=function(id){var el=document.getElementById(id);if(el){el.classList.add('disabled');el.style.pointerEvents='none';el.style.opacity='0.5';}};")
         ' INE - si existe, deshabilitar subida
         If enableVerIne Then
@@ -822,7 +827,7 @@ END"
         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "uploadControl_" & Guid.NewGuid().ToString("N"), jsUploadControl.ToString(), True)
 
         ' ====== Control de botones INV (LinkButtons) para no-admin ======
-        If Not IsCurrentUserAdmin Then
+        If Not isAdmin Then
             ' Si INV existe (inv.pdf o grúa), deshabilitar botones de subida
             If enableVerInv OrElse invGruaOk Then
                 btnInvHtml.Enabled = False
