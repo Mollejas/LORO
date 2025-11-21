@@ -727,6 +727,11 @@
         function(){ /* no-op */ }
       );
 
+      // Cerrar modal automáticamente después de subir
+      setTimeout(function() {
+        bootstrap.Modal.getInstance(document.getElementById('fotosModal'))?.hide();
+      }, 800);
+
     } catch(err){
       alert('Error subiendo fotos: ' + err.message);
     }
