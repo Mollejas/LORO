@@ -1873,10 +1873,17 @@
       };
     }
     function openDiagPage(pageUrl) {
-      // Cerrar todos los modales abiertos antes de abrir diagModal
-      document.querySelectorAll('.modal.show').forEach(function(m) {
+      // Destruir TODOS los modales (no solo los visibles) antes de abrir diagModal
+      document.querySelectorAll('.modal').forEach(function(m) {
+        if (m.id === 'diagModal') return; // No destruir el que vamos a abrir
         var instance = bootstrap.Modal.getInstance(m);
-        if (instance) instance.hide();
+        if (instance) {
+          instance.dispose();
+        }
+        m.classList.remove('show');
+        m.style.display = '';
+        m.removeAttribute('aria-modal');
+        m.removeAttribute('role');
       });
       // Limpiar backdrops huérfanos
       document.querySelectorAll('.modal-backdrop').forEach(function(b) { b.remove(); });
