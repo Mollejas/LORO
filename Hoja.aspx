@@ -1561,8 +1561,10 @@
                     // TRANSITO: ODA + FOTOS + INE + CT
                     ok = areEnabled(['#btnVerODA', '#btnVerFotosPresup', '#btnVerINE', '#btnVerCT']);
                 } else {
-                    // PISO: ODA + FOTOS + INE + INV (sin CT)
-                    ok = areEnabled(['#btnVerODA', '#btnVerFotosPresup', '#btnVerINE', '#btnVerINV']);
+                    // PISO: ODA + FOTOS + INE + (INV o InvGrua) - sin CT
+                    const baseOk = areEnabled(['#btnVerODA', '#btnVerFotosPresup', '#btnVerINE']);
+                    const invOk = isBtnEnabledById('#btnVerINV') || isBtnEnabledById('#btnVerInvGrua');
+                    ok = baseOk && invOk;
                 }
             } else {
                 ok = eyesAllEnabled(stripEl);
