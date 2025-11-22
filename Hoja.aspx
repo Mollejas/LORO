@@ -3254,51 +3254,82 @@
             // Exponer globalmente para que pueda ser llamada desde otros scripts
             window.applyDiagGateUI = applyDiagGateUI;
 
-            // Endurecemos openDiagPage: si está en rojo, no abrimos
-            // Guardamos referencia SOLO si ya existe
-            const __origOpenDiagPage = window.openDiagPage;
+            // Sobrescribimos openDiagPage completamente con validación de checkboxes
             window.openDiagPage = function (pageUrl) {
                 const isMec = /Mecanica\.aspx$/i.test(pageUrl);
                 const isHoja = /Hojalateria\.aspx$/i.test(pageUrl);
                 const allowMec = !!document.getElementById('chkMecSi')?.checked;
                 const allowHoja = !!document.getElementById('chkHojaSi')?.checked;
+
                 if ((isMec && !allowMec) || (isHoja && !allowHoja)) {
                     alert('Este módulo está bloqueado (rojo). Activa el switch para continuar.');
                     return false;
                 }
-                // Llamar a la función original
-                if (typeof __origOpenDiagPage === 'function') {
-                    return __origOpenDiagPage(pageUrl);
-                } else {
-                    // Fallback: abrir el modal directamente si la función original no existe
-                    console.warn('openDiagPage original no encontrada, usando fallback');
-                    const iframe = document.getElementById('diagFrame');
-                    const modalEl = document.getElementById('diagModal');
-                    if (!modalEl || !iframe) return;
 
-                    // Limpiar modales y backdrops
-                    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-                    document.body.classList.remove('modal-open');
-
-                    // Crear datos del expediente
-                    const d = {};
-                    ['lblId', 'lblCarpeta', 'lblExpediente', 'lblSiniestro', 'lblAsegurado',
-                     'lblTelefono', 'lblCorreo', 'lblReporte', 'lblVehiculo',
-                     'lblFechaCreacion', 'lblDiasTranscurridos'].forEach(id => {
-                        const el = document.getElementById(id);
-                        const key = id.replace('lbl', '').toLowerCase();
-                        d[key === 'id' ? 'id' : key] = el ? (el.textContent || '').trim() : '';
-                    });
-                    d.carpeta = document.getElementById('hidCarpeta')?.value || d.carpeta;
-
-                    const qs = new URLSearchParams(d).toString();
-                    iframe.src = pageUrl + '?' + qs;
-
-                    var existingModal = bootstrap.Modal.getInstance(modalEl);
-                    if (existingModal) existingModal.dispose();
-                    const modal = new bootstrap.Modal(modalEl);
-                    modal.show();
+                // Obtener elementos
+                const iframe = document.getElementById('diagFrame');
+                const modalEl = document.getElementById('diagModal');
+                if (!modalEl || !iframe) {
+                    console.error('No se encontró diagModal o diagFrame');
+                    return;
                 }
+
+                // Destruir TODOS los modales antes de abrir diagModal
+                document.querySelectorAll('.modal').forEach(function(m) {
+                    if (m.id === 'diagModal') return;
+                    var instance = bootstrap.Modal.getInstance(m);
+                    if (instance) instance.dispose();
+                    m.classList.remove('show');
+                    m.style.display = '';
+                    m.removeAttribute('aria-modal');
+                    m.removeAttribute('role');
+                });
+
+                // Limpiar backdrops huérfanos
+                document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+
+                // Obtener datos del expediente
+                function gt(id) {
+                    const el = document.getElementById(id);
+                    return el ? (el.textContent || el.innerText || '').trim() : '';
+                }
+                const d = {
+                    id: gt('lblId'),
+                    carpeta: (document.getElementById('hidCarpeta')?.value || gt('lblCarpeta')),
+                    expediente: gt('lblExpediente'),
+                    siniestro: gt('lblSiniestro'),
+                    asegurado: gt('lblAsegurado'),
+                    telefono: gt('lblTelefono'),
+                    correo: gt('lblCorreo'),
+                    reporte: gt('lblReporte'),
+                    vehiculo: gt('lblVehiculo'),
+                    fechaCreacion: gt('lblFechaCreacion'),
+                    diasTranscurridos: gt('lblDiasTranscurridos')
+                };
+
+                const qs = new URLSearchParams(d).toString();
+                const finalUrl = pageUrl + '?' + qs;
+
+                // Dispose existing modal instance and create fresh one
+                var existingModal = bootstrap.Modal.getInstance(modalEl);
+                if (existingModal) existingModal.dispose();
+                const modal = new bootstrap.Modal(modalEl);
+
+                // Cargar iframe y mostrar modal
+                iframe.src = finalUrl;
+                iframe.onload = () => {
+                    try {
+                        iframe.contentWindow.postMessage({ type: 'EXP_PREFILL', payload: d }, window.location.origin);
+                    } catch (e) { console.warn('postMessage falló:', e); }
+                };
+
+                modal.show();
+
+                const hid = document.getElementById('hidDiagSrc');
+                if (hid) hid.value = finalUrl;
             };
         })();
     </script>
