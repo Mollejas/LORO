@@ -2244,18 +2244,21 @@ Paint:
 
         Dim allOk As Boolean = a1 AndAlso a2 AndAlso a3
 
-        ' Asegura estado visual del tile
+        ' Asegura estado visual del tile (NO sobrescribir checkbox - se lee de BD en CargarExpediente)
         Dim cls As String = tileMec.Attributes("class")
         If allOk Then
             If Not cls.Contains(" ok") Then tileMec.Attributes("class") = cls & " ok"
-            flagMec.Attributes("class") = "diag-flag on"
-            icoMec.Attributes("class") = "bi bi-toggle-on fs-4"
-            chkMecSi.Checked = True
         Else
             tileMec.Attributes("class") = cls.Replace(" ok", "")
+        End If
+
+        ' Actualizar visual del flag basado en el estado del checkbox (NO cambiar el checkbox)
+        If chkMecSi.Checked Then
+            flagMec.Attributes("class") = "diag-flag on"
+            icoMec.Attributes("class") = "bi bi-toggle-on fs-4"
+        Else
             flagMec.Attributes("class") = "diag-flag off"
             icoMec.Attributes("class") = "bi bi-toggle-off fs-4"
-            chkMecSi.Checked = False
         End If
     End Sub
     Private Sub PintarTileColision(admId As Integer)
@@ -2278,18 +2281,21 @@ Paint:
 
         Dim allOk As Boolean = a1 AndAlso a2 AndAlso a3
 
-        ' Asegura estado visual del tile
+        ' Asegura estado visual del tile (NO sobrescribir checkbox - se lee de BD en CargarExpediente)
         Dim cls As String = tileCol.Attributes("class")
         If allOk Then
             If Not cls.Contains(" ok") Then tileCol.Attributes("class") = cls & " ok"
-            flagHoja.Attributes("class") = "diag-flag on"
-            icoHoja.Attributes("class") = "bi bi-toggle-on fs-4"
-            chkHojaSi.Checked = True
         Else
             tileCol.Attributes("class") = cls.Replace(" ok", "")
+        End If
+
+        ' Actualizar visual del flag basado en el estado del checkbox (NO cambiar el checkbox)
+        If chkHojaSi.Checked Then
+            flagHoja.Attributes("class") = "diag-flag on"
+            icoHoja.Attributes("class") = "bi bi-toggle-on fs-4"
+        Else
             flagHoja.Attributes("class") = "diag-flag off"
             icoHoja.Attributes("class") = "bi bi-toggle-off fs-4"
-            chkHojaSi.Checked = False
         End If
     End Sub
 
