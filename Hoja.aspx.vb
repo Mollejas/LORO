@@ -2292,23 +2292,23 @@ Paint:
     Private Sub CargarFinesDiagnostico(admId As Integer)
         Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
         Dim finMecObj As Object = Nothing
-        Dim finHojObj As Object = Nothing
+        Dim finColObj As Object = Nothing
 
         Using cn As New SqlConnection(cs)
-            Using cmd As New SqlCommand("SELECT finmec, finhoj FROM admisiones WHERE id = @id", cn)
+            Using cmd As New SqlCommand("SELECT finmec, fincol FROM admisiones WHERE id = @id", cn)
                 cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
                 cn.Open()
                 Using rd = cmd.ExecuteReader()
                     If rd.Read() Then
                         finMecObj = If(rd.IsDBNull(0), Nothing, rd.GetValue(0))
-                        finHojObj = If(rd.IsDBNull(1), Nothing, rd.GetValue(1))
+                        finColObj = If(rd.IsDBNull(1), Nothing, rd.GetValue(1))
                     End If
                 End Using
             End Using
         End Using
 
         lblDiagFinMecanica.Text = FormatearFechaCortaHora(finMecObj)
-        lblDiagFinColision.Text = FormatearFechaCortaHora(finHojObj)
+        lblDiagFinColision.Text = FormatearFechaCortaHora(finColObj)
     End Sub
 
     Private Function FormatearFechaCortaHora(val As Object) As String

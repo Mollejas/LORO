@@ -2809,6 +2809,31 @@
                        applyDiagGateUI();
                    }
                }
+               if (e.data && e.data.type === 'HOJA_UPDATED') {
+                   // Actualizar el label de fin diagnóstico sin recargar
+                   const lbl = document.getElementById('lblDiagFinColision');
+                   if (lbl && e.data.fincol) {
+                       lbl.textContent = e.data.fincol;
+                   }
+                   // Pintar el tile de verde (usar clase ok como los demás)
+                   const tile = document.getElementById('tileCol');
+                   if (tile && e.data.fincol) {
+                       if (!tile.classList.contains('ok')) {
+                           tile.classList.add('ok');
+                       }
+                   }
+                   // Actualizar estado visual del flag
+                   const flag = document.getElementById('flagHoja');
+                   const ico = document.getElementById('icoHoja');
+                   const chk = document.getElementById('chkHojaSi');
+                   if (flag) flag.className = 'diag-flag on';
+                   if (ico) ico.className = 'bi bi-toggle-on fs-4';
+                   if (chk) chk.checked = true;
+                   // Actualizar estado del botón de diagnóstico
+                   if (typeof applyDiagGateUI === 'function') {
+                       applyDiagGateUI();
+                   }
+               }
            });
        });
    </script>
