@@ -517,15 +517,15 @@
   text-align: center;
 }
 .ht-toggle:hover { background: #f0f0f0; border-radius: 3px; }
-.ht-toggle:empty::after { content: none; } /* Sin placeholder - ocultar círculos vacíos */
+.ht-toggle:empty { visibility: hidden; } /* Ocultar completamente si está vacío */
 .ht-si { color: #16a34a; } /* verde */
 .ht-no { color: #dc2626; } /* rojo */
 .ht-status { color: #2563eb; } /* azul */
 
 /* Bloquear todo cuando está validado */
 .ht-all-locked .ht-toggle {
-    cursor: not-allowed !important;
-    opacity: 0.6;
+    cursor: default !important;
+    pointer-events: none;
 }
 .ht-all-locked .ht-toggle:hover {
     background: transparent !important;
