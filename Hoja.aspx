@@ -163,6 +163,9 @@
     #btnToggleStripVal.blink-danger{animation:blinkBtnDanger 1.1s ease-in-out infinite!important;background:#fee2e2!important;border-color:#ef4444!important;color:#dc2626!important;}
     #btnToggleStripVal.blink-success{background:#dcfce7!important;border-color:#16a34a!important;color:#15803d!important;}
 
+    /* Estilos para el contenedor stripVal - parpadeo del borde */
+    #stripVal.strip-danger{animation:blinkBorder 1.1s ease-in-out infinite;}
+
     /* Estilos para el contenedor stripDiag - solo parpadeo del borde */
     #stripDiag.strip-danger{animation:blinkBorder 1.1s ease-in-out infinite;}
     #strip{overflow:hidden;transition:max-height .35s ease,opacity .25s ease,transform .35s ease;}
@@ -1793,15 +1796,25 @@
                         ok = baseOk && invOk;
                     }
                 }
+            } else if (stripEl.id === 'stripVal') {
+                // Verificar los 5 tiles de valuación
+                ok = areEnabled([
+                    '#btnVerHojaTrabajo',
+                    '#btnVerValSinAut',
+                    '#btnVerValAutPdf',
+                    '#btnVerHojaTrabajoAut',
+                    '#btnVerSeguimientoCompl'
+                ]);
             } else {
                 ok = eyesAllEnabled(stripEl);
             }
             stripEl.classList.toggle('alert-pulse', !ok);
+            stripEl.classList.toggle('strip-danger', !ok);
             btnEl.classList.toggle('danger', !ok);
             btnEl.title = ok ? 'Todos los visores habilitados' : 'Faltan visores por habilitar';
 
-            // Aplicar blink al botón PROCESO DE RECEPCION
-            if (stripEl.id === 'strip') {
+            // Aplicar blink al botón
+            if (stripEl.id === 'strip' || stripEl.id === 'stripVal') {
                 btnEl.classList.toggle('blink-danger', !ok);
                 btnEl.classList.toggle('blink-success', ok);
             }
