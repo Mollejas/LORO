@@ -2354,7 +2354,7 @@
 
 
   <script>
-    /* 7) Diagnóstico: abrir páginas hijas + postMessage */
+    /* 7) Diagnóstico: helper para obtener datos del expediente */
     function getExpedienteData() {
       function gt(id) { const el = document.getElementById(id); return el ? (el.textContent || el.innerText || '').trim() : ''; }
       return {
@@ -2371,48 +2371,7 @@
         diasTranscurridos: gt('lblDiasTranscurridos')
       };
     }
-    window.openDiagPage = function(pageUrl) {
-      // Destruir TODOS los modales (no solo los visibles) antes de abrir diagModal
-      document.querySelectorAll('.modal').forEach(function(m) {
-        if (m.id === 'diagModal') return; // No destruir el que vamos a abrir
-        var instance = bootstrap.Modal.getInstance(m);
-        if (instance) {
-          instance.dispose();
-        }
-        m.classList.remove('show');
-        m.style.display = '';
-        m.removeAttribute('aria-modal');
-        m.removeAttribute('role');
-      });
-      // Limpiar backdrops huérfanos
-      document.querySelectorAll('.modal-backdrop').forEach(function(b) { b.remove(); });
-      document.body.classList.remove('modal-open');
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
-
-      const iframe = document.getElementById('diagFrame');
-      const modalEl = document.getElementById('diagModal');
-
-      // Dispose existing instance if any and create fresh one
-      var existingModal = bootstrap.Modal.getInstance(modalEl);
-      if (existingModal) existingModal.dispose();
-      const modal = new bootstrap.Modal(modalEl);
-
-      const d = getExpedienteData();
-      const qs = new URLSearchParams(d).toString();
-      const finalUrl = pageUrl + '?' + qs;
-
-      iframe.src = finalUrl;
-      iframe.onload = () => {
-        try {
-          iframe.contentWindow.postMessage({ type: 'EXP_PREFILL', payload: d }, window.location.origin);
-        } catch (e) { console.warn('postMessage falló:', e); }
-      };
-
-      modal.show();
-      const hid = document.getElementById('hidDiagSrc');
-      if (hid) hid.value = finalUrl;
-    }
+    // openDiagPage se define más abajo con validación de checkboxes
     window.addEventListener('message', (e) => {
       if (e.origin !== window.location.origin) return;
       if (e.data?.type === 'EXP_REQUEST') {
@@ -3174,14 +3133,12 @@
             function setFlagUI(flagId, iconId, checked) {
                 const flag = document.getElementById(flagId);
                 const ico = document.getElementById(iconId);
-                const txt = flag?.querySelector('.state');
-                if (!flag || !ico || !txt) return;
+                if (!flag || !ico) return;
 
                 flag.classList.toggle('on', !!checked);
                 flag.classList.toggle('off', !checked);
                 ico.classList.toggle('bi-toggle-on', !!checked);
                 ico.classList.toggle('bi-toggle-off', !checked);
-                txt.textContent = checked ? 'Habilitado' : 'Deshabilitado';
             }
 
             function applyDiagGateUI() {
@@ -3291,25 +3248,8 @@
                 document.body.style.overflow = '';
                 document.body.style.paddingRight = '';
 
-                // Obtener datos del expediente
-                function gt(id) {
-                    const el = document.getElementById(id);
-                    return el ? (el.textContent || el.innerText || '').trim() : '';
-                }
-                const d = {
-                    id: gt('lblId'),
-                    carpeta: (document.getElementById('hidCarpeta')?.value || gt('lblCarpeta')),
-                    expediente: gt('lblExpediente'),
-                    siniestro: gt('lblSiniestro'),
-                    asegurado: gt('lblAsegurado'),
-                    telefono: gt('lblTelefono'),
-                    correo: gt('lblCorreo'),
-                    reporte: gt('lblReporte'),
-                    vehiculo: gt('lblVehiculo'),
-                    fechaCreacion: gt('lblFechaCreacion'),
-                    diasTranscurridos: gt('lblDiasTranscurridos')
-                };
-
+                // Obtener datos del expediente usando la función global
+                const d = typeof getExpedienteData === 'function' ? getExpedienteData() : {};
                 const qs = new URLSearchParams(d).toString();
                 const finalUrl = pageUrl + '?' + qs;
 
