@@ -2669,8 +2669,12 @@ Paint:
             da.Fill(dt)
         End Using
 
-        ' Cargar cada DropDownList individualmente
-        Dim ddlList() As DropDownList = {ddlValRef1, ddlValRef2, ddlValRef3}
+        ' Buscar controles usando FindControl
+        Dim ddl1 As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef1"), DropDownList)
+        Dim ddl2 As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef2"), DropDownList)
+        Dim ddl3 As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef3"), DropDownList)
+
+        Dim ddlList() As DropDownList = {ddl1, ddl2, ddl3}
         For Each ddl As DropDownList In ddlList
             If ddl IsNot Nothing Then
                 ddl.Items.Clear()
@@ -2684,9 +2688,12 @@ Paint:
         Next
 
         ' Limpiar campos de contraseña
-        If txtPassValRef1 IsNot Nothing Then txtPassValRef1.Text = ""
-        If txtPassValRef2 IsNot Nothing Then txtPassValRef2.Text = ""
-        If txtPassValRef3 IsNot Nothing Then txtPassValRef3.Text = ""
+        Dim txt1 As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef1"), TextBox)
+        Dim txt2 As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef2"), TextBox)
+        Dim txt3 As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef3"), TextBox)
+        If txt1 IsNot Nothing Then txt1.Text = ""
+        If txt2 IsNot Nothing Then txt2.Text = ""
+        If txt3 IsNot Nothing Then txt3.Text = ""
     End Sub
 
     Private Sub PaintHTValFlags(cn As SqlConnection, expediente As String)
@@ -2704,25 +2711,42 @@ Paint:
             End Using
         End Using
 
-        If litValRef1 IsNot Nothing Then litValRef1.Text = If(v1, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n1)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
-        If litValRef2 IsNot Nothing Then litValRef2.Text = If(v2, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n2)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
-        If litValRef3 IsNot Nothing Then litValRef3.Text = If(v3, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n3)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
+        ' Buscar controles usando FindControl
+        Dim lit1 As Literal = TryCast(FindControlRecursive(Me, "litValRef1"), Literal)
+        Dim lit2 As Literal = TryCast(FindControlRecursive(Me, "litValRef2"), Literal)
+        Dim lit3 As Literal = TryCast(FindControlRecursive(Me, "litValRef3"), Literal)
+
+        If lit1 IsNot Nothing Then lit1.Text = If(v1, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n1)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
+        If lit2 IsNot Nothing Then lit2.Text = If(v2, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n2)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
+        If lit3 IsNot Nothing Then lit3.Text = If(v3, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n3)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
+
+        ' Buscar controles de validación
+        Dim ddl1 As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef1"), DropDownList)
+        Dim ddl2 As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef2"), DropDownList)
+        Dim ddl3 As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef3"), DropDownList)
+        Dim txt1 As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef1"), TextBox)
+        Dim txt2 As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef2"), TextBox)
+        Dim txt3 As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef3"), TextBox)
+        Dim btn1 As LinkButton = TryCast(FindControlRecursive(Me, "btnValidarRef1"), LinkButton)
+        Dim btn2 As LinkButton = TryCast(FindControlRecursive(Me, "btnValidarRef2"), LinkButton)
+        Dim btn3 As LinkButton = TryCast(FindControlRecursive(Me, "btnValidarRef3"), LinkButton)
 
         ' Ocultar controles cuando está validado
-        If ddlValRef1 IsNot Nothing Then ddlValRef1.Visible = Not v1
-        If txtPassValRef1 IsNot Nothing Then txtPassValRef1.Visible = Not v1
-        If btnValidarRef1 IsNot Nothing Then btnValidarRef1.Visible = Not v1
+        If ddl1 IsNot Nothing Then ddl1.Visible = Not v1
+        If txt1 IsNot Nothing Then txt1.Visible = Not v1
+        If btn1 IsNot Nothing Then btn1.Visible = Not v1
 
-        If ddlValRef2 IsNot Nothing Then ddlValRef2.Visible = Not v2
-        If txtPassValRef2 IsNot Nothing Then txtPassValRef2.Visible = Not v2
-        If btnValidarRef2 IsNot Nothing Then btnValidarRef2.Visible = Not v2
+        If ddl2 IsNot Nothing Then ddl2.Visible = Not v2
+        If txt2 IsNot Nothing Then txt2.Visible = Not v2
+        If btn2 IsNot Nothing Then btn2.Visible = Not v2
 
-        If ddlValRef3 IsNot Nothing Then ddlValRef3.Visible = Not v3
-        If txtPassValRef3 IsNot Nothing Then txtPassValRef3.Visible = Not v3
-        If btnValidarRef3 IsNot Nothing Then btnValidarRef3.Visible = Not v3
+        If ddl3 IsNot Nothing Then ddl3.Visible = Not v3
+        If txt3 IsNot Nothing Then txt3.Visible = Not v3
+        If btn3 IsNot Nothing Then btn3.Visible = Not v3
 
         ' Actualizar hidden field para JS
-        If hfHTValidado IsNot Nothing Then hfHTValidado.Value = If(v1 AndAlso v2 AndAlso v3, "1", "0")
+        Dim hf As HiddenField = TryCast(FindControlRecursive(Me, "hfHTValidado"), HiddenField)
+        If hf IsNot Nothing Then hf.Value = If(v1 AndAlso v2 AndAlso v3, "1", "0")
     End Sub
 
     ' Handler para agregar encabezados agrupados a los GridViews de Hoja de Trabajo
@@ -2831,15 +2855,30 @@ Paint:
 
     ' ====== Validaciones de Hoja de Trabajo ======
     Protected Sub btnValidarRef1_Click(sender As Object, e As EventArgs)
-        HandleHTValidation(ddlValRef1, txtPassValRef1, "valrefmec1", litValRef1)
+        Dim ddl As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef1"), DropDownList)
+        Dim txt As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef1"), TextBox)
+        Dim lit As Literal = TryCast(FindControlRecursive(Me, "litValRef1"), Literal)
+        If ddl IsNot Nothing AndAlso txt IsNot Nothing Then
+            HandleHTValidation(ddl, txt, "valrefmec1", lit)
+        End If
     End Sub
 
     Protected Sub btnValidarRef2_Click(sender As Object, e As EventArgs)
-        HandleHTValidation(ddlValRef2, txtPassValRef2, "valrefmec2", litValRef2)
+        Dim ddl As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef2"), DropDownList)
+        Dim txt As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef2"), TextBox)
+        Dim lit As Literal = TryCast(FindControlRecursive(Me, "litValRef2"), Literal)
+        If ddl IsNot Nothing AndAlso txt IsNot Nothing Then
+            HandleHTValidation(ddl, txt, "valrefmec2", lit)
+        End If
     End Sub
 
     Protected Sub btnValidarRef3_Click(sender As Object, e As EventArgs)
-        HandleHTValidation(ddlValRef3, txtPassValRef3, "valrefmec3", litValRef3)
+        Dim ddl As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef3"), DropDownList)
+        Dim txt As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef3"), TextBox)
+        Dim lit As Literal = TryCast(FindControlRecursive(Me, "litValRef3"), Literal)
+        If ddl IsNot Nothing AndAlso txt IsNot Nothing Then
+            HandleHTValidation(ddl, txt, "valrefmec3", lit)
+        End If
     End Sub
 
     Private Sub HandleHTValidation(ddl As DropDownList, txtPass As TextBox, fieldName As String, lit As Literal)
