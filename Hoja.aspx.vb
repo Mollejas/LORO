@@ -2685,9 +2685,10 @@ Paint:
         litValRef2.Text = If(v2, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n2)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
         litValRef3.Text = If(v3, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n3)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
 
-        ddlValRef1.Enabled = Not v1 : txtPassValRef1.Enabled = Not v1 : btnValidarRef1.Enabled = Not v1
-        ddlValRef2.Enabled = Not v2 : txtPassValRef2.Enabled = Not v2 : btnValidarRef2.Enabled = Not v2
-        ddlValRef3.Enabled = Not v3 : txtPassValRef3.Enabled = Not v3 : btnValidarRef3.Enabled = Not v3
+        ' Ocultar controles cuando está validado
+        ddlValRef1.Visible = Not v1 : txtPassValRef1.Visible = Not v1 : btnValidarRef1.Visible = Not v1
+        ddlValRef2.Visible = Not v2 : txtPassValRef2.Visible = Not v2 : btnValidarRef2.Visible = Not v2
+        ddlValRef3.Visible = Not v3 : txtPassValRef3.Visible = Not v3 : btnValidarRef3.Visible = Not v3
 
         ' Actualizar hidden field para JS
         hfHTValidado.Value = If(v1 AndAlso v2 AndAlso v3, "1", "0")
