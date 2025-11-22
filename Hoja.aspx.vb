@@ -2555,12 +2555,13 @@ Paint:
 
         ' Cargar datos del vehículo
         Dim expediente As String = ""
+        Dim carpetaRel As String = ""
 
         Using cn As New SqlConnection(cs)
             cn.Open()
 
             ' Obtener datos de admisiones
-            Using cmd As New SqlCommand("SELECT expediente, marca, tipo, modelo, color, placas FROM admisiones WHERE id = @id", cn)
+            Using cmd As New SqlCommand("SELECT expediente, marca, tipo, modelo, color, placas, carpetarel FROM admisiones WHERE id = @id", cn)
                 cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
                 Using rd = cmd.ExecuteReader()
                     If rd.Read() Then
@@ -2571,13 +2572,14 @@ Paint:
                         lblHTAnio.Text = If(rd.IsDBNull(3), "", rd.GetValue(3).ToString())  ' Modelo es el año
                         lblHTColor.Text = If(rd.IsDBNull(4), "", rd.GetString(4))
                         lblHTPlacas.Text = If(rd.IsDBNull(5), "", rd.GetString(5))
+                        carpetaRel = If(rd.IsDBNull(6), "", rd.GetString(6))
                     End If
                 End Using
             End Using
 
             ' Cargar imagen principal
-            If Not String.IsNullOrWhiteSpace(hidCarpeta.Value) Then
-                Dim baseFolder As String = ResolverCarpetaFisica(hidCarpeta.Value)
+            If Not String.IsNullOrWhiteSpace(carpetaRel) Then
+                Dim baseFolder As String = ResolverCarpetaFisica(carpetaRel)
                 Dim imgPath As String = Path.Combine(baseFolder, "1. DOCUMENTOS DE INGRESO", "principal.jpg")
                 If File.Exists(imgPath) Then
                     Dim bytes = File.ReadAllBytes(imgPath)
