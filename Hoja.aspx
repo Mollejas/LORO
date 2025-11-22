@@ -3255,11 +3255,23 @@
                 const isHoja = /Hojalateria\.aspx$/i.test(pageUrl);
                 const allowMec = !!document.getElementById('chkMecSi')?.checked;
                 const allowHoja = !!document.getElementById('chkHojaSi')?.checked;
+
+                // DEBUG: Mostrar estado de checkboxes
+                console.log('openDiagPage llamada:', pageUrl);
+                console.log('chkMecSi checked:', allowMec);
+                console.log('chkHojaSi checked:', allowHoja);
+                console.log('__origOpenDiagPage es función:', typeof __origOpenDiagPage === 'function');
+
                 if ((isMec && !allowMec) || (isHoja && !allowHoja)) {
                     alert('Este módulo está bloqueado (rojo). Activa el switch para continuar.');
                     return false;
                 }
-                if (typeof __origOpenDiagPage === 'function') return __origOpenDiagPage(pageUrl);
+                if (typeof __origOpenDiagPage === 'function') {
+                    return __origOpenDiagPage(pageUrl);
+                } else {
+                    console.error('__origOpenDiagPage no es una función!');
+                    alert('Error: función openDiagPage original no encontrada');
+                }
             };
         })();
     </script>
