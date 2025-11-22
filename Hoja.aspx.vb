@@ -2591,7 +2591,7 @@ Paint:
 
             ' Cargar refacciones - Mecánica Reparación
             Dim dtMecRep As New DataTable()
-            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
                 cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtMecRep)
@@ -2602,7 +2602,7 @@ Paint:
 
             ' Cargar refacciones - Mecánica Sustitución
             Dim dtMecSus As New DataTable()
-            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
                 cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtMecSus)
@@ -2613,7 +2613,7 @@ Paint:
 
             ' Cargar refacciones - Hojalatería Reparación
             Dim dtHojRep As New DataTable()
-            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
                 cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtHojRep)
@@ -2624,7 +2624,7 @@ Paint:
 
             ' Cargar refacciones - Hojalatería Sustitución
             Dim dtHojSus As New DataTable()
-            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
                 cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtHojSus)
@@ -2636,6 +2636,39 @@ Paint:
 
         ' Abrir modal
         EmitStartupScript("openHojaTrabajo", "bootstrap.Modal.getOrCreateInstance(document.getElementById('modalHojaTrabajo')).show();")
+    End Sub
+
+    ' Handler para agregar encabezados agrupados a los GridViews de Hoja de Trabajo
+    Protected Sub gvHT_RowDataBound(sender As Object, e As GridViewRowEventArgs)
+        If e.Row.RowType = DataControlRowType.Header Then
+            Dim gv As GridView = DirectCast(sender, GridView)
+            Dim headerRow As New GridViewRow(0, 0, DataControlRowType.Header, DataControlRowState.Normal)
+
+            ' Determinar número de columnas base (3 para todos)
+            Dim baseColSpan As Integer = 3
+
+            ' Columnas base
+            Dim cellBase As New TableHeaderCell()
+            cellBase.ColumnSpan = baseColSpan
+            cellBase.Text = ""
+            headerRow.Cells.Add(cellBase)
+
+            ' Autorización (2 columnas: Si, No)
+            Dim cellAut As New TableHeaderCell()
+            cellAut.ColumnSpan = 2
+            cellAut.Text = "Autorización"
+            cellAut.CssClass = "text-center bg-light"
+            headerRow.Cells.Add(cellAut)
+
+            ' Estatus (3 columnas: P, E, D)
+            Dim cellEst As New TableHeaderCell()
+            cellEst.ColumnSpan = 3
+            cellEst.Text = "Estatus"
+            cellEst.CssClass = "text-center bg-light"
+            headerRow.Cells.Add(cellEst)
+
+            gv.Controls(0).Controls.AddAt(0, headerRow)
+        End If
     End Sub
 
     ' Ver Valuación Sin Autorizar
