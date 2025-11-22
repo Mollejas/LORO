@@ -2669,20 +2669,24 @@ Paint:
             da.Fill(dt)
         End Using
 
-        For Each ddl As DropDownList In New DropDownList() {ddlValRef1, ddlValRef2, ddlValRef3}
-            ddl.Items.Clear()
-            ddl.DataSource = dt
-            ddl.DataTextField = "Nombre"
-            ddl.DataValueField = "UsuarioId"
-            ddl.DataBind()
-            ddl.Items.Insert(0, New ListItem("-- Selecciona usuario --", ""))
-            ddl.SelectedIndex = 0
+        ' Cargar cada DropDownList individualmente
+        Dim ddlList() As DropDownList = {ddlValRef1, ddlValRef2, ddlValRef3}
+        For Each ddl As DropDownList In ddlList
+            If ddl IsNot Nothing Then
+                ddl.Items.Clear()
+                ddl.DataSource = dt
+                ddl.DataTextField = "Nombre"
+                ddl.DataValueField = "UsuarioId"
+                ddl.DataBind()
+                ddl.Items.Insert(0, New ListItem("-- Selecciona usuario --", ""))
+                ddl.SelectedIndex = 0
+            End If
         Next
 
         ' Limpiar campos de contraseña
-        txtPassValRef1.Text = ""
-        txtPassValRef2.Text = ""
-        txtPassValRef3.Text = ""
+        If txtPassValRef1 IsNot Nothing Then txtPassValRef1.Text = ""
+        If txtPassValRef2 IsNot Nothing Then txtPassValRef2.Text = ""
+        If txtPassValRef3 IsNot Nothing Then txtPassValRef3.Text = ""
     End Sub
 
     Private Sub PaintHTValFlags(cn As SqlConnection, expediente As String)
@@ -2700,17 +2704,25 @@ Paint:
             End Using
         End Using
 
-        litValRef1.Text = If(v1, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n1)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
-        litValRef2.Text = If(v2, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n2)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
-        litValRef3.Text = If(v3, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n3)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
+        If litValRef1 IsNot Nothing Then litValRef1.Text = If(v1, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n1)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
+        If litValRef2 IsNot Nothing Then litValRef2.Text = If(v2, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n2)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
+        If litValRef3 IsNot Nothing Then litValRef3.Text = If(v3, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n3)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
 
         ' Ocultar controles cuando está validado
-        ddlValRef1.Visible = Not v1 : txtPassValRef1.Visible = Not v1 : btnValidarRef1.Visible = Not v1
-        ddlValRef2.Visible = Not v2 : txtPassValRef2.Visible = Not v2 : btnValidarRef2.Visible = Not v2
-        ddlValRef3.Visible = Not v3 : txtPassValRef3.Visible = Not v3 : btnValidarRef3.Visible = Not v3
+        If ddlValRef1 IsNot Nothing Then ddlValRef1.Visible = Not v1
+        If txtPassValRef1 IsNot Nothing Then txtPassValRef1.Visible = Not v1
+        If btnValidarRef1 IsNot Nothing Then btnValidarRef1.Visible = Not v1
+
+        If ddlValRef2 IsNot Nothing Then ddlValRef2.Visible = Not v2
+        If txtPassValRef2 IsNot Nothing Then txtPassValRef2.Visible = Not v2
+        If btnValidarRef2 IsNot Nothing Then btnValidarRef2.Visible = Not v2
+
+        If ddlValRef3 IsNot Nothing Then ddlValRef3.Visible = Not v3
+        If txtPassValRef3 IsNot Nothing Then txtPassValRef3.Visible = Not v3
+        If btnValidarRef3 IsNot Nothing Then btnValidarRef3.Visible = Not v3
 
         ' Actualizar hidden field para JS
-        hfHTValidado.Value = If(v1 AndAlso v2 AndAlso v3, "1", "0")
+        If hfHTValidado IsNot Nothing Then hfHTValidado.Value = If(v1 AndAlso v2 AndAlso v3, "1", "0")
     End Sub
 
     ' Handler para agregar encabezados agrupados a los GridViews de Hoja de Trabajo
