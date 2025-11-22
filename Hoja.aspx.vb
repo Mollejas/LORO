@@ -2580,7 +2580,8 @@ Paint:
                 Dim baseFolder As String = ResolverCarpetaFisica(hidCarpeta.Value)
                 Dim imgPath As String = Path.Combine(baseFolder, "1. DOCUMENTOS DE INGRESO", "principal.jpg")
                 If File.Exists(imgPath) Then
-                    imgHTPrincipal.ImageUrl = "~/ImageHandler.ashx?path=" & Server.UrlEncode(imgPath) & "&v=" & DateTime.Now.Ticks.ToString()
+                    Dim bytes = File.ReadAllBytes(imgPath)
+                    imgHTPrincipal.ImageUrl = "data:image/jpeg;base64," & Convert.ToBase64String(bytes)
                 Else
                     imgHTPrincipal.ImageUrl = ""
                 End If
