@@ -178,6 +178,29 @@
                                     <label for="<%= chkAdmin.ClientID %>">Administrador</label>
                                 </div>
                             </div>
+
+                            <div class="paridad-box">
+                                <div class="paridad-title">Rol de Jefe (solo uno)</div>
+                                <div class="paridad-options">
+                                    <div class="paridad-item">
+                                        <asp:CheckBox ID="chkJefeServicio" runat="server" />
+                                        <label for="<%= chkJefeServicio.ClientID %>">Jefe de Servicio</label>
+                                    </div>
+                                    <div class="paridad-item">
+                                        <asp:CheckBox ID="chkJefeRefacciones" runat="server" />
+                                        <label for="<%= chkJefeRefacciones.ClientID %>">Jefe de Refacciones</label>
+                                    </div>
+                                    <div class="paridad-item">
+                                        <asp:CheckBox ID="chkJefeAdministracion" runat="server" />
+                                        <label for="<%= chkJefeAdministracion.ClientID %>">Jefe de Administración</label>
+                                    </div>
+                                    <div class="paridad-item">
+                                        <asp:CheckBox ID="chkJefeTaller" runat="server" />
+                                        <label for="<%= chkJefeTaller.ClientID %>">Jefe de Taller</label>
+                                    </div>
+                                </div>
+                                <div class="paridad-note">Solo puede seleccionar un rol de jefe</div>
+                            </div>
                             
                             <div class="paridad-box">
                                 <div class="paridad-title">Configuración de Paridad</div>
@@ -241,6 +264,21 @@
                             </EditItemTemplate>
                         </asp:TemplateField>
 
+                        <asp:TemplateField HeaderText="Jefe">
+                            <ItemTemplate>
+                                <%# GetJefeDisplay(Eval("JefeServicio"), Eval("JefeRefacciones"), Eval("JefeAdministracion"), Eval("JefeTaller")) %>
+                            </ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:DropDownList ID="ddlEditJefe" runat="server" CssClass="inp">
+                                    <asp:ListItem Text="(ninguno)" Value="" />
+                                    <asp:ListItem Text="Servicio" Value="Servicio" />
+                                    <asp:ListItem Text="Refacciones" Value="Refacciones" />
+                                    <asp:ListItem Text="Administración" Value="Administracion" />
+                                    <asp:ListItem Text="Taller" Value="Taller" />
+                                </asp:DropDownList>
+                            </EditItemTemplate>
+                        </asp:TemplateField>
+
                         <asp:TemplateField HeaderText="Paridad">
                             <ItemTemplate><%# Eval("Paridad") %></ItemTemplate>
                             <EditItemTemplate>
@@ -270,9 +308,39 @@
                 par.addEventListener('change', function () { if (par.checked) non.checked = false; });
                 non.addEventListener('change', function () { if (non.checked) par.checked = false; });
             }
+
+            function bindJefes() {
+                var jefeServicio = document.getElementById('<%= chkJefeServicio.ClientID %>');
+                var jefeRefacciones = document.getElementById('<%= chkJefeRefacciones.ClientID %>');
+                var jefeAdmin = document.getElementById('<%= chkJefeAdministracion.ClientID %>');
+                var jefeTaller = document.getElementById('<%= chkJefeTaller.ClientID %>');
+
+                var jefes = [jefeServicio, jefeRefacciones, jefeAdmin, jefeTaller];
+
+                jefes.forEach(function(chk) {
+                    if (chk) {
+                        chk.addEventListener('change', function() {
+                            if (this.checked) {
+                                jefes.forEach(function(other) {
+                                    if (other && other !== chk) {
+                                        other.checked = false;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+
             if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', bindParity);
-            } else { bindParity(); }
+                document.addEventListener('DOMContentLoaded', function() {
+                    bindParity();
+                    bindJefes();
+                });
+            } else {
+                bindParity();
+                bindJefes();
+            }
         })();
     </script>
 </form>
