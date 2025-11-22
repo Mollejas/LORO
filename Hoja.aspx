@@ -1621,9 +1621,6 @@
               </div>
             </div>
           </div>
-          <div class="small text-muted mt-2">
-            Cuando las 3 validaciones estén completas, los toggles se deshabilitarán automáticamente.
-          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
