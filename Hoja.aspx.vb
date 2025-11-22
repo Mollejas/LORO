@@ -2861,8 +2861,8 @@ Paint:
                     ElseIf dbHash.Length = 32 Then
                         Dim passBytes = System.Text.Encoding.UTF8.GetBytes(password)
                         Dim mix(salt.Length + passBytes.Length - 1) As Byte
-                        Buffer.BlockCopy(salt, 0, mix, 0, salt.Length)
-                        Buffer.BlockCopy(passBytes, 0, mix, salt.Length, passBytes.Length)
+                        System.Buffer.BlockCopy(salt, 0, mix, 0, salt.Length)
+                        System.Buffer.BlockCopy(passBytes, 0, mix, salt.Length, passBytes.Length)
                         Using sha As System.Security.Cryptography.SHA256 = System.Security.Cryptography.SHA256.Create()
                             calc = sha.ComputeHash(mix)
                         End Using
