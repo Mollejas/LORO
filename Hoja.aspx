@@ -1432,7 +1432,6 @@
                 <Columns>
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="50px" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
-                  <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
                   <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
                 </Columns>
               </asp:GridView>
@@ -1444,7 +1443,6 @@
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="50px" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                   <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
-                  <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
                 </Columns>
               </asp:GridView>
             </div>
@@ -1459,7 +1457,6 @@
                 <Columns>
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="50px" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
-                  <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
                   <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
                 </Columns>
               </asp:GridView>
@@ -1471,7 +1468,6 @@
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="50px" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                   <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
-                  <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
                 </Columns>
               </asp:GridView>
             </div>
