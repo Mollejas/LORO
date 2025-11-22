@@ -2354,7 +2354,7 @@
 
 
   <script>
-    /* 7) Diagnóstico: helper para obtener datos del expediente */
+    /* 7) Diagnóstico: abrir páginas hijas + postMessage */
     function getExpedienteData() {
       function gt(id) { const el = document.getElementById(id); return el ? (el.textContent || el.innerText || '').trim() : ''; }
       return {
@@ -2371,7 +2371,44 @@
         diasTranscurridos: gt('lblDiasTranscurridos')
       };
     }
-    // openDiagPage se define más abajo con validación de checkboxes
+    function openDiagPage(pageUrl) {
+      // Destruir TODOS los modales (no solo los visibles) antes de abrir diagModal
+      document.querySelectorAll('.modal').forEach(function(m) {
+        if (m.id === 'diagModal') return;
+        var instance = bootstrap.Modal.getInstance(m);
+        if (instance) {
+          instance.dispose();
+        }
+        m.classList.remove('show');
+        m.style.display = '';
+        m.removeAttribute('aria-modal');
+        m.removeAttribute('role');
+      });
+      // Limpiar backdrops huérfanos
+      document.querySelectorAll('.modal-backdrop').forEach(function(b) { b.remove(); });
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+
+      const iframe = document.getElementById('diagFrame');
+      const modalEl = document.getElementById('diagModal');
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+      const d = getExpedienteData();
+      const qs = new URLSearchParams(d).toString();
+      const finalUrl = pageUrl + '?' + qs;
+
+      iframe.src = finalUrl;
+      iframe.onload = () => {
+        try {
+          iframe.contentWindow.postMessage({ type: 'EXP_PREFILL', payload: d }, window.location.origin);
+        } catch (e) { console.warn('postMessage falló:', e); }
+      };
+
+      modal.show();
+      const hid = document.getElementById('hidDiagSrc');
+      if (hid) hid.value = finalUrl;
+    }
     window.addEventListener('message', (e) => {
       if (e.origin !== window.location.origin) return;
       if (e.data?.type === 'EXP_REQUEST') {
@@ -3211,65 +3248,18 @@
             // Exponer globalmente para que pueda ser llamada desde otros scripts
             window.applyDiagGateUI = applyDiagGateUI;
 
-            // Sobrescribimos openDiagPage completamente con validación de checkboxes
+            // Endurecemos openDiagPage: si está en rojo, no abrimos
+            const __origOpenDiagPage = window.openDiagPage;
             window.openDiagPage = function (pageUrl) {
                 const isMec = /Mecanica\.aspx$/i.test(pageUrl);
                 const isHoja = /Hojalateria\.aspx$/i.test(pageUrl);
                 const allowMec = !!document.getElementById('chkMecSi')?.checked;
                 const allowHoja = !!document.getElementById('chkHojaSi')?.checked;
-
                 if ((isMec && !allowMec) || (isHoja && !allowHoja)) {
                     alert('Este módulo está bloqueado (rojo). Activa el switch para continuar.');
                     return false;
                 }
-
-                // Obtener elementos
-                const iframe = document.getElementById('diagFrame');
-                const modalEl = document.getElementById('diagModal');
-                if (!modalEl || !iframe) {
-                    console.error('No se encontró diagModal o diagFrame');
-                    return;
-                }
-
-                // Destruir TODOS los modales antes de abrir diagModal
-                document.querySelectorAll('.modal').forEach(function(m) {
-                    if (m.id === 'diagModal') return;
-                    var instance = bootstrap.Modal.getInstance(m);
-                    if (instance) instance.dispose();
-                    m.classList.remove('show');
-                    m.style.display = '';
-                    m.removeAttribute('aria-modal');
-                    m.removeAttribute('role');
-                });
-
-                // Limpiar backdrops huérfanos
-                document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-                document.body.classList.remove('modal-open');
-                document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
-
-                // Obtener datos del expediente usando la función global
-                const d = typeof getExpedienteData === 'function' ? getExpedienteData() : {};
-                const qs = new URLSearchParams(d).toString();
-                const finalUrl = pageUrl + '?' + qs;
-
-                // Dispose existing modal instance and create fresh one
-                var existingModal = bootstrap.Modal.getInstance(modalEl);
-                if (existingModal) existingModal.dispose();
-                const modal = new bootstrap.Modal(modalEl);
-
-                // Cargar iframe y mostrar modal
-                iframe.src = finalUrl;
-                iframe.onload = () => {
-                    try {
-                        iframe.contentWindow.postMessage({ type: 'EXP_PREFILL', payload: d }, window.location.origin);
-                    } catch (e) { console.warn('postMessage falló:', e); }
-                };
-
-                modal.show();
-
-                const hid = document.getElementById('hidDiagSrc');
-                if (hid) hid.value = finalUrl;
+                if (typeof __origOpenDiagPage === 'function') return __origOpenDiagPage(pageUrl);
             };
         })();
     </script>
