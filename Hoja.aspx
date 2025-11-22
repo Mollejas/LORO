@@ -522,9 +522,10 @@
 .ht-no { color: #dc2626; } /* rojo */
 .ht-status { color: #2563eb; } /* azul */
 
-/* Ocultar estatus cuando no están validados */
-.ht-status-hidden .ht-status { visibility: hidden !important; }
+/* Ocultar solo los placeholders vacíos (○) de estatus cuando no están validados */
 .ht-status-hidden .ht-status:empty::after { content: none !important; }
+.ht-status-hidden .ht-status { cursor: default !important; }
+.ht-status-hidden .ht-status:hover { background: transparent !important; }
 
 /* Bloquear autorización cuando está validado */
 .ht-auth-locked .ht-si,
