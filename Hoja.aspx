@@ -3298,8 +3298,15 @@
            });
        }
 
-       // Enviar al servidor (opcional - por ahora solo visual)
-       // fetch('UpdateRefaccion.ashx', { method: 'POST', body: JSON.stringify({id, field, val}) });
+       // Guardar en la base de datos
+       fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val)
+           .then(r => r.json())
+           .then(data => {
+               if (!data.ok) {
+                   console.error('Error al guardar:', data.error);
+               }
+           })
+           .catch(err => console.error('Error:', err));
    });
    </script>
 
