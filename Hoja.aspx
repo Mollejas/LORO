@@ -183,8 +183,9 @@
     /* Contenedores de las secciones - heredar mismo layout */
     #diagSection, #valSection{width:100%;padding:0;margin:0;}
 
-    /* Espaciado consistente entre toggles */
-    #diagSection > .d-flex, #valSection > .d-flex{margin-top:1rem!important;}
+    /* Espaciado consistente entre toggles - juntos con pequeño espacio */
+    #diagSection, #valSection{margin-top:0.5rem!important;}
+    #diagSection > .d-flex, #valSection > .d-flex{margin-top:0!important;}
 
     /* Todas las tiras con mismo estilo base y altura consistente */
     #strip, #stripDiag, #stripVal{
