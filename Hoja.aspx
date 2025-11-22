@@ -2371,7 +2371,7 @@
         diasTranscurridos: gt('lblDiasTranscurridos')
       };
     }
-    function openDiagPage(pageUrl) {
+    window.openDiagPage = function(pageUrl) {
       // Destruir TODOS los modales (no solo los visibles) antes de abrir diagModal
       document.querySelectorAll('.modal').forEach(function(m) {
         if (m.id === 'diagModal') return; // No destruir el que vamos a abrir
