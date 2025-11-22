@@ -2392,7 +2392,11 @@
 
       const iframe = document.getElementById('diagFrame');
       const modalEl = document.getElementById('diagModal');
-      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+      // Dispose existing instance if any and create fresh one
+      var existingModal = bootstrap.Modal.getInstance(modalEl);
+      if (existingModal) existingModal.dispose();
+      const modal = new bootstrap.Modal(modalEl);
 
       const d = getExpedienteData();
       const qs = new URLSearchParams(d).toString();
