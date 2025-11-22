@@ -24,98 +24,80 @@
             --ok:#10b981; --okbg:#d1fae5; --okbd:#a7f3d0; --err:#dc2626; --errbg:#fee2e2; --errbd:#fecaca;
         }
         *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:Calibri,"Segoe UI",Roboto,Arial,sans-serif;background:linear-gradient(135deg,var(--nav-bg),#064e3b)}
-        .wrap{min-height:100%;display:grid;place-items:center;padding:20px}
-        .card{width:100%;max-width:1200px;background:var(--surface);border-radius:18px;box-shadow:0 18px 56px rgba(0,0,0,.22);overflow:hidden;animation:fadeIn .35s ease-out both}
-        .hdr{display:flex;gap:20px;align-items:center;padding:24px 32px;background:var(--primary-light);border-bottom:1px solid #d1fae5}
-        .logo{width:64px;height:64px;object-fit:contain;background:var(--surface);border-radius:12px;border:1px solid var(--border-color)}
-        .ttl{margin:0;color:var(--text-header);font-size:1.65rem;font-weight:800;letter-spacing:-.02em}
-        .sub{margin:.35rem 0 0 0;color:var(--text-muted);font-size:1rem}
-        .body{padding:32px 32px 24px;border-bottom:1px solid var(--border-color)}
-        
-        /* Layout de dos columnas */
-        .two-column-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px}
-        
+        html,body{height:100%;margin:0;font-family:Calibri,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg-main)}
+        .wrap{min-height:100%;padding:10px}
+        .card{width:100%;max-width:1400px;margin:0 auto;background:var(--surface);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.08);overflow:hidden}
+        .hdr{display:flex;gap:12px;align-items:center;padding:12px 20px;background:var(--nav-bg);color:#fff}
+        .logo{width:40px;height:40px;object-fit:contain;background:var(--surface);border-radius:8px}
+        .ttl{margin:0;color:#fff;font-size:1.2rem;font-weight:700}
+        .sub{margin:0;color:rgba(255,255,255,.7);font-size:.8rem}
+        .body{padding:16px 20px 12px}
+
+        /* Layout principal de 3 columnas */
+        .main-layout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:12px}
+
         /* Sección de formulario */
-        .form-section{background:var(--bg-main);padding:24px;border-radius:14px;border:1px solid var(--border-color);height:100%;display:flex;flex-direction:column}
-        .section-title{margin:0 0 20px 0;color:var(--text-header);font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:10px}
-        .section-title::before{content:'';width:4px;height:20px;background:var(--primary);border-radius:2px}
-        
+        .form-section{background:var(--bg-main);padding:14px;border-radius:10px;border:1px solid var(--border-color)}
+        .section-title{margin:0 0 10px 0;color:var(--text-header);font-size:.9rem;font-weight:700;padding-bottom:8px;border-bottom:2px solid var(--primary)}
+
         /* Stack de campos */
-        .fields-stack{display:flex;flex-direction:column;gap:16px;flex:1}
-        
-        .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
-        .col-6{grid-column:span 6}
-        .col-4{grid-column:span 4}
-        .col-3{grid-column:span 3}
-        .col-12{grid-column:span 12}
-        
-        .field-group{display:flex;flex-direction:column;gap:8px}
-        label{display:block;color:var(--text-body);font-weight:700;font-size:.95rem}
+        .fields-stack{display:flex;flex-direction:column;gap:8px}
+
+        .field-group{display:flex;flex-direction:column;gap:3px}
+        label{display:block;color:var(--text-body);font-weight:600;font-size:.75rem}
         .label-required::after{content:' *';color:#dc2626}
-        
-        .inp{width:100%;border:1px solid var(--border-color);border-radius:10px;padding:12px 16px;font-size:15px;outline:none;transition:all .2s;background:var(--surface)}
-        .inp:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(16,185,129,.12)}
-        .inp:hover:not(:focus){border-color:#9ca3af}
-        
-        /* Sección de permisos */
-        .permissions-stack{display:flex;flex-direction:column;gap:12px}
-        .permissions-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:4px}
-        .chip{display:flex;align-items:center;gap:10px;border:2px solid var(--border-color);border-radius:12px;padding:14px 16px;background:var(--surface);transition:all .2s;cursor:pointer}
+
+        .inp{width:100%;border:1px solid var(--border-color);border-radius:6px;padding:6px 10px;font-size:13px;outline:none;transition:all .2s;background:var(--surface)}
+        .inp:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(16,185,129,.12)}
+
+        /* Permisos inline */
+        .permissions-inline{display:flex;flex-wrap:wrap;gap:8px}
+        .chip{display:flex;align-items:center;gap:6px;border:1px solid var(--border-color);border-radius:6px;padding:6px 10px;background:var(--surface);transition:all .2s;cursor:pointer;font-size:.75rem}
         .chip:hover{border-color:var(--primary);background:var(--primary-light)}
-        .chip input[type="checkbox"]{cursor:pointer;width:18px;height:18px;accent-color:var(--primary)}
-        .chip label{margin:0;cursor:pointer;font-weight:600;color:var(--text-body)}
-        
-        .paridad-box{background:var(--surface);border:2px solid var(--border-color);border-radius:12px;padding:18px}
-        .paridad-title{font-weight:700;color:var(--text-header);margin-bottom:12px;font-size:1rem}
-        .paridad-options{display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
-        .paridad-item{display:flex;align-items:center;gap:8px}
-        .paridad-item input[type="checkbox"]{width:18px;height:18px;accent-color:var(--primary);cursor:pointer}
-        .paridad-item label{margin:0;font-weight:600;cursor:pointer}
-        .paridad-note{color:var(--text-muted);font-size:.88rem;font-style:italic;display:block}
-        
-        .btns{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
-        .btn{border:0;border-radius:10px;padding:13px 24px;font-weight:700;cursor:pointer;background:var(--primary);color:#fff;transition:all .2s ease;font-size:1rem;box-shadow:0 2px 8px rgba(16,185,129,.25)}
-        .btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(16,185,129,.35);background:var(--primary-hover)}
-        .btn:active{transform:translateY(0)}
-        .btn.sec{background:var(--nav-bg);box-shadow:0 2px 8px rgba(6,42,36,.25)}
-        .btn.sec:hover{background:#042218;box-shadow:0 4px 12px rgba(6,42,36,.35)}
-        
-        .msg{margin-bottom:20px;padding:14px 16px;border-radius:10px;border:2px solid transparent;display:none;font-weight:600}
+        .chip input[type="checkbox"]{cursor:pointer;width:14px;height:14px;accent-color:var(--primary)}
+        .chip label{margin:0;cursor:pointer;font-weight:600;color:var(--text-body);font-size:.75rem}
+
+        .paridad-box{background:var(--surface);border:1px solid var(--border-color);border-radius:8px;padding:10px}
+        .paridad-title{font-weight:700;color:var(--text-header);margin-bottom:8px;font-size:.8rem}
+        .paridad-options{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+        .paridad-item{display:flex;align-items:center;gap:4px}
+        .paridad-item input[type="checkbox"]{width:14px;height:14px;accent-color:var(--primary);cursor:pointer}
+        .paridad-item label{margin:0;font-weight:600;cursor:pointer;font-size:.75rem}
+        .paridad-note{color:var(--text-muted);font-size:.7rem;font-style:italic;margin-top:6px}
+
+        .btns{display:flex;gap:8px;justify-content:center;padding:10px 20px;background:var(--bg-main);border-top:1px solid var(--border-color)}
+        .btn{border:0;border-radius:6px;padding:8px 16px;font-weight:700;cursor:pointer;background:var(--primary);color:#fff;transition:all .2s ease;font-size:.85rem}
+        .btn:hover{background:var(--primary-hover)}
+        .btn.sec{background:var(--nav-bg)}
+        .btn.sec:hover{background:#042218}
+
+        .msg{margin-bottom:12px;padding:8px 12px;border-radius:6px;border:1px solid transparent;display:none;font-weight:600;font-size:.85rem}
         .msg.show{display:block}
         .msg.ok{background:var(--okbg);border-color:var(--okbd);color:var(--ok)}
         .msg.err{background:var(--errbg);border-color:var(--errbd);color:var(--err)}
-        
-        @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-        /* Tabla mejorada */
-        .list{padding:32px 32px 28px}
-        .list-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-        .list-title{margin:0;color:var(--text-header);font-size:1.35rem;font-weight:800}
-        .tbl{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border-color);border-radius:12px;overflow:hidden}
-        .tbl th,.tbl td{padding:12px 16px;text-align:left;font-size:14px}
-        .tbl th{background:var(--bg-main);color:var(--text-header);font-weight:700;border-bottom:2px solid var(--border-color)}
-        .tbl td{border-bottom:1px solid var(--border-color)}
-        .tbl tr:last-child td{border-bottom:none}
+        /* Tabla compacta */
+        .list{padding:12px 20px 16px}
+        .list-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+        .list-title{margin:0;color:var(--text-header);font-size:1rem;font-weight:700}
+        .tbl{width:100%;border-collapse:collapse;font-size:12px}
+        .tbl th,.tbl td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--border-color)}
+        .tbl th{background:var(--nav-bg);color:#fff;font-weight:600;font-size:11px;text-transform:uppercase}
         .tbl tr:hover td{background:var(--primary-light)}
+        .tbl tr:nth-child(even) td{background:#f9fafb}
+        .tbl tr:nth-child(even):hover td{background:var(--primary-light)}
 
-        .badge{display:inline-block;padding:4px 10px;font-size:11px;font-weight:700;border-radius:999px;background:var(--primary-light);color:var(--chip-active-bg);border:1px solid #a7f3d0;text-transform:uppercase;letter-spacing:.02em}
+        .badge{display:inline-block;padding:2px 6px;font-size:9px;font-weight:700;border-radius:4px;background:var(--primary);color:#fff;text-transform:uppercase;margin-left:8px}
         .muted{color:var(--text-muted)}
 
-        @media (max-width: 1024px){
-            .two-column-layout{grid-template-columns:1fr}
-            .grid{grid-template-columns:repeat(6,1fr)}
-            .col-6,.col-4,.col-3{grid-column:span 6}
-            .col-12{grid-column:span 6}
+        @media (max-width: 1200px){
+            .main-layout{grid-template-columns:1fr 1fr}
         }
-        
+
         @media (max-width: 768px){
-            .hdr{flex-direction:column;align-items:flex-start;padding:20px 24px}
-            .body,.list{padding:24px 20px}
-            .form-section{padding:20px 16px}
-            .permissions-grid{grid-template-columns:1fr}
-            .paridad-note{margin-left:0;margin-top:8px}
-            .ttl{font-size:1.4rem}
+            .main-layout{grid-template-columns:1fr}
+            .hdr{flex-direction:column;align-items:flex-start;padding:12px 16px}
+            .body,.list{padding:12px 16px}
         }
     </style>
 </head>
@@ -126,84 +108,83 @@
             <div class="hdr">
                 <img class="logo" src="images/logo1.png" alt="Logo" />
                 <div>
-                    <h1 class="ttl">Alta de Usuarios</h1>
-                    <div class="sub">Crea nuevos usuarios y administra los existentes <span class="badge">Administración</span></div>
+                    <h1 class="ttl">Alta de Usuarios <span class="badge">Admin</span></h1>
+                    <div class="sub">Gestiona usuarios del sistema</div>
                 </div>
             </div>
 
             <div class="body">
                 <asp:Label ID="lblMsg" runat="server" CssClass="msg"></asp:Label>
-                
-                <div class="two-column-layout">
+
+                <div class="main-layout">
                     <div class="form-section">
-                        <h2 class="section-title">Información Personal</h2>
+                        <h2 class="section-title">Datos Personales</h2>
                         <div class="fields-stack">
                             <div class="field-group">
-                                <label for="txtNombre" class="label-required">Nombre completo</label>
-                                <asp:TextBox ID="txtNombre" runat="server" CssClass="inp" MaxLength="100" placeholder="Ej: Juan Pérez García" />
+                                <label for="txtNombre" class="label-required">Nombre</label>
+                                <asp:TextBox ID="txtNombre" runat="server" CssClass="inp" MaxLength="100" placeholder="Juan Pérez" />
                             </div>
-
                             <div class="field-group">
-                                <label for="txtCorreo" class="label-required">Correo electrónico</label>
+                                <label for="txtCorreo" class="label-required">Correo</label>
                                 <asp:TextBox ID="txtCorreo" runat="server" CssClass="inp text-lowercase" TextMode="Email" MaxLength="150" placeholder="usuario@empresa.com" />
                             </div>
-
                             <div class="field-group">
                                 <label for="txtTelefono">Teléfono</label>
                                 <asp:TextBox ID="txtTelefono" runat="server" CssClass="inp" MaxLength="30" placeholder="(55) 1234-5678" />
-                            </div>
-
-                            <div class="field-group">
-                                <label for="txtPassword" class="label-required">Contraseña</label>
-                                <asp:TextBox ID="txtPassword" runat="server" CssClass="inp" TextMode="Password" placeholder="Mínimo 8 caracteres" />
-                            </div>
-
-                            <div class="field-group">
-                                <label for="txtConfirm" class="label-required">Confirmar contraseña</label>
-                                <asp:TextBox ID="txtConfirm" runat="server" CssClass="inp" TextMode="Password" placeholder="Repite la contraseña" />
                             </div>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h2 class="section-title">Permisos y Configuración</h2>
+                        <h2 class="section-title">Seguridad</h2>
                         <div class="fields-stack">
-                            <div class="permissions-stack">
+                            <div class="field-group">
+                                <label for="txtPassword" class="label-required">Contraseña</label>
+                                <asp:TextBox ID="txtPassword" runat="server" CssClass="inp" TextMode="Password" placeholder="Min. 8 caracteres" />
+                            </div>
+                            <div class="field-group">
+                                <label for="txtConfirm" class="label-required">Confirmar</label>
+                                <asp:TextBox ID="txtConfirm" runat="server" CssClass="inp" TextMode="Password" placeholder="Repetir contraseña" />
+                            </div>
+                            <div class="permissions-inline">
                                 <div class="chip">
                                     <asp:CheckBox ID="chkValidador" runat="server" />
-                                    <label for="<%= chkValidador.ClientID %>">Validador (activo)</label>
+                                    <label for="<%= chkValidador.ClientID %>">Validador</label>
                                 </div>
                                 <div class="chip">
                                     <asp:CheckBox ID="chkAdmin" runat="server" />
-                                    <label for="<%= chkAdmin.ClientID %>">Administrador</label>
+                                    <label for="<%= chkAdmin.ClientID %>">Admin</label>
                                 </div>
                             </div>
+                        </div>
+                    </div>
 
+                    <div class="form-section">
+                        <h2 class="section-title">Configuración</h2>
+                        <div class="fields-stack">
                             <div class="paridad-box">
-                                <div class="paridad-title">Rol de Jefe (solo uno)</div>
+                                <div class="paridad-title">Rol de Jefe</div>
                                 <div class="paridad-options">
                                     <div class="paridad-item">
                                         <asp:CheckBox ID="chkJefeServicio" runat="server" />
-                                        <label for="<%= chkJefeServicio.ClientID %>">Jefe de Servicio</label>
+                                        <label for="<%= chkJefeServicio.ClientID %>">Servicio</label>
                                     </div>
                                     <div class="paridad-item">
                                         <asp:CheckBox ID="chkJefeRefacciones" runat="server" />
-                                        <label for="<%= chkJefeRefacciones.ClientID %>">Jefe de Refacciones</label>
+                                        <label for="<%= chkJefeRefacciones.ClientID %>">Refacc.</label>
                                     </div>
                                     <div class="paridad-item">
                                         <asp:CheckBox ID="chkJefeAdministracion" runat="server" />
-                                        <label for="<%= chkJefeAdministracion.ClientID %>">Jefe de Administración</label>
+                                        <label for="<%= chkJefeAdministracion.ClientID %>">Admin.</label>
                                     </div>
                                     <div class="paridad-item">
                                         <asp:CheckBox ID="chkJefeTaller" runat="server" />
-                                        <label for="<%= chkJefeTaller.ClientID %>">Jefe de Taller</label>
+                                        <label for="<%= chkJefeTaller.ClientID %>">Taller</label>
                                     </div>
                                 </div>
-                                <div class="paridad-note">Solo puede seleccionar un rol de jefe</div>
                             </div>
-                            
                             <div class="paridad-box">
-                                <div class="paridad-title">Configuración de Paridad</div>
+                                <div class="paridad-title">Paridad</div>
                                 <div class="paridad-options">
                                     <div class="paridad-item">
                                         <asp:CheckBox ID="chkPar" runat="server" />
@@ -214,16 +195,15 @@
                                         <label for="<%= chkNon.ClientID %>">Non</label>
                                     </div>
                                 </div>
-                                <div class="paridad-note">Las opciones son mutuamente excluyentes</div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="btns">
-                    <asp:Button ID="btnGuardar" runat="server" CssClass="btn" Text="💾 Guardar usuario" OnClick="btnGuardar_Click" />
-                    <asp:Button ID="btnLimpiar" runat="server" CssClass="btn sec" Text="🔄 Limpiar formulario" CausesValidation="false" OnClick="btnLimpiar_Click" />
-                </div>
+            <div class="btns">
+                <asp:Button ID="btnGuardar" runat="server" CssClass="btn" Text="Guardar" OnClick="btnGuardar_Click" />
+                <asp:Button ID="btnLimpiar" runat="server" CssClass="btn sec" Text="Limpiar" CausesValidation="false" OnClick="btnLimpiar_Click" />
             </div>
 
             <div class="list">
@@ -296,7 +276,6 @@
                 </asp:GridView>
             </div>
         </div>
-        <div style="text-align:center;color:#e6f0ff;font-size:.9rem;margin-top:16px;font-weight:500">© <%: DateTime.Now.Year %> Mi Empresa — Todos los derechos reservados</div>
     </div>
 
     <script type="text/javascript">
