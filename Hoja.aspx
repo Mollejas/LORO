@@ -2372,18 +2372,15 @@
       };
     }
     function openDiagPage(pageUrl) {
-      // Destruir TODOS los modales (no solo los visibles) antes de abrir diagModal
-      document.querySelectorAll('.modal').forEach(function(m) {
-        if (m.id === 'diagModal') return; // No destruir el que vamos a abrir
+      // Solo cerrar modales que tengan instancia activa de Bootstrap
+      document.querySelectorAll('.modal.show').forEach(function(m) {
+        if (m.id === 'diagModal') return;
         var instance = bootstrap.Modal.getInstance(m);
         if (instance) {
-          instance.dispose();
+          instance.hide();
         }
-        m.classList.remove('show');
-        m.style.display = '';
-        m.removeAttribute('aria-modal');
-        m.removeAttribute('role');
       });
+
       // Limpiar backdrops huérfanos
       document.querySelectorAll('.modal-backdrop').forEach(function(b) { b.remove(); });
       document.body.classList.remove('modal-open');
@@ -2392,20 +2389,22 @@
 
       const iframe = document.getElementById('diagFrame');
       const modalEl = document.getElementById('diagModal');
-      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+      if (!iframe || !modalEl) {
+        console.error('diagFrame o diagModal no encontrado');
+        return;
+      }
 
       const d = getExpedienteData();
       const qs = new URLSearchParams(d).toString();
       const finalUrl = pageUrl + '?' + qs;
 
       iframe.src = finalUrl;
-      iframe.onload = () => {
-        try {
-          iframe.contentWindow.postMessage({ type: 'EXP_PREFILL', payload: d }, window.location.origin);
-        } catch (e) { console.warn('postMessage falló:', e); }
-      };
 
+      // Usar getOrCreateInstance para evitar problemas
+      var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
       modal.show();
+
       const hid = document.getElementById('hidDiagSrc');
       if (hid) hid.value = finalUrl;
     }
