@@ -138,6 +138,30 @@
     .btn-close:hover{ opacity:1 }
 
     #autPanel .badge{ font-weight:700; }
+
+    /* ====== Toggles de autorización/estatus ====== */
+    .ht-toggle {
+      cursor: pointer;
+      display: inline-block;
+      min-width: 20px;
+      min-height: 20px;
+      line-height: 20px;
+      font-weight: bold;
+      user-select: none;
+      text-align: center;
+    }
+    .ht-toggle:hover { background: #f0f0f0; border-radius: 3px; }
+    .ht-toggle:empty::after { content: "○"; color: #ccc; }
+    .ht-si { color: #22c55e; }
+    .ht-no { color: #ef4444; }
+    .ht-status { color: #3b82f6; }
+    .col-aut { width: 70px; text-align: center; }
+    .col-est { width: 90px; text-align: center; }
+
+    /* Cuando está validado, ocultar placeholders y deshabilitar */
+    .validated .ht-toggle { cursor: default; pointer-events: none; }
+    .validated .ht-toggle:empty::after { content: ""; }
+    .validated .ht-toggle:hover { background: transparent; }
   </style>
 </head>
 <body>
@@ -164,6 +188,7 @@
     <asp:HiddenField ID="hfId" runat="server" />
     <asp:HiddenField ID="hfExpediente" runat="server" />
     <asp:HiddenField ID="hfCarpetaRel" runat="server" ClientIDMode="Static" />
+    <asp:HiddenField ID="hfValidado" runat="server" ClientIDMode="Static" Value="0" />
     <asp:TextBox ID="txtExpediente" runat="server" CssClass="d-none" />
     <asp:TextBox ID="txtSiniestro" runat="server" CssClass="d-none" />
     <asp:TextBox ID="txtVehiculo" runat="server" CssClass="d-none" />
@@ -200,7 +225,7 @@
             <div class="table-wrap mt-3">
               <asp:GridView ID="gvSust" runat="server" AutoGenerateColumns="False"
                 CssClass="table table-sm table-striped table-hover table-sticky table-fixed"
-                DataKeyNames="Id,Descripcion,NumParte,Observ1"
+                DataKeyNames="Id,Descripcion,NumParte,Observ1,Autorizado,Estatus"
                 OnRowCommand="gvSust_RowCommand"
                 OnRowDataBound="gvSust_RowDataBound"
                 OnRowEditing="gvSust_RowEditing"
@@ -236,6 +261,23 @@
                     </EditItemTemplate>
                     <ItemStyle CssClass="col-np" />
                     <HeaderStyle CssClass="col-np" />
+                  </asp:TemplateField>
+
+                  <asp:TemplateField HeaderText="Autorización">
+                    <ItemTemplate>
+                      <span class="ht-toggle ht-si" data-id='<%# Eval("Id") %>' data-field="autorizado" data-val="1"><%# IIf(Convert.ToInt32(Eval("Autorizado")) = 1, "✓", "") %></span>
+                      <span class="ht-toggle ht-no" data-id='<%# Eval("Id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("Autorizado")) = 0, "✗", "") %></span>
+                    </ItemTemplate>
+                    <ItemStyle CssClass="col-aut" /><HeaderStyle CssClass="col-aut" />
+                  </asp:TemplateField>
+
+                  <asp:TemplateField HeaderText="Estatus">
+                    <ItemTemplate>
+                      <span class="ht-toggle ht-status" data-id='<%# Eval("Id") %>' data-field="estatus" data-val="P"><%# IIf(Convert.ToString(Eval("Estatus")) = "P", "●", "") %></span>
+                      <span class="ht-toggle ht-status" data-id='<%# Eval("Id") %>' data-field="estatus" data-val="E"><%# IIf(Convert.ToString(Eval("Estatus")) = "E", "●", "") %></span>
+                      <span class="ht-toggle ht-status" data-id='<%# Eval("Id") %>' data-field="estatus" data-val="D"><%# IIf(Convert.ToString(Eval("Estatus")) = "D", "●", "") %></span>
+                    </ItemTemplate>
+                    <ItemStyle CssClass="col-est" /><HeaderStyle CssClass="col-est" />
                   </asp:TemplateField>
 
                   <asp:TemplateField>
@@ -338,7 +380,7 @@
             <div class="table-wrap mt-3">
               <asp:GridView ID="gvRep" runat="server" AutoGenerateColumns="False"
                 CssClass="table table-sm table-striped table-hover table-sticky table-fixed"
-                DataKeyNames="Id,Descripcion,NumParte,Observ1"
+                DataKeyNames="Id,Descripcion,NumParte,Observ1,Autorizado,Estatus"
                 OnRowCommand="gvRep_RowCommand"
                 OnRowDataBound="gvRep_RowDataBound"
                 OnRowEditing="gvRep_RowEditing"
@@ -371,6 +413,23 @@
                       <asp:TextBox ID="txtObserv1" runat="server" Text='<%# Bind("Observ1") %>' CssClass="form-control form-control-sm"></asp:TextBox>
                     </EditItemTemplate>
                     <ItemStyle CssClass="col-obs" /><HeaderStyle CssClass="col-obs" />
+                  </asp:TemplateField>
+
+                  <asp:TemplateField HeaderText="Autorización">
+                    <ItemTemplate>
+                      <span class="ht-toggle ht-si" data-id='<%# Eval("Id") %>' data-field="autorizado" data-val="1"><%# IIf(Convert.ToInt32(Eval("Autorizado")) = 1, "✓", "") %></span>
+                      <span class="ht-toggle ht-no" data-id='<%# Eval("Id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("Autorizado")) = 0, "✗", "") %></span>
+                    </ItemTemplate>
+                    <ItemStyle CssClass="col-aut" /><HeaderStyle CssClass="col-aut" />
+                  </asp:TemplateField>
+
+                  <asp:TemplateField HeaderText="Estatus">
+                    <ItemTemplate>
+                      <span class="ht-toggle ht-status" data-id='<%# Eval("Id") %>' data-field="estatus" data-val="P"><%# IIf(Convert.ToString(Eval("Estatus")) = "P", "●", "") %></span>
+                      <span class="ht-toggle ht-status" data-id='<%# Eval("Id") %>' data-field="estatus" data-val="E"><%# IIf(Convert.ToString(Eval("Estatus")) = "E", "●", "") %></span>
+                      <span class="ht-toggle ht-status" data-id='<%# Eval("Id") %>' data-field="estatus" data-val="D"><%# IIf(Convert.ToString(Eval("Estatus")) = "D", "●", "") %></span>
+                    </ItemTemplate>
+                    <ItemStyle CssClass="col-est" /><HeaderStyle CssClass="col-est" />
                   </asp:TemplateField>
 
                   <asp:TemplateField>
@@ -1155,6 +1214,63 @@
       dragging = false;
       zoomImage.style.cursor = scale > 1 ? 'move' : 'grab';
     }
+  });
+})();
+</script>
+
+<!-- ===== TOGGLE AUTORIZACIÓN/ESTATUS ===== -->
+<script>
+(function(){
+  // Check validation state on load
+  function checkValidationState() {
+    const validado = document.getElementById('hfValidado');
+    if (validado && validado.value === '1') {
+      document.querySelectorAll('.table-wrap').forEach(el => el.classList.add('validated'));
+    }
+  }
+  window.addEventListener('load', checkValidationState);
+
+  // Toggle click handler
+  document.addEventListener('click', function(e) {
+    const toggle = e.target.closest('.ht-toggle');
+    if (!toggle) return;
+
+    // Check if validated (disabled)
+    const tableWrap = toggle.closest('.table-wrap');
+    if (tableWrap && tableWrap.classList.contains('validated')) return;
+
+    const id = toggle.dataset.id;
+    const field = toggle.dataset.field;
+    const val = toggle.dataset.val;
+
+    const row = toggle.closest('tr');
+    if (!row) return;
+
+    // Update UI immediately
+    if (field === 'autorizado') {
+      const siSpan = row.querySelector('.ht-si');
+      const noSpan = row.querySelector('.ht-no');
+      if (val === '1') {
+        siSpan.textContent = '✓';
+        noSpan.textContent = '';
+      } else {
+        siSpan.textContent = '';
+        noSpan.textContent = '✗';
+      }
+    } else if (field === 'estatus') {
+      const statusSpans = row.querySelectorAll('.ht-status');
+      statusSpans.forEach(span => {
+        span.textContent = span.dataset.val === val ? '●' : '';
+      });
+    }
+
+    // Save to database
+    fetch('<%= ResolveUrl("~/UpdateRefaccion.ashx") %>?id=' + id + '&field=' + field + '&val=' + val)
+      .then(r => r.json())
+      .then(data => {
+        if (!data.ok) console.error('Error al guardar:', data.error);
+      })
+      .catch(err => console.error('Error:', err));
   });
 })();
 </script>
