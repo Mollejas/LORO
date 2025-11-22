@@ -143,6 +143,7 @@
     .icon-btn.compacto i{font-size:18px;}
     .icon-btn.compacto:hover{background:var(--brand-600);color:#fff;border-color:var(--brand-700);transform:translateY(-1px);}
     .icon-btn.compacto.disabled,.icon-btn.compacto[disabled]{pointer-events:none;opacity:.45;}
+    .icon-btn.compacto.soft-disabled{opacity:.5;}
     .icon-row.inv.compacto{display:grid!important;grid-template-columns:repeat(2,36px);grid-auto-rows:36px;gap:8px 10px;justify-content:center;align-content:center;}
     @media (min-width: 992px){.icon-row.inv.compacto{grid-template-columns:repeat(4,36px);}}
     .icon-row.inv.compacto .icon-btn{width:36px;height:36px;}
@@ -520,11 +521,6 @@
 .ht-si { color: #16a34a; } /* verde */
 .ht-no { color: #dc2626; } /* rojo */
 .ht-status { color: #2563eb; } /* azul */
-
-/* Cuando está validado, ocultar placeholders y deshabilitar */
-.ht-validated .ht-toggle { cursor: default; pointer-events: none; }
-.ht-validated .ht-toggle:empty::after { content: ""; }
-.ht-validated .ht-toggle:hover { background: transparent; }
 
 </style>
 
@@ -1448,12 +1444,8 @@
           </div>
 
           <!-- GridViews de Mecánica -->
-          <div class="card border-primary mb-4">
-            <div class="card-header bg-primary text-white">
-              <h6 class="mb-0"><i class="bi bi-wrench"></i> Mecánica</h6>
-            </div>
-            <div class="card-body">
-              <div class="row">
+          <h6 class="fw-bold text-primary mb-2"><i class="bi bi-wrench"></i> Mecánica</h6>
+          <div class="row mb-4">
             <div class="col-lg-6">
               <h6 class="text-muted">Reparación</h6>
               <asp:GridView ID="gvMecReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
@@ -1503,17 +1495,12 @@
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
-              </div>
             </div>
           </div>
 
           <!-- GridViews de Hojalatería -->
-          <div class="card border-warning mb-4">
-            <div class="card-header bg-warning text-dark">
-              <h6 class="mb-0"><i class="bi bi-tools"></i> Hojalatería</h6>
-            </div>
-            <div class="card-body">
-              <div class="row">
+          <h6 class="fw-bold text-warning mb-2"><i class="bi bi-tools"></i> Hojalatería</h6>
+          <div class="row">
             <div class="col-lg-6">
               <h6 class="text-muted">Reparación</h6>
               <asp:GridView ID="gvHojReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
@@ -1563,62 +1550,6 @@
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
-              </div>
-            </div>
-          </div>
-          </div>
-
-          <!-- Sección de Validaciones -->
-          <hr class="my-4" />
-          <h6 class="fw-bold text-success mb-3"><i class="bi bi-shield-check"></i> Validaciones</h6>
-          <asp:HiddenField ID="hfHTValidado" runat="server" ClientIDMode="Static" Value="0" />
-          <div class="row g-3">
-            <div class="col-md-4">
-              <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                  <div class="mb-2 fw-bold">Validación 1</div>
-                  <asp:DropDownList ID="ddlValRef1" runat="server" CssClass="form-select"></asp:DropDownList>
-                  <asp:TextBox ID="txtPassValRef1" runat="server" CssClass="form-control mt-2" TextMode="Password" placeholder="Contraseña" />
-                  <div class="d-grid mt-2">
-                    <asp:Button ID="btnValidarRef1" runat="server" CssClass="btn btn-success" Text="Validar" UseSubmitBehavior="false" OnClick="btnValidarRef1_Click" />
-                  </div>
-                  <div class="mt-2">
-                    <asp:Literal ID="litValRef1" runat="server" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                  <div class="mb-2 fw-bold">Validación 2</div>
-                  <asp:DropDownList ID="ddlValRef2" runat="server" CssClass="form-select"></asp:DropDownList>
-                  <asp:TextBox ID="txtPassValRef2" runat="server" CssClass="form-control mt-2" TextMode="Password" placeholder="Contraseña" />
-                  <div class="d-grid mt-2">
-                    <asp:Button ID="btnValidarRef2" runat="server" CssClass="btn btn-success" Text="Validar" UseSubmitBehavior="false" OnClick="btnValidarRef2_Click" />
-                  </div>
-                  <div class="mt-2">
-                    <asp:Literal ID="litValRef2" runat="server" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                  <div class="mb-2 fw-bold">Validación 3</div>
-                  <asp:DropDownList ID="ddlValRef3" runat="server" CssClass="form-select"></asp:DropDownList>
-                  <asp:TextBox ID="txtPassValRef3" runat="server" CssClass="form-control mt-2" TextMode="Password" placeholder="Contraseña" />
-                  <div class="d-grid mt-2">
-                    <asp:Button ID="btnValidarRef3" runat="server" CssClass="btn btn-success" Text="Validar" UseSubmitBehavior="false" OnClick="btnValidarRef3_Click" />
-                  </div>
-                  <div class="mt-2">
-                    <asp:Literal ID="litValRef3" runat="server" />
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -2372,15 +2303,18 @@
       };
     }
     function openDiagPage(pageUrl) {
-      // Solo cerrar modales que tengan instancia activa de Bootstrap
-      document.querySelectorAll('.modal.show').forEach(function(m) {
-        if (m.id === 'diagModal') return;
+      // Destruir TODOS los modales (no solo los visibles) antes de abrir diagModal
+      document.querySelectorAll('.modal').forEach(function(m) {
+        if (m.id === 'diagModal') return; // No destruir el que vamos a abrir
         var instance = bootstrap.Modal.getInstance(m);
         if (instance) {
-          instance.hide();
+          instance.dispose();
         }
+        m.classList.remove('show');
+        m.style.display = '';
+        m.removeAttribute('aria-modal');
+        m.removeAttribute('role');
       });
-
       // Limpiar backdrops huérfanos
       document.querySelectorAll('.modal-backdrop').forEach(function(b) { b.remove(); });
       document.body.classList.remove('modal-open');
@@ -2389,22 +2323,20 @@
 
       const iframe = document.getElementById('diagFrame');
       const modalEl = document.getElementById('diagModal');
-
-      if (!iframe || !modalEl) {
-        console.error('diagFrame o diagModal no encontrado');
-        return;
-      }
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
 
       const d = getExpedienteData();
       const qs = new URLSearchParams(d).toString();
       const finalUrl = pageUrl + '?' + qs;
 
       iframe.src = finalUrl;
+      iframe.onload = () => {
+        try {
+          iframe.contentWindow.postMessage({ type: 'EXP_PREFILL', payload: d }, window.location.origin);
+        } catch (e) { console.warn('postMessage falló:', e); }
+      };
 
-      // Usar getOrCreateInstance para evitar problemas
-      var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
       modal.show();
-
       const hid = document.getElementById('hidDiagSrc');
       if (hid) hid.value = finalUrl;
     }
@@ -3169,12 +3101,14 @@
             function setFlagUI(flagId, iconId, checked) {
                 const flag = document.getElementById(flagId);
                 const ico = document.getElementById(iconId);
-                if (!flag || !ico) return;
+                const txt = flag?.querySelector('.state');
+                if (!flag || !ico || !txt) return;
 
                 flag.classList.toggle('on', !!checked);
                 flag.classList.toggle('off', !checked);
                 ico.classList.toggle('bi-toggle-on', !!checked);
                 ico.classList.toggle('bi-toggle-off', !checked);
+                txt.textContent = checked ? 'Habilitado' : 'Deshabilitado';
             }
 
             function applyDiagGateUI() {
@@ -3183,11 +3117,17 @@
                 setFlagUI('flagMec', 'icoMec', !!mec);
                 setFlagUI('flagHoja', 'icoHoja', !!hoja);
 
-                // TEMPORALMENTE DESHABILITADO: No bloquear los botones
-                // const lnkM = document.querySelector('a#<%= btnDiagnosticoMecanica.ClientID %>');
-                // const lnkH = document.querySelector('a#<%= btnDiagnosticoHojalateria.ClientID %>');
-                // if(lnkM) lnkM.classList.toggle('disabled', !mec);
-                // if(lnkH) lnkH.classList.toggle('disabled', !hoja);
+                // Deja clickeables los accesos a diagnóstico; solo atenuamos visualmente
+                const lnkM = document.querySelector('a#<%= btnDiagnosticoMecanica.ClientID %>');
+                const lnkH = document.querySelector('a#<%= btnDiagnosticoHojalateria.ClientID %>');
+                if(lnkM){
+                    lnkM.classList.toggle('soft-disabled', !mec);
+                    lnkM.removeAttribute('aria-disabled');
+                }
+                if(lnkH){
+                    lnkH.classList.toggle('soft-disabled', !hoja);
+                    lnkH.removeAttribute('aria-disabled');
+                }
 
                 // Actualizar estado del botón PROCESO DE DIAGNOSTICO y el contenedor
                 const btnDiag = document.getElementById('btnToggleStripDiag');
@@ -3336,69 +3276,62 @@
    </script>
 
    <script>
-   // Check validation state and apply class
-   function checkHTValidationState() {
-       const validado = document.getElementById('hfHTValidado');
-       const modalBody = document.querySelector('#modalHojaTrabajo .modal-body');
-       if (validado && modalBody) {
-           if (validado.value === '1') {
-               modalBody.classList.add('ht-validated');
-           } else {
-               modalBody.classList.remove('ht-validated');
-           }
-       }
-   }
-
-   // Check on page load and when modal shows
-   window.addEventListener('load', checkHTValidationState);
-   document.getElementById('modalHojaTrabajo')?.addEventListener('shown.bs.modal', checkHTValidationState);
-
-   // Toggle handlers para Hoja de Trabajo
-   document.addEventListener('click', function(e) {
-       const toggle = e.target.closest('.ht-toggle');
-       if (!toggle) return;
-
-       // Check if validated (disabled)
-       const modalBody = toggle.closest('.modal-body');
-       if (modalBody && modalBody.classList.contains('ht-validated')) return;
-
-       const id = toggle.dataset.id;
-       const field = toggle.dataset.field;
-       const val = toggle.dataset.val;
-
-       const row = toggle.closest('tr');
-       if (!row) return;
-
-       if (field === 'autorizado') {
-           // Toggle Si/No - mutuamente excluyente
-           const siSpan = row.querySelector('.ht-si');
-           const noSpan = row.querySelector('.ht-no');
-
-           if (val === '1') {
-               siSpan.textContent = '✓';
-               noSpan.textContent = '';
-           } else {
-               siSpan.textContent = '';
-               noSpan.textContent = '✗';
-           }
-       } else if (field === 'estatus') {
-           // Toggle P/E/D - mutuamente excluyente
-           const statusSpans = row.querySelectorAll('.ht-status');
-           statusSpans.forEach(span => {
-               span.textContent = span.dataset.val === val ? '●' : '';
-           });
-       }
-
-       // Guardar en la base de datos
-       fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val)
-           .then(r => r.json())
-           .then(data => {
-               if (!data.ok) {
-                   console.error('Error al guardar:', data.error);
+       // Toggle handlers para Hoja de Trabajo
+       document.addEventListener('click', function (e) {
+           const toggle = e.target.closest('.ht-toggle');
+           if (!toggle) {
+               // Debug: ver si click llega pero no encuentra toggle
+               if (e.target.closest('#modalHojaTrabajo')) {
+                   console.log('Click en modal pero no en toggle:', e.target);
                }
-           })
-           .catch(err => console.error('Error:', err));
-   });
+               return;
+           }
+
+           console.log('Toggle encontrado:', toggle);
+
+           const id = toggle.dataset.id;
+           const field = toggle.dataset.field;
+           const val = toggle.dataset.val;
+
+           console.log('Datos:', { id, field, val });
+
+           // Encontrar la fila
+           const row = toggle.closest('tr');
+           if (!row) {
+               console.log('No se encontró la fila');
+               return;
+           }
+
+           if (field === 'autorizado') {
+               // Toggle Si/No - mutuamente excluyente
+               const siSpan = row.querySelector('.ht-si');
+               const noSpan = row.querySelector('.ht-no');
+
+               if (val === '1') {
+                   siSpan.textContent = '✓';
+                   noSpan.textContent = '';
+               } else {
+                   siSpan.textContent = '';
+                   noSpan.textContent = '✗';
+               }
+           } else if (field === 'estatus') {
+               // Toggle P/E/D - mutuamente excluyente
+               const statusSpans = row.querySelectorAll('.ht-status');
+               statusSpans.forEach(span => {
+                   span.textContent = span.dataset.val === val ? '●' : '';
+               });
+           }
+
+           // Guardar en la base de datos
+           fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val)
+               .then(r => r.json())
+               .then(data => {
+                   if (!data.ok) {
+                       console.error('Error al guardar:', data.error);
+                   }
+               })
+               .catch(err => console.error('Error:', err));
+       });
    </script>
 
 

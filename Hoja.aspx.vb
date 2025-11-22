@@ -436,6 +436,19 @@ END"
     Private _marca As String = "", _version As String = "", _anio As String = "", _placas As String = ""
     Private _telefono As String = "", _correo As String = "", _siniestro As String = ""
     Private lblInvGruaInfo As Object
+    Private ddlValRef1 As Object
+    Private txtPassValRef1 As TextBox
+    Private litValRef1 As Literal
+    Private ddlValRef2 As DropDownList
+    Private txtPassValRef2 As TextBox
+    Private litValRef2 As Literal
+    Private ddlValRef3 As DropDownList
+    Private txtPassValRef3 As TextBox
+    Private litValRef3 As Literal
+    Private btnValidarRef3 As Object
+    Private hfHTValidado As Object
+    Private ReadOnly btnValidarRef1 As Object
+    Private ReadOnly btnValidarRef2 As Object
 
     Private Sub CargarAdmision(id As Integer)
         Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
@@ -2902,5 +2915,4 @@ Paint:
     End Function
 
 End Class
-
 
