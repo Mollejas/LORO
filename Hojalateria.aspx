@@ -1,4 +1,4 @@
-﻿<%@ Page Language="VB" AutoEventWireup="false" CodeBehind="Hojalateria.aspx.vb" Inherits="DAYTONAMIO.Hojalateria" MaintainScrollPositionOnPostBack="true" %><!DOCTYPE html>
+<%@ Page Language="VB" AutoEventWireup="false" CodeBehind="Hojalateria.aspx.vb" Inherits="DAYTONAMIO.Hojalateria" MaintainScrollPositionOnPostBack="true" %><!DOCTYPE html>
 <html lang="es">
 <head runat="server">
   <meta charset="utf-8" />
@@ -25,7 +25,9 @@
         linear-gradient(180deg, var(--neutral-050), #fff 45%, var(--neutral-050) 100%);
       color: var(--neutral-800);
     }
-    .shell{ max-width: 1400px; margin: 0 auto; }
+
+    /* === Full width === */
+    .shell{ width:100%; max-width:100%; margin:0 auto; }
 
     .hero{
       position: relative; border-radius: var(--radius-lg); padding: 18px 20px;
@@ -69,23 +71,51 @@
     }
     .btn-ghost{ background:#fff; color:var(--brand-700); border:2px solid var(--brand-600); font-weight:700; border-radius:12px; }
 
+    /* ====== Tablas compactas y con layout fijo ====== */
     .table-wrap{
       border:1px solid var(--neutral-200); border-radius: 12px; overflow:auto;
       max-height: 48vh; background:#fff;
     }
+    .table.table-sm>:not(caption)>*>*{ padding:.35rem .45rem }
+    .table td, .table th{ vertical-align:middle; }
+    .table-fixed{ table-layout: fixed; }
+
+    .col-cant{ width:60px; }
+    .col-desc{ width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .col-np{ width:160px; }
+    .col-obs{ width:170px; }
+    .col-act{ width:44px; text-align:center; }
+    .col-act i{ font-size:1rem; opacity:.9; }
+
+    .btn-icon{ --size: 32px; width: var(--size); height: var(--size); padding: 0; display:inline-flex; align-items:center; justify-content:center; border-radius: 8px; }
+    .btn-icon i{ pointer-events:none; }
+
+    /* Resaltado sutil si cumple con mín. de fotos */
+    .table tr.row-photos-ok{ box-shadow: inset 4px 0 0 #22c55e; }
+    .table tr.row-photos-ok > *{
+      background: linear-gradient(180deg, #effaf3, #e9f7ef) !important;
+      border-top: 1px solid #d9f0e1; border-bottom: 1px solid #d9f0e1; color:#0f3b26;
+    }
+
     .table-sticky thead th{
       position: sticky; top: 0; z-index: 2;
       background:linear-gradient(180deg, #fff, var(--neutral-100));
       border-bottom:2px solid var(--neutral-200) !important;
     }
-    .table.table-sm>:not(caption)>*>*{ padding:.55rem .6rem }
 
-    .ck-head{ white-space:nowrap; }
-    .btn-icon{
-      width:34px; height:34px; padding:0; display:inline-grid; place-items:center;
-      border-radius:10px; border:1px solid #e5e7eb; background:#fff;
+    /* ====== Cámara (overlay temporal) ====== */
+    .cam-ov{
+      position:fixed; inset:0; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center;
+      z-index: 20000;
     }
-    .btn-icon:hover{ background:#f8fafc; }
+    .cam-ov-inner{
+      background:#000; border-radius:16px; box-shadow: var(--shadow-lg);
+      width:min(96vw, 680px); padding:10px; display:flex; flex-direction:column; gap:10px;
+    }
+    .cam-ov video{ width:100%; max-height:60vh; border-radius:10px; background:#000; }
+    .cam-ov .row-actions{ display:flex; gap:10px; justify-content:center; }
+    .fm-thumb{ width:86px; height:86px; border:1px solid var(--neutral-200); border-radius:10px; display:grid; place-items:center; overflow:hidden; }
+    .fm-thumb img{ width:100%; height:100%; object-fit:cover; }
 
     /* Galería */
     .gal-wrap{ display:flex; flex-direction:column; gap:14px; min-height: 60vh }
@@ -109,116 +139,13 @@
 
     #autPanel .badge{ font-weight:700; }
   </style>
-  <style>
-    /* ====== EXPANDIR EN MODAL/IFRAME ====== */
-    html, body{ height:100%; }
-
-    body.embed .shell,
-    body.embed .container,
-    body.embed .container-xxl{
-      max-width: 100% !important;
-      width: 100% !important;
-      padding-left: 8px;
-      padding-right: 8px;
-    }
-
-    body.embed .row.grids{
-      height: calc(92vh - 320px);
-      min-height: 420px;
-    }
-
-    body.embed .row.g-3 > [class*="col-"]{
-      display: flex;
-      flex-direction: column;
-    }
-
-    body.embed .panel.h-100{
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
-
-    body.embed .panel-body{
-      flex: 1 1 auto;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
-
-    body.embed .table-wrap{
-      height: calc(100% - 150px);
-      max-height: none;
-      overflow: auto;
-    }
-
-    body.embed .table-sticky thead th{
-      position: sticky; top: 0; z-index: 2;
-    }
-
-    @media (max-width: 992px){
-      body.embed .row.g-3{ height: auto; }
-      body.embed .panel.h-100{ min-height: 420px; }
-      body.embed .table-wrap{ height: calc(100% - 180px); }
-    }
-
-    .hero{ padding: 12px 14px; }
-    .hero.mb-2{ margin-bottom: .5rem !important; }
-    .row.grids{ margin-top: 0 !important; }
-
-    body.embed .row.grids{
-      height: calc(92vh - 110px);
-      min-height: 420px;
-    }
-
-    .shell.container-xxl{ padding-top: .5rem !important; padding-bottom: .75rem !important; }
-
-    .panel-body{ display:flex; flex-direction:column; min-height:0; }
-    .table-wrap{ flex: 1 1 auto; max-height:none; overflow:auto; }
-
-    /* ====== Thumbs del fotosModal ====== */
-    #fmThumbs{
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      max-height: 38vh;
-      overflow: auto;
-    }
-    .fm-thumb{
-      width: 96px;
-      height: 96px;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      background: #fff;
-      display: grid;
-      place-items: center;
-      box-shadow: 0 1px 2px rgba(0,0,0,.04);
-    }
-    .fm-thumb img{
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 10px;
-    }
-
-    /* Panel compacto de Datos del expediente */
-    .panel.compact .panel-head{ padding: 8px 10px; }
-    .panel.compact .panel-head .ttl{ font-size: 1rem; margin: 0; }
-    .panel.compact .panel-body{ padding: 10px 12px; }
-    .panel.compact .row.g-3{ --bs-gutter-y: .35rem; --bs-gutter-x: .5rem; }
-    .panel.compact .input-group .input-group-text{ padding: .25rem .45rem; }
-    .panel.compact .form-control{ padding: .25rem .5rem; height: 2rem; font-size: .9rem; }
-
-    .hero{ padding: 10px 12px; }
-    .shell.container-xxl{ padding-top: .5rem !important; padding-bottom: .75rem !important; }
-  </style>
-
 </head>
 <body>
 <form id="form1" runat="server">
-  <asp:ScriptManager ID="sm1" runat="server" />
+  <asp:ScriptManager ID="sm1" runat="server" EnablePageMethods="true" />
 
-  <div class="shell container-xxl py-2">
+  <div class="shell container-fluid py-2"><!-- full width -->
+
     <!-- Hero -->
     <div class="hero mb-3">
       <div class="d-flex align-items-center gap-2">
@@ -233,42 +160,13 @@
       </div>
     </div>
 
-    <!-- Datos expediente -->
-    <div class="panel mb-2 compact">
-      <div class="panel-head">
-        <i class="bi bi-info-circle text-primary fs-5"></i>
-        <h2 class="ttl">Datos del expediente</h2>
-      </div>
-      <div class="panel-body">
-        <asp:HiddenField ID="hfId" runat="server" />
-        <asp:HiddenField ID="hfExpediente" runat="server" />
-        <asp:HiddenField ID="hfCarpetaRel" runat="server" ClientIDMode="Static" />
-
-        <div class="row g-3">
-          <div class="col-md-4">
-            <label class="label-strong mb-1">Expediente</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-folder2-open"></i></span>
-              <asp:TextBox ID="txtExpediente" runat="server" CssClass="form-control" ReadOnly="true" />
-            </div>
-          </div>
-          <div class="col-md-4">
-            <label class="label-strong mb-1">Siniestro</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-shield-check"></i></span>
-              <asp:TextBox ID="txtSiniestro" runat="server" CssClass="form-control" ReadOnly="true" />
-            </div>
-          </div>
-          <div class="col-md-4">
-            <label class="label-strong mb-1">Vehículo</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-car-front"></i></span>
-              <asp:TextBox ID="txtVehiculo" runat="server" CssClass="form-control" ReadOnly="true" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Hidden fields necesarios -->
+    <asp:HiddenField ID="hfId" runat="server" />
+    <asp:HiddenField ID="hfExpediente" runat="server" />
+    <asp:HiddenField ID="hfCarpetaRel" runat="server" ClientIDMode="Static" />
+    <asp:TextBox ID="txtExpediente" runat="server" CssClass="d-none" />
+    <asp:TextBox ID="txtSiniestro" runat="server" CssClass="d-none" />
+    <asp:TextBox ID="txtVehiculo" runat="server" CssClass="d-none" />
 
     <!-- Paneles principales (Sustitución / Reparación) -->
     <div class="row g-3">
@@ -281,13 +179,17 @@
           </div>
           <div class="panel-body">
             <div class="row g-2 align-items-end">
-              <div class="col-4 col-sm-3">
+              <div class="col-6 col-sm-2">
                 <label class="label-strong mb-1">Cantidad</label>
                 <asp:TextBox ID="txtCantSust" runat="server" CssClass="form-control qty" MaxLength="4" />
               </div>
-              <div class="col-8 col-sm-7">
+              <div class="col-12 col-sm-5">
                 <label class="label-strong mb-1">Descripción</label>
                 <asp:TextBox ID="txtDescSust" runat="server" CssClass="form-control" />
+              </div>
+              <div class="col-6 col-sm-3">
+                <label class="label-strong mb-1">Num. de parte (opcional)</label>
+                <asp:TextBox ID="txtNumParteSust" runat="server" CssClass="form-control" MaxLength="80" />
               </div>
               <div class="col-12 col-sm-2 d-grid">
                 <asp:Button ID="btnAddSust" runat="server" CssClass="btn btn-brand" Text="Guardar"
@@ -297,61 +199,107 @@
 
             <div class="table-wrap mt-3">
               <asp:GridView ID="gvSust" runat="server" AutoGenerateColumns="False"
-                CssClass="table table-sm table-striped table-hover table-sticky"
-                DataKeyNames="Id,Descripcion"
-                OnRowDataBound="gv_RowDataBound"
-                OnRowCommand="gvSust_RowCommand">
+                CssClass="table table-sm table-striped table-hover table-sticky table-fixed"
+                DataKeyNames="Id,Descripcion,NumParte,Observ1"
+                OnRowCommand="gvSust_RowCommand"
+                OnRowDataBound="gvSust_RowDataBound"
+                OnRowEditing="gvSust_RowEditing"
+                OnRowUpdating="gvSust_RowUpdating"
+                OnRowCancelingEdit="gvSust_RowCancelingEdit">
                 <Columns>
-                  <asp:BoundField DataField="Id" HeaderText="Id" ReadOnly="True" />
-                  <asp:BoundField DataField="Cantidad" HeaderText="Cant." />
-                  <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
-                  <asp:TemplateField HeaderText="Autorización" HeaderStyle-CssClass="ck-head">
+                  <asp:TemplateField HeaderText="Cant.">
                     <ItemTemplate>
-                      <asp:LinkButton ID="btnToggleAuto" runat="server"
-                        CommandName="TOGGLE_AUTO"
-                        CommandArgument='<%# Eval("Id") %>'
-                        CssClass="btn-icon" ToolTip="Cambiar autorización"
-                        CausesValidation="false" UseSubmitBehavior="false">
-                        <i id="icoAuto" runat="server" class="bi"></i>
-                      </asp:LinkButton>
+                      <asp:Label ID="lblCantidad" runat="server" Text='<%# Eval("Cantidad") %>'></asp:Label>
                     </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:TextBox ID="txtCantidad" runat="server" Text='<%# Bind("Cantidad") %>' CssClass="form-control form-control-sm" style="width:60px;"></asp:TextBox>
+                    </EditItemTemplate>
+                    <ItemStyle CssClass="col-cant" />
+                    <HeaderStyle CssClass="col-cant" />
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="Estatus">
+                  <asp:TemplateField HeaderText="Descripción">
                     <ItemTemplate>
-                      <asp:LinkButton ID="btnChecar" runat="server"
-                        CommandName="TOGGLE_CHECAR" CommandArgument='<%# Eval("Id") %>'
-                        ToolTip="Cambiar estatus" CssClass="btn-icon"
-                        CausesValidation="false" UseSubmitBehavior="false">
-                        <i class="bi bi-power"></i>
-                      </asp:LinkButton>
+                      <asp:Label ID="lblDescripcion" runat="server" Text='<%# Eval("Descripcion") %>'></asp:Label>
                     </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:TextBox ID="txtDescripcion" runat="server" Text='<%# Bind("Descripcion") %>' CssClass="form-control form-control-sm"></asp:TextBox>
+                    </EditItemTemplate>
+                    <ItemStyle CssClass="col-desc" />
+                    <HeaderStyle CssClass="col-desc" />
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="Aut">
+                  <asp:TemplateField HeaderText="Num. parte">
                     <ItemTemplate>
-                      <asp:LinkButton ID="btnAldo" runat="server"
-                        CommandName="TOGGLE_ALDO" CommandArgument='<%# Eval("Id") %>'
-                        ToolTip="Marcar" CssClass="btn-icon"
-                        CausesValidation="false" UseSubmitBehavior="false">
-                        <i class="bi bi-person-check"></i>
-                      </asp:LinkButton>
+                      <asp:Label ID="lblNumParte" runat="server" Text='<%# Eval("NumParte") %>'></asp:Label>
                     </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:TextBox ID="txtNumParte" runat="server" Text='<%# Bind("NumParte") %>' CssClass="form-control form-control-sm"></asp:TextBox>
+                    </EditItemTemplate>
+                    <ItemStyle CssClass="col-np" />
+                    <HeaderStyle CssClass="col-np" />
                   </asp:TemplateField>
-                  <asp:BoundField DataField="AldoDateTime" HeaderText="Fecha" DataFormatString="{0:yyyy-MM-dd HH:mm}" HtmlEncode="False" />
-                  <asp:TemplateField HeaderText="Fotos">
+
+                  <asp:TemplateField>
+                    <HeaderTemplate><i class="bi bi-cloud-upload" title="Subir fotos"></i></HeaderTemplate>
                     <ItemTemplate>
-                      <button type="button" class="btn btn-outline-secondary btn-sm btn-fotos"
+                      <button type="button" class="btn btn-outline-secondary btn-sm btn-icon btn-fotos"
+                              title="Subir fotos" aria-label="Subir fotos"
                               data-ref-id='<%# Eval("Id") %>' data-descripcion='<%# Eval("Descripcion") %>'
                               data-bs-toggle="modal" data-bs-target="#fotosModal">
-                        <i class="bi bi-cloud-upload"></i> Fotos
+                        <i class="bi bi-cloud-upload"></i>
                       </button>
                     </ItemTemplate>
+                    <ItemStyle CssClass="col-act" /><HeaderStyle CssClass="col-act" />
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="Ver">
+
+                  <asp:TemplateField>
+                    <HeaderTemplate><i class="bi bi-images" title="Ver galería"></i></HeaderTemplate>
                     <ItemTemplate>
-                      <asp:Button runat="server" ID="btnVerSust" Text="Ver"
-                        CommandName="VER_FOTOS" CommandArgument="<%# Container.DataItemIndex %>"
-                        CssClass="btn btn-outline-primary btn-sm" CausesValidation="false" UseSubmitBehavior="false" />
+                      <asp:LinkButton runat="server" ID="btnVerSust" CommandName="VER_FOTOS"
+                        CommandArgument="<%# Container.DataItemIndex %>"
+                        CssClass="btn btn-outline-primary btn-sm btn-icon"
+                        CausesValidation="false" UseSubmitBehavior="false" ToolTip="Ver galería" aria-label="Ver galería">
+                        <i class="bi bi-images"></i>
+                      </asp:LinkButton>
                     </ItemTemplate>
+                    <ItemStyle CssClass="col-act" /><HeaderStyle CssClass="col-act" />
+                  </asp:TemplateField>
+
+                  <asp:TemplateField>
+                    <HeaderTemplate><i class="bi bi-pencil-square" title="Modificar"></i></HeaderTemplate>
+                    <ItemTemplate>
+                      <asp:LinkButton ID="btnEditSust" runat="server" CommandName="Edit"
+                        CssClass="btn btn-outline-secondary btn-sm btn-icon"
+                        CausesValidation="false" ToolTip="Modificar" aria-label="Modificar">
+                        <i class="bi bi-pencil-square"></i>
+                      </asp:LinkButton>
+                    </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:LinkButton ID="btnUpdateSust" runat="server" CommandName="Update"
+                        CssClass="btn btn-outline-success btn-sm btn-icon"
+                        CausesValidation="false" ToolTip="Guardar" aria-label="Guardar">
+                        <i class="bi bi-check-lg"></i>
+                      </asp:LinkButton>
+                      <asp:LinkButton ID="btnCancelSust" runat="server" CommandName="Cancel"
+                        CssClass="btn btn-outline-secondary btn-sm btn-icon"
+                        CausesValidation="false" ToolTip="Cancelar" aria-label="Cancelar">
+                        <i class="bi bi-x-lg"></i>
+                      </asp:LinkButton>
+                    </EditItemTemplate>
+                    <ItemStyle CssClass="col-act" /><HeaderStyle CssClass="col-act" />
+                  </asp:TemplateField>
+
+                  <asp:TemplateField HeaderText="Eliminar" Visible="False">
+                    <HeaderTemplate><i class="bi bi-trash" title="Eliminar"></i></HeaderTemplate>
+                    <ItemTemplate>
+                      <asp:LinkButton ID="btnDelSust" runat="server"
+                        CommandName="DELETE_ROW" CommandArgument='<%# Eval("Id") %>'
+                        CssClass="btn btn-outline-danger btn-sm btn-icon"
+                        OnClientClick='return confirm("¿Eliminar la refacción seleccionada?");'
+                        CausesValidation="false" UseSubmitBehavior="false" ToolTip="Eliminar" aria-label="Eliminar">
+                        <i class="bi bi-trash"></i>
+                      </asp:LinkButton>
+                    </ItemTemplate>
+                    <ItemStyle CssClass="col-act" /><HeaderStyle CssClass="col-act" />
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -369,13 +317,17 @@
           </div>
           <div class="panel-body">
             <div class="row g-2 align-items-end">
-              <div class="col-4 col-sm-3">
+              <div class="col-6 col-sm-2">
                 <label class="label-strong mb-1">Cantidad</label>
                 <asp:TextBox ID="txtCantRep" runat="server" CssClass="form-control qty" MaxLength="4" />
               </div>
-              <div class="col-8 col-sm-7">
+              <div class="col-12 col-sm-5">
                 <label class="label-strong mb-1">Descripción</label>
                 <asp:TextBox ID="txtDescRep" runat="server" CssClass="form-control" />
+              </div>
+              <div class="col-12 col-sm-3">
+                <label class="label-strong mb-1">Observaciones (opcional)</label>
+                <asp:TextBox ID="txtObsRep" runat="server" CssClass="form-control" MaxLength="250" />
               </div>
               <div class="col-12 col-sm-2 d-grid">
                 <asp:Button ID="btnAddRep" runat="server" CssClass="btn btn-brand" Text="Guardar"
@@ -385,61 +337,104 @@
 
             <div class="table-wrap mt-3">
               <asp:GridView ID="gvRep" runat="server" AutoGenerateColumns="False"
-                CssClass="table table-sm table-striped table-hover table-sticky"
-                DataKeyNames="Id,Descripcion"
-                OnRowDataBound="gv_RowDataBound"
-                OnRowCommand="gvRep_RowCommand">
+                CssClass="table table-sm table-striped table-hover table-sticky table-fixed"
+                DataKeyNames="Id,Descripcion,NumParte,Observ1"
+                OnRowCommand="gvRep_RowCommand"
+                OnRowDataBound="gvRep_RowDataBound"
+                OnRowEditing="gvRep_RowEditing"
+                OnRowUpdating="gvRep_RowUpdating"
+                OnRowCancelingEdit="gvRep_RowCancelingEdit">
                 <Columns>
-                  <asp:BoundField DataField="Id" HeaderText="Id" ReadOnly="True" />
-                  <asp:BoundField DataField="Cantidad" HeaderText="Cant." />
-                  <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
-                  <asp:TemplateField HeaderText="Autorización" HeaderStyle-CssClass="ck-head">
+                  <asp:TemplateField HeaderText="Cant.">
                     <ItemTemplate>
-                      <asp:LinkButton ID="btnToggleAuto" runat="server"
-                        CommandName="TOGGLE_AUTO"
-                        CommandArgument='<%# Eval("Id") %>'
-                        CssClass="btn-icon" ToolTip="Cambiar autorización"
-                        CausesValidation="false" UseSubmitBehavior="false">
-                        <i id="icoAuto" runat="server" class="bi"></i>
-                      </asp:LinkButton>
+                      <asp:Label ID="lblCantidad" runat="server" Text='<%# Eval("Cantidad") %>'></asp:Label>
                     </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:TextBox ID="txtCantidad" runat="server" Text='<%# Bind("Cantidad") %>' CssClass="form-control form-control-sm" style="width:60px;"></asp:TextBox>
+                    </EditItemTemplate>
+                    <ItemStyle CssClass="col-cant" /><HeaderStyle CssClass="col-cant" />
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="Estatus">
+                  <asp:TemplateField HeaderText="Descripción">
                     <ItemTemplate>
-                      <asp:LinkButton ID="btnChecar" runat="server"
-                        CommandName="TOGGLE_CHECAR" CommandArgument='<%# Eval("Id") %>'
-                        ToolTip="Cambiar estatus" CssClass="btn-icon"
-                        CausesValidation="false" UseSubmitBehavior="false">
-                        <i class="bi bi-power"></i>
-                      </asp:LinkButton>
+                      <asp:Label ID="lblDescripcion" runat="server" Text='<%# Eval("Descripcion") %>'></asp:Label>
                     </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:TextBox ID="txtDescripcion" runat="server" Text='<%# Bind("Descripcion") %>' CssClass="form-control form-control-sm"></asp:TextBox>
+                    </EditItemTemplate>
+                    <ItemStyle CssClass="col-desc" /><HeaderStyle CssClass="col-desc" />
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="Aut">
+                  <asp:TemplateField HeaderText="Observaciones">
                     <ItemTemplate>
-                      <asp:LinkButton ID="btnAldo" runat="server"
-                        CommandName="TOGGLE_ALDO" CommandArgument='<%# Eval("Id") %>'
-                        ToolTip="Marcar Aldo" CssClass="btn-icon"
-                        CausesValidation="false" UseSubmitBehavior="false">
-                        <i class="bi bi-person-check"></i>
-                      </asp:LinkButton>
+                      <asp:Label ID="lblObserv1" runat="server" Text='<%# Eval("Observ1") %>'></asp:Label>
                     </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:TextBox ID="txtObserv1" runat="server" Text='<%# Bind("Observ1") %>' CssClass="form-control form-control-sm"></asp:TextBox>
+                    </EditItemTemplate>
+                    <ItemStyle CssClass="col-obs" /><HeaderStyle CssClass="col-obs" />
                   </asp:TemplateField>
-                  <asp:BoundField DataField="AldoDateTime" HeaderText="Fecha" DataFormatString="{0:yyyy-MM-dd HH:mm}" HtmlEncode="False" />
-                  <asp:TemplateField HeaderText="Fotos">
+
+                  <asp:TemplateField>
+                    <HeaderTemplate><i class="bi bi-cloud-upload" title="Subir fotos"></i></HeaderTemplate>
                     <ItemTemplate>
-                      <button type="button" class="btn btn-outline-secondary btn-sm btn-fotos"
+                      <button type="button" class="btn btn-outline-secondary btn-sm btn-icon btn-fotos"
+                              title="Subir fotos" aria-label="Subir fotos"
                               data-ref-id='<%# Eval("Id") %>' data-descripcion='<%# Eval("Descripcion") %>'
                               data-bs-toggle="modal" data-bs-target="#fotosModal">
-                        <i class="bi bi-cloud-upload"></i> Fotos
+                        <i class="bi bi-cloud-upload"></i>
                       </button>
                     </ItemTemplate>
+                    <ItemStyle CssClass="col-act" /><HeaderStyle CssClass="col-act" />
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="Ver">
+
+                  <asp:TemplateField>
+                    <HeaderTemplate><i class="bi bi-images" title="Ver galería"></i></HeaderTemplate>
                     <ItemTemplate>
-                      <asp:Button runat="server" ID="btnVerRep" Text="Ver"
-                        CommandName="VER_FOTOS" CommandArgument="<%# Container.DataItemIndex %>"
-                        CssClass="btn btn-outline-primary btn-sm" CausesValidation="false" UseSubmitBehavior="false" />
+                      <asp:LinkButton runat="server" ID="btnVerRep" CommandName="VER_FOTOS"
+                        CommandArgument="<%# Container.DataItemIndex %>"
+                        CssClass="btn btn-outline-primary btn-sm btn-icon"
+                        CausesValidation="false" UseSubmitBehavior="false" ToolTip="Ver galería" aria-label="Ver galería">
+                        <i class="bi bi-images"></i>
+                      </asp:LinkButton>
                     </ItemTemplate>
+                    <ItemStyle CssClass="col-act" /><HeaderStyle CssClass="col-act" />
+                  </asp:TemplateField>
+
+                  <asp:TemplateField>
+                    <HeaderTemplate><i class="bi bi-pencil-square" title="Modificar"></i></HeaderTemplate>
+                    <ItemTemplate>
+                      <asp:LinkButton ID="btnEditRep" runat="server" CommandName="Edit"
+                        CssClass="btn btn-outline-secondary btn-sm btn-icon"
+                        CausesValidation="false" ToolTip="Modificar" aria-label="Modificar">
+                        <i class="bi bi-pencil-square"></i>
+                      </asp:LinkButton>
+                    </ItemTemplate>
+                    <EditItemTemplate>
+                      <asp:LinkButton ID="btnUpdateRep" runat="server" CommandName="Update"
+                        CssClass="btn btn-outline-success btn-sm btn-icon"
+                        CausesValidation="false" ToolTip="Guardar" aria-label="Guardar">
+                        <i class="bi bi-check-lg"></i>
+                      </asp:LinkButton>
+                      <asp:LinkButton ID="btnCancelRep" runat="server" CommandName="Cancel"
+                        CssClass="btn btn-outline-secondary btn-sm btn-icon"
+                        CausesValidation="false" ToolTip="Cancelar" aria-label="Cancelar">
+                        <i class="bi bi-x-lg"></i>
+                      </asp:LinkButton>
+                    </EditItemTemplate>
+                    <ItemStyle CssClass="col-act" /><HeaderStyle CssClass="col-act" />
+                  </asp:TemplateField>
+
+                  <asp:TemplateField HeaderText="Eliminar" Visible="False">
+                    <HeaderTemplate><i class="bi bi-trash" title="Eliminar"></i></HeaderTemplate>
+                    <ItemTemplate>
+                      <asp:LinkButton ID="btnDelRep" runat="server"
+                        CommandName="DELETE_ROW" CommandArgument='<%# Eval("Id") %>'
+                        CssClass="btn btn-outline-danger btn-sm btn-icon"
+                        OnClientClick='return confirm("¿Eliminar la reparación seleccionada?");'
+                        CausesValidation="false" UseSubmitBehavior="false" ToolTip="Eliminar" aria-label="Eliminar">
+                        <i class="bi bi-trash"></i>
+                      </asp:LinkButton>
+                    </ItemTemplate>
+                    <ItemStyle CssClass="col-act" /><HeaderStyle CssClass="col-act" />
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -449,7 +444,14 @@
       </div>
     </div>
 
-    <!-- === Vistos buenos (autorizaciones) === -->
+    <!-- Botón descargar PDF -->
+    <div class="text-center my-3">
+      <asp:Button ID="btnDescargarPDF" runat="server" CssClass="btn btn-brand btn-lg"
+                  Text="Descargar Hoja" OnClick="btnDescargarPDF_Click" UseSubmitBehavior="false">
+      </asp:Button>
+    </div>
+
+    <!-- Autorizaciones -->
     <div id="autPanel" class="panel mt-3">
       <div class="panel-head">
         <i class="bi bi-person-badge text-primary fs-5"></i>
@@ -457,52 +459,49 @@
       </div>
       <div class="panel-body">
         <div class="row g-3">
-          <!-- Aut 1 -->
           <div class="col-md-4">
             <div class="card border-0 shadow-sm">
               <div class="card-body">
                 <div class="mb-2 fw-bold">Autorización 1</div>
-                <asp:DropDownList ID="ddlAutMec1" runat="server" CssClass="form-select"></asp:DropDownList>
-                <asp:TextBox ID="txtPassMec1" runat="server" CssClass="form-control mt-2" TextMode="Password" placeholder="Contraseña" />
+                <asp:DropDownList ID="ddlAutHoj1" runat="server" CssClass="form-select"></asp:DropDownList>
+                <asp:TextBox ID="txtPassHoj1" runat="server" CssClass="form-control mt-2" TextMode="Password" placeholder="Contraseña" />
                 <div class="d-grid mt-2">
-                  <asp:Button ID="btnAutorizarMec1" runat="server" CssClass="btn btn-brand" Text="Autorizar" UseSubmitBehavior="false" />
+                  <asp:Button ID="btnAutorizarHoj1" runat="server" CssClass="btn btn-brand" Text="Autorizar" UseSubmitBehavior="false" />
                 </div>
                 <div class="mt-2">
-                  <asp:Literal ID="litAutMec1" runat="server" />
+                  <asp:Literal ID="litAutHoj1" runat="server" />
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Aut 2 -->
           <div class="col-md-4">
             <div class="card border-0 shadow-sm">
               <div class="card-body">
                 <div class="mb-2 fw-bold">Autorización 2</div>
-                <asp:DropDownList ID="ddlAutMec2" runat="server" CssClass="form-select"></asp:DropDownList>
-                <asp:TextBox ID="txtPassMec2" runat="server" CssClass="form-control mt-2" TextMode="Password" placeholder="Contraseña" />
+                <asp:DropDownList ID="ddlAutHoj2" runat="server" CssClass="form-select"></asp:DropDownList>
+                <asp:TextBox ID="txtPassHoj2" runat="server" CssClass="form-control mt-2" TextMode="Password" placeholder="Contraseña" />
                 <div class="d-grid mt-2">
-                  <asp:Button ID="btnAutorizarMec2" runat="server" CssClass="btn btn-brand" Text="Autorizar" UseSubmitBehavior="false" />
+                  <asp:Button ID="btnAutorizarHoj2" runat="server" CssClass="btn btn-brand" Text="Autorizar" UseSubmitBehavior="false" />
                 </div>
                 <div class="mt-2">
-                  <asp:Literal ID="litAutMec2" runat="server" />
+                  <asp:Literal ID="litAutHoj2" runat="server" />
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Aut 3 -->
           <div class="col-md-4">
             <div class="card border-0 shadow-sm">
               <div class="card-body">
                 <div class="mb-2 fw-bold">Autorización 3</div>
-                <asp:DropDownList ID="ddlAutMec3" runat="server" CssClass="form-select"></asp:DropDownList>
-                <asp:TextBox ID="txtPassMec3" runat="server" CssClass="form-control mt-2" TextMode="Password" placeholder="Contraseña" />
+                <asp:DropDownList ID="ddlAutHoj3" runat="server" CssClass="form-select"></asp:DropDownList>
+                <asp:TextBox ID="txtPassHoj3" runat="server" CssClass="form-control mt-2" TextMode="Password" placeholder="Contraseña" />
                 <div class="d-grid mt-2">
-                  <asp:Button ID="btnAutorizarMec3" runat="server" CssClass="btn btn-brand" Text="Autorizar" UseSubmitBehavior="false" />
+                  <asp:Button ID="btnAutorizarHoj3" runat="server" CssClass="btn btn-brand" Text="Autorizar" UseSubmitBehavior="false" />
                 </div>
                 <div class="mt-2">
-                  <asp:Literal ID="litAutMec3" runat="server" />
+                  <asp:Literal ID="litAutHoj3" runat="server" />
                 </div>
               </div>
             </div>
@@ -510,7 +509,8 @@
         </div>
 
         <div class="small text-muted mt-2">
-          Selecciona tu nombre de la lista, escribe tu contraseña y presiona <strong>Autorizar</strong>. Si es correcta, se marcará en Admisiones (<code>autmec1</code>, <code>autmec2</code>, <code>autmec3</code>).
+          Selecciona tu nombre de la lista, escribe tu contraseña y presiona <strong>Autorizar</strong>.
+          Si es correcta, se marcará en Admisiones y se guardará tu nombre (<code>authoj1nombre</code>, <code>authoj2nombre</code>, <code>authoj3nombre</code>).
         </div>
       </div>
     </div>
@@ -524,12 +524,12 @@
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-cloud-arrow-up me-2"></i>Fotos de diagnóstico (mínimo 5)</h5>
+        <h5 class="modal-title"><i class="bi bi-cloud-arrow-up me-2"></i>Fotos de diagnóstico (mínimo 3)</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
         <div class="alert alert-info py-2">
-          Se guardarán en <strong>\3. FOTOS DIAGNOSTICO HOJALATERIA\</strong> con prefijo de 5 caracteres de la descripción y consecutivo.
+          Se guardarán en <strong>\3. FOTOS DIAGNOSTICO HOJALATERIA\</strong> con prefijo <strong>Id-5car</strong> y consecutivo.
         </div>
         <div class="mb-2 small text-muted d-flex flex-wrap gap-4">
           <div><span class="text-muted">Refacción Id:</span> <span id="fmRefId" class="fw-semibold">—</span></div>
@@ -537,8 +537,13 @@
         </div>
         <div class="row g-3">
           <div class="col-12">
-            <input id="fmInput" type="file" accept="image/*" capture="environment" class="form-control" multiple />
-            <div class="form-text">Selecciona o toma al menos 5 fotos.</div>
+            <div class="d-flex flex-wrap gap-2">
+              <input id="fmInput" type="file" accept="image/*" capture="environment" class="form-control" multiple style="max-width:420px" />
+              <button type="button" id="fmCamBtn" class="btn btn-outline-secondary">
+                <i class="bi bi-camera"></i> Tomar con cámara
+              </button>
+            </div>
+            <div class="form-text">Selecciona o toma al menos 3 fotos.</div>
           </div>
           <div class="col-12 d-flex flex-wrap gap-2" id="fmThumbs"></div>
           <div class="col-12 d-none" id="fmProgWrap">
@@ -573,7 +578,7 @@
       <div class="modal-body">
         <div class="gal-wrap">
           <div class="gal-stage">
-            <img id="galBig" class="gal-big" alt="imagen" />
+            <img id="galBig" class="gal-big" alt="imagen" title="Doble clic para zoom pantalla completa" />
             <div class="gal-arrows">
               <button class="btn btn-light btn-sm" id="galPrev" type="button"><i class="bi bi-chevron-left"></i></button>
               <button class="btn btn-light btn-sm" id="galNext" type="button"><i class="bi bi-chevron-right"></i></button>
@@ -582,6 +587,28 @@
           <div class="gal-thumbs" id="galThumbs"></div>
         </div>
         <div class="small mt-2 text-muted" id="galInfo"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: ZOOM FULLSCREEN ===================== -->
+<div class="modal fade" id="zoomModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content" style="background: rgba(0,0,0,0.95);">
+      <div class="modal-header border-0 position-absolute" style="top:10px; right:10px; z-index:10;">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body d-flex align-items-center justify-content-center p-0" id="zoomContainer" style="overflow:hidden;">
+        <img id="zoomImage" alt="Imagen en pantalla completa" style="max-width:90vw; max-height:85vh; object-fit:contain; transform-origin:center center; cursor:grab;" />
+      </div>
+      <div class="modal-footer border-0 justify-content-center position-absolute" style="bottom:10px; left:0; right:0;">
+        <div class="d-flex gap-2 align-items-center bg-white rounded-pill px-3 py-2 shadow">
+          <button type="button" class="btn btn-primary btn-sm rounded-circle" style="width:36px;height:36px;" id="zoomOut">−</button>
+          <input type="range" id="zoomRange" min="1" max="6" step="0.1" value="1" style="width:120px;" />
+          <button type="button" class="btn btn-primary btn-sm rounded-circle" style="width:36px;height:36px;" id="zoomIn">+</button>
+          <button type="button" class="btn btn-secondary btn-sm rounded-circle" style="width:36px;height:36px;" id="zoomReset">⟳</button>
+        </div>
       </div>
     </div>
   </div>
@@ -616,32 +643,6 @@
   });
 </script>
 
-<script>
-  // Sugerir tamaño al padre (cuando está en iframe/modal)
-  function __resizeForModal() {
-      try { window.parent && window.parent.postMessage({ type: 'IFR_RESIZE', heightVh: 92 }, window.location.origin); } catch (_) { }
-      const h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
-      try { window.parent && window.parent.postMessage({ type: 'IFR_CONTENT_HEIGHT', px: h }, window.location.origin); } catch (_) { }
-  }
-  window.addEventListener('load', __resizeForModal);
-  window.addEventListener('resize', function () { clearTimeout(window.__rto); window.__rto = setTimeout(__resizeForModal, 120); });
-
-  (function () {
-      var set = function () { document.body.classList.add('embed'); };
-      try {
-          if (window.self !== window.top) {
-              if (document.readyState === 'loading') {
-                  document.addEventListener('DOMContentLoaded', set);
-              } else { set(); }
-          }
-      } catch (e) {
-          if (document.readyState === 'loading') {
-              document.addEventListener('DOMContentLoaded', set);
-          } else { set(); }
-      }
-  })();
-</script>
-
 <!-- ===== SUBIR FOTOS (fotosModal) ===== -->
 <script>
   let __fmRefId=null, __fmDesc="", __fmFiles=[];
@@ -653,9 +654,11 @@
     btn: () => document.getElementById('fmUploadBtn'),
     progWrap: () => document.getElementById('fmProgWrap'),
     prog: () => document.getElementById('fmProg'),
-    msg: () => document.getElementById('fmMsg')
+    msg: () => document.getElementById('fmMsg'),
+    camBtn: () => document.getElementById('fmCamBtn')
   };
 
+  // ---------- Abrir modal de fotos ----------
   document.addEventListener('click', function (e) {
     const btn = e.target.closest('.btn-fotos');
     if (!btn) return;
@@ -671,41 +674,40 @@
     fm.msg().classList.add('d-none');
   });
 
+  // ---------- Previsualización (input nativo) ----------
   fm.input().addEventListener('change', function () {
-    __fmFiles = Array.from(this.files || []).filter(f => f.type.startsWith('image/'));
-    fm.thumbs().innerHTML = '';
-
-    __fmFiles.forEach(f => {
-      const r = new FileReader();
-      r.onload = e => {
-        const wrap = document.createElement('div');
-        wrap.className = 'fm-thumb';
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        img.alt = f.name;
-        img.loading = 'lazy';
-        wrap.appendChild(img);
-        fm.thumbs().appendChild(wrap);
-      };
-      r.readAsDataURL(f);
-    });
-
-    fm.btn().disabled = (__fmFiles.length < 5);
+    // Acumular fotos en lugar de reemplazar
+    const newFiles = Array.from(this.files || []).filter(f => f.type.startsWith('image/'));
+    __fmFiles = __fmFiles.concat(newFiles);
+    this.value = ''; // Limpiar input para permitir seleccionar el mismo archivo de nuevo
+    refreshThumbs();
   });
 
+  // Limpiar preview al cerrar el modal
+  document.getElementById('fotosModal').addEventListener('hidden.bs.modal', function () {
+    __fmFiles = [];
+    fm.input().value = '';
+    fm.thumbs().innerHTML = '';
+    fm.btn().disabled = true;
+    fm.progWrap().classList.add('d-none');
+    fm.msg().classList.add('d-none');
+  });
+
+  // ---------- Subir a handler .ashx ----------
   fm.btn().addEventListener('click', async function () {
     const expediente = document.getElementById('hfExpediente')?.value || '';
     if (!expediente) { alert('Expediente vacío.'); return; }
     if (!__fmRefId) { alert('Fila no válida.'); return; }
-    if (__fmFiles.length < 5) { alert('Selecciona al menos 5 fotos.'); return; }
+    if (__fmFiles.length < 3) { alert('Selecciona o toma al menos 3 fotos.'); return; }
     fm.progWrap().classList.remove('d-none');
     fm.msg().classList.add('d-none');
     fm.prog().style.width = '10%'; fm.prog().textContent = '10%';
 
     const fd = new FormData();
-    fd.append('refId', __fmRefId);
+    fd.append('refId', __fmRefId);            // usar para prefijo {Id}-
     fd.append('expediente', expediente);
-    fd.append('descripcion', __fmDesc);
+    fd.append('descripcion', __fmDesc);       // usar para 5 primeros chars sanitizados
+    fd.append('area', 'HOJALATERIA');         // indicar área
     __fmFiles.forEach((f, i) => fd.append('file' + i, f, f.name));
 
     try {
@@ -715,10 +717,187 @@
       if(!j.ok) throw new Error(j.msg || 'Fallo al guardar');
       fm.prog().style.width = '100%'; fm.prog().textContent = '100%';
       fm.msg().classList.remove('d-none');
+
+      // === Marcar la fila en sutil verde sin recargar ===
+      PageMethods.HasMinFotos(expediente, parseInt(__fmRefId,10), __fmDesc, 3,
+        function(ok){
+          const fotosBtn = document.querySelector(`.btn-fotos[data-ref-id="${CSS.escape(__fmRefId)}"]`);
+          const row = fotosBtn?.closest('tr');
+          if(row){ row.classList.toggle('row-photos-ok', !!ok); }
+        },
+        function(){ /* no-op */ }
+      );
+
+      // Cerrar modal automáticamente después de subir
+      setTimeout(function() {
+        const modalEl = document.getElementById('fotosModal');
+        const modal = bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.hide();
+      }, 800);
+
     } catch(err){
       alert('Error subiendo fotos: ' + err.message);
     }
   });
+
+  // ---------- Editar descripción (renombrar en servidor) ----------
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('.btn-edit-desc');
+    if(!btn) return;
+
+    const expediente = document.getElementById('hfExpediente')?.value || '';
+    const id = parseInt(btn.getAttribute('data-ref-id'),10);
+    const oldDesc = btn.getAttribute('data-descripcion') || '';
+
+    const newDesc = prompt('Nueva descripción:', oldDesc);
+    if(newDesc === null) return;
+    const trimmed = (newDesc || '').trim();
+    if(!trimmed){ alert('La descripción no puede estar vacía.'); return; }
+
+    btn.disabled = true;
+    PageMethods.UpdateDescripcionAndRename(expediente, id, oldDesc, trimmed,
+      function(res){
+        btn.disabled = false;
+        if(!res || res.ok !== true){
+          alert((res && res.msg) ? res.msg : 'No se pudo actualizar.');
+          return;
+        }
+        const row = btn.closest('tr');
+
+        // Actualiza celda y data-atributos
+        btn.setAttribute('data-descripcion', trimmed);
+        const descCell = row?.querySelector('td.col-desc');
+        if(descCell) descCell.textContent = trimmed;
+        const fotosBtn = row?.querySelector('.btn-fotos');
+        if(fotosBtn) fotosBtn.setAttribute('data-descripcion', trimmed);
+
+        // Re-evalúa si hay ≥3 fotos con el nuevo prefijo (Id-5car)
+        PageMethods.HasMinFotos(expediente, id, trimmed, 3,
+          function(ok){ if(row) row.classList.toggle('row-photos-ok', !!ok); },
+          function(){}
+        );
+
+        // Mensaje
+        try{
+          const lbl = document.getElementById('<%= lblStatus.ClientID %>');
+          if(lbl){ lbl.className = 'd-block mt-3 fw-semibold text-success'; lbl.textContent = `Descripción actualizada y ${res.renamed||0} archivo(s) renombrado(s).`; }
+        }catch(_){}
+      },
+      function(err){
+        btn.disabled = false;
+        alert('Error: ' + (err && err.get_message ? err.get_message() : 'desconocido'));
+      }
+    );
+  });
+
+  function refreshThumbs(){
+    const list = fm.thumbs();
+    list.innerHTML = '';
+    __fmFiles.forEach(f => {
+      const r = new FileReader();
+      r.onload = e => {
+        const wrap = document.createElement('div');
+        wrap.className = 'fm-thumb';
+        const img = document.createElement('img');
+        img.src = e.target.result; img.alt = f.name; img.loading = 'lazy';
+        wrap.appendChild(img);
+        list.appendChild(wrap);
+      };
+      r.readAsDataURL(f);
+    });
+    fm.btn().disabled = (__fmFiles.length < 3);
+  }
+
+  // ======================================================
+  // ==============  CÁMARA EN VIVO (NUEVO)  ==============
+  // ======================================================
+  fm.camBtn().addEventListener('click', async function(){
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+      // Sin cámara: abrimos selector nativo como fallback
+      fm.input().click();
+      return;
+    }
+    openCameraOverlay();
+  });
+
+  function openCameraOverlay(){
+    const ov = document.createElement('div');
+    ov.className = 'cam-ov';
+    ov.innerHTML = `
+      <div class="cam-ov-inner">
+        <div class="text-white small px-1">Cámara activa</div>
+        <video id="camLive" autoplay playsinline muted></video>
+        <div class="row-actions">
+          <button type="button" class="btn btn-light" id="camCapture"><i class="bi bi-camera-fill"></i> Capturar</button>
+          <button type="button" class="btn btn-outline-light" id="camCancel">Cancelar</button>
+        </div>
+      </div>`;
+    document.body.appendChild(ov);
+
+    const video = ov.querySelector('#camLive');
+    const btnOk = ov.querySelector('#camCapture');
+    const btnCancel = ov.querySelector('#camCancel');
+
+    let stream;
+
+    const stopAll = () => {
+      try{ stream?.getTracks()?.forEach(t => t.stop()); }catch(_){}
+      ov.remove();
+    };
+
+    btnCancel.addEventListener('click', stopAll);
+
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' } },
+      audio: false
+    }).then(s => {
+      stream = s;
+      video.srcObject = s;
+    }).catch(_ => {
+      // Permiso denegado o error -> fallback a input
+      stopAll();
+      fm.input().click();
+    });
+
+    btnOk.addEventListener('click', async () => {
+      try{
+        const blob = await captureFromVideo(video, {maxW:1600, maxH:1600, quality:0.85});
+        const file = new File([blob], genCamName(), {type:'image/jpeg'});
+        __fmFiles.push(file);
+        refreshThumbs();
+      }catch(err){
+        alert('No se pudo capturar: ' + err.message);
+      }finally{
+        stopAll();
+      }
+    }, { once:true });
+  }
+
+  function captureFromVideo(video, opts){
+    return new Promise((resolve, reject) => {
+      try{
+        const vw = video.videoWidth || 1600, vh = video.videoHeight || 1200;
+        const {w, h} = fitWithin(vw, vh, opts.maxW||1600, opts.maxH||1600);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, w, h);
+        canvas.toBlob((b)=> b ? resolve(b) : reject(new Error('blob nulo')), 'image/jpeg', opts.quality ?? 0.85);
+      }catch(e){ reject(e); }
+    });
+  }
+
+  function fitWithin(w, h, maxW, maxH){
+    const r = Math.min(maxW / w, maxH / h, 1);
+    return { w: Math.round(w*r), h: Math.round(h*r) };
+  }
+
+  function genCamName(){
+    const z = (n, l=2)=> String(n).padStart(l,'0');
+    const d = new Date();
+    const ts = d.getFullYear()+z(d.getMonth()+1)+z(d.getDate())+z(d.getHours())+z(d.getMinutes())+z(d.getSeconds())+z(d.getMilliseconds(),3);
+    return 'cam_'+ts+'.jpg';
+  }
 </script>
 
 <!-- ===== GALERÍA (galeriaModal) ===== -->
@@ -736,6 +915,7 @@
     const $selNone = document.getElementById('btnSelNone');
 
     var __folder = "", __prefix = "", __files = [], __idx = 0, _scale = 1;
+    var __currentRefId = null, __currentDesc = "";  // Para restaurar highlighting
 
     function bust(u) {
       if (!u) return '';
@@ -793,10 +973,11 @@
       $big.style.cursor = (_scale > 1) ? 'zoom-out' : 'zoom-in';
     }, { passive: false });
 
+    // Doble clic abre modal de zoom fullscreen
     $big.addEventListener('dblclick', function () {
-      _scale = (_scale > 1) ? 1 : 2;
-      $big.style.transform = 'scale(' + _scale + ')';
-      $big.style.cursor = (_scale > 1) ? 'zoom-out' : 'zoom-in';
+      if ($big.src) {
+        openZoomModal($big.src);
+      }
     });
 
     $thumbs.addEventListener('click', function (e) {
@@ -839,16 +1020,144 @@
         setTimeout(function () { document.body.removeChild(form); }, 2000);
     });
 
+        // Expuesta para RegisterStartupScript del servidor
         window.__openGaleriaDiag = function (title, virtualFolder, prefix, filesCsv) {
             $title.textContent = title || 'Galería';
             __folder = virtualFolder || '';
             __prefix = prefix || '';
             __files = (filesCsv || '').split('|').filter(Boolean);
+
+            // Extraer refId y descripción del prefix (formato: "id-desc")
+            var parts = prefix.split('-');
+            __currentRefId = parts[0] || null;
+            __currentDesc = parts.slice(1).join('-') || '';
+
             renderThumbs();
             showAt(0);
             galModal.show();
         };
+
+        // Restaurar highlighting al cerrar el modal de galería
+        document.getElementById('galeriaModal').addEventListener('hidden.bs.modal', function () {
+            if (!__currentRefId) return;
+
+            var expediente = (document.getElementById('hfExpediente') && document.getElementById('hfExpediente').value) || '';
+            if (!expediente) return;
+
+            // Buscar la fila correspondiente y restaurar su highlighting
+            var fotosBtn = document.querySelector('.btn-fotos[data-ref-id="' + CSS.escape(__currentRefId) + '"]');
+            if (!fotosBtn) return;
+
+            var row = fotosBtn.closest('tr');
+            var descripcion = fotosBtn.getAttribute('data-descripcion') || '';
+
+            // Re-verificar si cumple con el mínimo de fotos
+            PageMethods.HasMinFotos(expediente, parseInt(__currentRefId, 10), descripcion, 3,
+                function(ok) {
+                    if (row) {
+                        row.classList.toggle('row-photos-ok', !!ok);
+                    }
+                },
+                function() { /* no-op */ }
+            );
+        });
     })();
+</script>
+
+<!-- ===== ZOOM FULLSCREEN ===== -->
+<script>
+(function(){
+  const modal = document.getElementById('zoomModal');
+  const zoomImage = document.getElementById('zoomImage');
+  const zoomRange = document.getElementById('zoomRange');
+  const zoomIn = document.getElementById('zoomIn');
+  const zoomOut = document.getElementById('zoomOut');
+  const zoomReset = document.getElementById('zoomReset');
+
+  if (!modal || !zoomImage) return;
+
+  let scale = 1, tx = 0, ty = 0;
+  const MIN = 1, MAX = 6;
+  let dragging = false, lastX = 0, lastY = 0;
+
+  function apply() {
+    zoomImage.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+    zoomImage.style.cursor = scale > 1 ? 'move' : 'grab';
+  }
+
+  function reset() {
+    scale = 1; tx = 0; ty = 0; dragging = false;
+    zoomImage.style.transform = '';
+    zoomImage.style.cursor = 'grab';
+    if (zoomRange) zoomRange.value = '1';
+  }
+
+  function clampPan() {
+    const rect = zoomImage.getBoundingClientRect();
+    const cont = zoomImage.parentElement.getBoundingClientRect();
+    const baseW = rect.width / scale, baseH = rect.height / scale;
+    const maxX = Math.max(0, (baseW * scale - cont.width) / 2);
+    const maxY = Math.max(0, (baseH * scale - cont.height) / 2);
+    tx = Math.max(-maxX, Math.min(maxX, tx));
+    ty = Math.max(-maxY, Math.min(maxY, ty));
+  }
+
+  function setScale(val) {
+    scale = Math.max(MIN, Math.min(MAX, val));
+    if (scale <= 1.0001) { tx = 0; ty = 0; }
+    clampPan(); apply();
+    if (zoomRange) zoomRange.value = String(scale);
+  }
+
+  // Abrir modal
+  window.openZoomModal = function(src) {
+    zoomImage.src = src;
+    reset();
+    const bsModal = bootstrap.Modal.getOrCreateInstance(modal);
+    bsModal.show();
+  };
+
+  // Reset al cerrar
+  modal.addEventListener('hidden.bs.modal', reset);
+
+  // Botones de zoom
+  zoomIn?.addEventListener('click', () => setScale(scale + 0.5));
+  zoomOut?.addEventListener('click', () => setScale(scale - 0.5));
+  zoomReset?.addEventListener('click', reset);
+
+  // Slider de zoom
+  zoomRange?.addEventListener('input', () => setScale(parseFloat(zoomRange.value || "1")));
+
+  // Zoom con rueda del mouse
+  zoomImage.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    setScale(scale + (e.deltaY > 0 ? -0.3 : 0.3));
+  }, { passive: false });
+
+  // Pan con mouse
+  zoomImage.addEventListener('mousedown', (e) => {
+    if (scale <= 1) return;
+    dragging = true;
+    lastX = e.clientX; lastY = e.clientY;
+    zoomImage.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    tx += (e.clientX - lastX);
+    ty += (e.clientY - lastY);
+    lastX = e.clientX; lastY = e.clientY;
+    clampPan(); apply();
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (dragging) {
+      dragging = false;
+      zoomImage.style.cursor = scale > 1 ? 'move' : 'grab';
+    }
+  });
+})();
 </script>
 
 </body>
