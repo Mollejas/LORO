@@ -400,6 +400,7 @@ END"
         Dim idStr As String = If(Not IsPostBack, Request.QueryString("id"), hidId.Value)
         If Integer.TryParse(idStr, admId) Then
             PintarTileMecanica(admId)
+            PintarTileColision(admId)
             CargarFinesDiagnostico(admId)
         End If
         ' <<< ADD
@@ -2254,26 +2255,60 @@ Paint:
             chkMecSi.Checked = False
         End If
     End Sub
+    Private Sub PintarTileColision(admId As Integer)
+        Dim a1 As Boolean = False, a2 As Boolean = False, a3 As Boolean = False
+
+        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Using cn As New SqlConnection(cs)
+            Using cmd As New SqlCommand("SELECT authoj1, authoj2, authoj3 FROM admisiones WHERE id = @id", cn)
+                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+                cn.Open()
+                Using rd = cmd.ExecuteReader()
+                    If rd.Read() Then
+                        a1 = Not rd.IsDBNull(0) AndAlso Convert.ToBoolean(rd(0))
+                        a2 = Not rd.IsDBNull(1) AndAlso Convert.ToBoolean(rd(1))
+                        a3 = Not rd.IsDBNull(2) AndAlso Convert.ToBoolean(rd(2))
+                    End If
+                End Using
+            End Using
+        End Using
+
+        Dim allOk As Boolean = a1 AndAlso a2 AndAlso a3
+
+        ' Asegura estado visual del tile
+        Dim cls As String = tileCol.Attributes("class")
+        If allOk Then
+            If Not cls.Contains(" ok") Then tileCol.Attributes("class") = cls & " ok"
+            flagHoja.Attributes("class") = "diag-flag on"
+            icoHoja.Attributes("class") = "bi bi-toggle-on fs-4"
+            chkHojaSi.Checked = True
+        Else
+            tileCol.Attributes("class") = cls.Replace(" ok", "")
+            flagHoja.Attributes("class") = "diag-flag off"
+            icoHoja.Attributes("class") = "bi bi-toggle-off fs-4"
+            chkHojaSi.Checked = False
+        End If
+    End Sub
     Private Sub CargarFinesDiagnostico(admId As Integer)
         Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
         Dim finMecObj As Object = Nothing
-        Dim finColObj As Object = Nothing
+        Dim finHojObj As Object = Nothing
 
         Using cn As New SqlConnection(cs)
-            Using cmd As New SqlCommand("SELECT finmec, fincol FROM admisiones WHERE id = @id", cn)
+            Using cmd As New SqlCommand("SELECT finmec, finhoj FROM admisiones WHERE id = @id", cn)
                 cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
                 cn.Open()
                 Using rd = cmd.ExecuteReader()
                     If rd.Read() Then
                         finMecObj = If(rd.IsDBNull(0), Nothing, rd.GetValue(0))
-                        finColObj = If(rd.IsDBNull(1), Nothing, rd.GetValue(1))
+                        finHojObj = If(rd.IsDBNull(1), Nothing, rd.GetValue(1))
                     End If
                 End Using
             End Using
         End Using
 
         lblDiagFinMecanica.Text = FormatearFechaCortaHora(finMecObj)
-        lblDiagFinColision.Text = FormatearFechaCortaHora(finColObj)
+        lblDiagFinColision.Text = FormatearFechaCortaHora(finHojObj)
     End Sub
 
     Private Function FormatearFechaCortaHora(val As Object) As String

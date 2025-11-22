@@ -842,7 +842,7 @@
       </div>
 
       <!-- === TILE COLISIÓN === -->
-      <div id="tileCol" class="tile compacto">
+      <div id="tileCol" runat="server" ClientIDMode="Static" class="tile compacto">
         <div class="title text-center">Colisión</div>
 
         <!-- Fin diagnóstico Colisión (arriba y centrado) -->
@@ -854,9 +854,9 @@
           </span>
         </div>
 
-        <div id="flagHoja" class="diag-flag off">
+        <div id="flagHoja" runat="server" ClientIDMode="Static" class="diag-flag off">
           <asp:CheckBox ID="chkHojaSi" runat="server" ClientIDMode="Static" CssClass="form-check-input" />
-          <i id="icoHoja" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
+          <i id="icoHoja" runat="server" ClientIDMode="Static" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
           <span class="state">Deshabilitado</span>
         </div>
 
