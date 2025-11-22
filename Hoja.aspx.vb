@@ -2652,13 +2652,12 @@ Paint:
 
         For Each ddl As DropDownList In New DropDownList() {ddlValRef1, ddlValRef2, ddlValRef3}
             ddl.Items.Clear()
-            ddl.Items.Add(New ListItem("-- Selecciona usuario --", ""))
             ddl.DataSource = dt
             ddl.DataTextField = "Nombre"
             ddl.DataValueField = "UsuarioId"
             ddl.DataBind()
-            ddl.ClearSelection()
-            ddl.SelectedValue = ""
+            ddl.Items.Insert(0, New ListItem("-- Selecciona usuario --", ""))
+            ddl.SelectedIndex = 0
         Next
 
         ' Limpiar campos de contraseña
