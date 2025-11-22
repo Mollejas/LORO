@@ -2632,10 +2632,59 @@ Paint:
             End Using
             gvHojSustitucion.DataSource = dtHojSus
             gvHojSustitucion.DataBind()
+
+            ' Cargar admins para validaciones
+            LoadAdminsForHTValidation(cn)
+
+            ' Verificar y pintar estado de validaciones
+            PaintHTValFlags(cn, expediente)
         End Using
 
         ' Abrir modal
         EmitStartupScript("openHojaTrabajo", "bootstrap.Modal.getOrCreateInstance(document.getElementById('modalHojaTrabajo')).show();")
+    End Sub
+
+    Private Sub LoadAdminsForHTValidation(cn As SqlConnection)
+        Dim dt As New DataTable()
+        Using da As New SqlDataAdapter("SELECT UsuarioId, COALESCE(Nombre, Correo) AS Nombre FROM dbo.Usuarios WHERE EsAdmin = 1 ORDER BY Nombre", cn)
+            da.Fill(dt)
+        End Using
+
+        For Each ddl As DropDownList In New DropDownList() {ddlValRef1, ddlValRef2, ddlValRef3}
+            ddl.Items.Clear()
+            ddl.Items.Add(New ListItem("-- Selecciona usuario --", ""))
+            ddl.DataSource = dt
+            ddl.DataTextField = "Nombre"
+            ddl.DataValueField = "UsuarioId"
+            ddl.DataBind()
+        Next
+    End Sub
+
+    Private Sub PaintHTValFlags(cn As SqlConnection, expediente As String)
+        Dim v1 As Boolean = False, v2 As Boolean = False, v3 As Boolean = False
+        Dim n1 As String = "", n2 As String = "", n3 As String = ""
+
+        Using cmd As New SqlCommand("SELECT TOP 1 ISNULL(valrefmec1,0), ISNULL(valrefmec1nombre,''), ISNULL(valrefmec2,0), ISNULL(valrefmec2nombre,''), ISNULL(valrefmec3,0), ISNULL(valrefmec3nombre,'') FROM dbo.Admisiones WHERE Expediente=@exp", cn)
+            cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
+            Using rd = cmd.ExecuteReader()
+                If rd.Read() Then
+                    v1 = rd.GetBoolean(0) : n1 = rd.GetString(1)
+                    v2 = rd.GetBoolean(2) : n2 = rd.GetString(3)
+                    v3 = rd.GetBoolean(4) : n3 = rd.GetString(5)
+                End If
+            End Using
+        End Using
+
+        litValRef1.Text = If(v1, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n1)}</span>", "<span class='badge bg-secondary'>Pendiente</span>")
+        litValRef2.Text = If(v2, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n2)}</span>", "<span class='badge bg-secondary'>Pendiente</span>")
+        litValRef3.Text = If(v3, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n3)}</span>", "<span class='badge bg-secondary'>Pendiente</span>")
+
+        ddlValRef1.Enabled = Not v1 : txtPassValRef1.Enabled = Not v1 : btnValidarRef1.Enabled = Not v1
+        ddlValRef2.Enabled = Not v2 : txtPassValRef2.Enabled = Not v2 : btnValidarRef2.Enabled = Not v2
+        ddlValRef3.Enabled = Not v3 : txtPassValRef3.Enabled = Not v3 : btnValidarRef3.Enabled = Not v3
+
+        ' Actualizar hidden field para JS
+        hfHTValidado.Value = If(v1 AndAlso v2 AndAlso v3, "1", "0")
     End Sub
 
     ' Handler para agregar encabezados agrupados a los GridViews de Hoja de Trabajo
@@ -2741,6 +2790,100 @@ Paint:
             bootstrap.Modal.getOrCreateInstance(document.getElementById('modalVerValAutPdf')).show();
         ")
     End Sub
+
+    ' ====== Validaciones de Hoja de Trabajo ======
+    Protected Sub btnValidarRef1_Click(sender As Object, e As EventArgs)
+        HandleHTValidation(ddlValRef1, txtPassValRef1, "valrefmec1", litValRef1)
+    End Sub
+
+    Protected Sub btnValidarRef2_Click(sender As Object, e As EventArgs)
+        HandleHTValidation(ddlValRef2, txtPassValRef2, "valrefmec2", litValRef2)
+    End Sub
+
+    Protected Sub btnValidarRef3_Click(sender As Object, e As EventArgs)
+        HandleHTValidation(ddlValRef3, txtPassValRef3, "valrefmec3", litValRef3)
+    End Sub
+
+    Private Sub HandleHTValidation(ddl As DropDownList, txtPass As TextBox, fieldName As String, lit As Literal)
+        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim expediente As String = hidExpediente.Value
+        If String.IsNullOrWhiteSpace(expediente) Then Exit Sub
+        If String.IsNullOrWhiteSpace(ddl.SelectedValue) Then Exit Sub
+
+        Dim userId As Integer
+        If Not Integer.TryParse(ddl.SelectedValue, userId) Then Exit Sub
+
+        Dim pass As String = If(txtPass.Text, "").Trim()
+        If pass = "" Then Exit Sub
+
+        ' Validar credenciales
+        If Not ValidateHTUser(userId, pass, cs) Then
+            EmitStartupScript("htValErr", "alert('Credenciales inválidas.');")
+            Exit Sub
+        End If
+
+        Dim authName As String = ddl.SelectedItem.Text
+        Dim nameField As String = fieldName & "nombre"
+
+        Using cn As New SqlConnection(cs)
+            Using cmd As New SqlCommand($"UPDATE dbo.Admisiones SET {fieldName}=1, {nameField}=@n WHERE Expediente=@exp", cn)
+                cmd.Parameters.Add("@n", SqlDbType.NVarChar).Value = authName
+                cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
+                cn.Open()
+                cmd.ExecuteNonQuery()
+            End Using
+
+            ' Repintar estado
+            PaintHTValFlags(cn, expediente)
+        End Using
+
+        ' Deshabilitar controles
+        ddl.Enabled = False : txtPass.Enabled = False
+    End Sub
+
+    Private Function ValidateHTUser(userId As Integer, password As String, cs As String) As Boolean
+        Using cn As New SqlConnection(cs)
+            Using cmd As New SqlCommand("SELECT TOP 1 PasswordHash, PasswordSalt FROM dbo.Usuarios WHERE UsuarioId = @Id", cn)
+                cmd.Parameters.Add("@Id", SqlDbType.Int).Value = userId
+                cn.Open()
+                Using rd = cmd.ExecuteReader()
+                    If Not rd.Read() Then Return False
+                    Dim dbHash As Byte() = TryCast(rd("PasswordHash"), Byte())
+                    Dim salt As Byte() = TryCast(rd("PasswordSalt"), Byte())
+                    If dbHash Is Nothing OrElse salt Is Nothing Then Return False
+
+                    ' PBKDF2 or legacy SHA256
+                    Dim calc() As Byte
+                    If dbHash.Length = 64 Then
+                        Using kdf As New System.Security.Cryptography.Rfc2898DeriveBytes(password, salt, 100000, System.Security.Cryptography.HashAlgorithmName.SHA256)
+                            calc = kdf.GetBytes(64)
+                        End Using
+                    ElseIf dbHash.Length = 32 Then
+                        Dim passBytes = System.Text.Encoding.UTF8.GetBytes(password)
+                        Dim mix(salt.Length + passBytes.Length - 1) As Byte
+                        Buffer.BlockCopy(salt, 0, mix, 0, salt.Length)
+                        Buffer.BlockCopy(passBytes, 0, mix, salt.Length, passBytes.Length)
+                        Using sha As System.Security.Cryptography.SHA256 = System.Security.Cryptography.SHA256.Create()
+                            calc = sha.ComputeHash(mix)
+                        End Using
+                    Else
+                        Return False
+                    End If
+
+                    Return BytesEqualHT(calc, dbHash)
+                End Using
+            End Using
+        End Using
+    End Function
+
+    Private Function BytesEqualHT(a As Byte(), b As Byte()) As Boolean
+        If a Is Nothing OrElse b Is Nothing OrElse a.Length <> b.Length Then Return False
+        Dim diff As Integer = 0
+        For i As Integer = 0 To a.Length - 1
+            diff = diff Or (a(i) Xor b(i))
+        Next
+        Return diff = 0
+    End Function
 
 End Class
 
