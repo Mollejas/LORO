@@ -944,10 +944,7 @@
         <div id="tileHojaTrabajo" runat="server" class="tile compacto">
           <div class="title">Hoja trabajo sin autorizar</div>
           <div class="icon-row compacto">
-            <a href="#" class="icon-btn compacto" id="btnSubirHojaTrabajo" title="Subir hoja de trabajo">
-              <i class="bi bi-cloud-upload"></i>
-            </a>
-            <asp:LinkButton ID="btnVerHojaTrabajo" runat="server" CssClass="icon-btn compacto" ToolTip="Ver hoja de trabajo" aria-label="Ver hoja de trabajo">
+            <asp:LinkButton ID="btnVerHojaTrabajo" runat="server" CssClass="icon-btn compacto" ToolTip="Ver hoja de trabajo" aria-label="Ver hoja de trabajo" OnClick="btnVerHojaTrabajo_Click">
               <i class="bi bi-eye"></i>
             </asp:LinkButton>
           </div>
@@ -1382,6 +1379,106 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
           <asp:LinkButton ID="btnUploadInePdfGo" runat="server" CssClass="btn btn-brand" UseSubmitBehavior="true" OnClick="btnUploadInePdfGo_Click">Subir PDF</asp:LinkButton>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: Hoja de Trabajo Sin Autorizar ===================== -->
+  <div class="modal fade" id="modalHojaTrabajo" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Hoja de Trabajo Sin Autorizar</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Encabezado con datos del auto e imagen -->
+          <div class="row mb-4">
+            <div class="col-md-8">
+              <h6 class="fw-bold mb-3">Datos del Vehículo</h6>
+              <table class="table table-sm table-bordered">
+                <tr>
+                  <th style="width:120px;">Expediente</th>
+                  <td><asp:Label ID="lblHTExpediente" runat="server" /></td>
+                  <th style="width:100px;">Año</th>
+                  <td><asp:Label ID="lblHTAnio" runat="server" /></td>
+                </tr>
+                <tr>
+                  <th>Marca</th>
+                  <td><asp:Label ID="lblHTMarca" runat="server" /></td>
+                  <th>Color</th>
+                  <td><asp:Label ID="lblHTColor" runat="server" /></td>
+                </tr>
+                <tr>
+                  <th>Modelo</th>
+                  <td><asp:Label ID="lblHTModelo" runat="server" /></td>
+                  <th>Placas</th>
+                  <td><asp:Label ID="lblHTPlacas" runat="server" /></td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-4 text-center">
+              <asp:Image ID="imgHTPrincipal" runat="server" CssClass="img-fluid rounded" style="max-height:150px;" AlternateText="Imagen del vehículo" />
+            </div>
+          </div>
+
+          <!-- GridViews de Mecánica -->
+          <h6 class="fw-bold text-primary mb-2"><i class="bi bi-wrench"></i> Mecánica</h6>
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h6 class="text-muted">Reparación</h6>
+              <asp:GridView ID="gvMecReparacion" runat="server" CssClass="table table-sm table-striped table-bordered" AutoGenerateColumns="False" EmptyDataText="Sin registros">
+                <Columns>
+                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="50px" />
+                  <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
+                  <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
+                  <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
+                </Columns>
+              </asp:GridView>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-muted">Sustitución</h6>
+              <asp:GridView ID="gvMecSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered" AutoGenerateColumns="False" EmptyDataText="Sin registros">
+                <Columns>
+                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="50px" />
+                  <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
+                  <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
+                  <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
+                </Columns>
+              </asp:GridView>
+            </div>
+          </div>
+
+          <!-- GridViews de Hojalatería -->
+          <h6 class="fw-bold text-warning mb-2"><i class="bi bi-tools"></i> Hojalatería</h6>
+          <div class="row">
+            <div class="col-md-6">
+              <h6 class="text-muted">Reparación</h6>
+              <asp:GridView ID="gvHojReparacion" runat="server" CssClass="table table-sm table-striped table-bordered" AutoGenerateColumns="False" EmptyDataText="Sin registros">
+                <Columns>
+                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="50px" />
+                  <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
+                  <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
+                  <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
+                </Columns>
+              </asp:GridView>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-muted">Sustitución</h6>
+              <asp:GridView ID="gvHojSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered" AutoGenerateColumns="False" EmptyDataText="Sin registros">
+                <Columns>
+                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="50px" />
+                  <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
+                  <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
+                  <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
+                </Columns>
+              </asp:GridView>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>
       </div>
     </div>
