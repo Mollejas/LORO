@@ -2806,7 +2806,7 @@ Paint:
 
     Private Sub HandleHTValidation(ddl As DropDownList, txtPass As TextBox, fieldName As String, lit As Literal)
         Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
-        Dim expediente As String = hidExpediente.Value
+        Dim expediente As String = lblHTExpediente.Text
         If String.IsNullOrWhiteSpace(expediente) Then Exit Sub
         If String.IsNullOrWhiteSpace(ddl.SelectedValue) Then Exit Sub
 
