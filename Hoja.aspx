@@ -3272,28 +3272,14 @@
    // Toggle handlers para Hoja de Trabajo
    document.addEventListener('click', function(e) {
        const toggle = e.target.closest('.ht-toggle');
-       if (!toggle) {
-           // Debug: ver si click llega pero no encuentra toggle
-           if (e.target.closest('#modalHojaTrabajo')) {
-               console.log('Click en modal pero no en toggle:', e.target);
-           }
-           return;
-       }
-
-       console.log('Toggle encontrado:', toggle);
+       if (!toggle) return;
 
        const id = toggle.dataset.id;
        const field = toggle.dataset.field;
        const val = toggle.dataset.val;
 
-       console.log('Datos:', {id, field, val});
-
-       // Encontrar la fila
        const row = toggle.closest('tr');
-       if (!row) {
-           console.log('No se encontró la fila');
-           return;
-       }
+       if (!row) return;
 
        if (field === 'autorizado') {
            // Toggle Si/No - mutuamente excluyente
