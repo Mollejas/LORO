@@ -2554,6 +2554,8 @@ Paint:
         Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
 
         ' Cargar datos del vehículo
+        Dim expediente As String = ""
+
         Using cn As New SqlConnection(cs)
             cn.Open()
 
@@ -2562,7 +2564,8 @@ Paint:
                 cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
                 Using rd = cmd.ExecuteReader()
                     If rd.Read() Then
-                        lblHTExpediente.Text = If(rd.IsDBNull(0), "", rd.GetString(0))
+                        expediente = If(rd.IsDBNull(0), "", rd.GetString(0))
+                        lblHTExpediente.Text = expediente
                         lblHTMarca.Text = If(rd.IsDBNull(1), "", rd.GetString(1))
                         lblHTModelo.Text = If(rd.IsDBNull(2), "", rd.GetString(2))  ' Tipo es el modelo del vehículo
                         lblHTAnio.Text = If(rd.IsDBNull(3), "", rd.GetValue(3).ToString())  ' Modelo es el año
@@ -2585,8 +2588,8 @@ Paint:
 
             ' Cargar refacciones - Mecánica Reparación
             Dim dtMecRep As New DataTable()
-            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE admisionid = @id AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
-                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
+                cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtMecRep)
                 End Using
@@ -2596,8 +2599,8 @@ Paint:
 
             ' Cargar refacciones - Mecánica Sustitución
             Dim dtMecSus As New DataTable()
-            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE admisionid = @id AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
-                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
+                cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtMecSus)
                 End Using
@@ -2607,8 +2610,8 @@ Paint:
 
             ' Cargar refacciones - Hojalatería Reparación
             Dim dtHojRep As New DataTable()
-            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE admisionid = @id AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
-                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
+                cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtHojRep)
                 End Using
@@ -2618,8 +2621,8 @@ Paint:
 
             ' Cargar refacciones - Hojalatería Sustitución
             Dim dtHojSus As New DataTable()
-            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE admisionid = @id AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
-                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
+                cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtHojSus)
                 End Using
