@@ -159,14 +159,18 @@
     #btnToggleStripDiag.blink-danger{animation:blinkBtnDanger 1.1s ease-in-out infinite!important;background:#fee2e2!important;border-color:#ef4444!important;color:#dc2626!important;}
     #btnToggleStripDiag.blink-success{background:#dcfce7!important;border-color:#16a34a!important;color:#15803d!important;}
 
+    /* Blink para botón PROCESO VALUACIÓN */
+    #btnToggleStripVal.blink-danger{animation:blinkBtnDanger 1.1s ease-in-out infinite!important;background:#fee2e2!important;border-color:#ef4444!important;color:#dc2626!important;}
+    #btnToggleStripVal.blink-success{background:#dcfce7!important;border-color:#16a34a!important;color:#15803d!important;}
+
     /* Estilos para el contenedor stripDiag - solo parpadeo del borde */
     #stripDiag.strip-danger{animation:blinkBorder 1.1s ease-in-out infinite;}
     #strip{overflow:hidden;transition:max-height .35s ease,opacity .25s ease,transform .35s ease;}
     #strip.is-collapsed{max-height:0!important;opacity:0;transform:translateY(6px);pointer-events:none;margin-top:0!important;margin-bottom:0!important;border-width:0;}
 
-    /* Transición y colapso para ambas tiras */
-    #strip, #stripDiag{ overflow:hidden; transition:max-height .35s ease, opacity .25s ease, transform .35s ease; }
-    #strip.is-collapsed, #stripDiag.is-collapsed{ max-height:0!important; opacity:0; transform:translateY(6px); pointer-events:none; margin-top:0!important; margin-bottom:0!important; border-width:0; }
+    /* Transición y colapso para todas las tiras */
+    #strip, #stripDiag, #stripVal{ overflow:hidden; transition:max-height .35s ease, opacity .25s ease, transform .35s ease; }
+    #strip.is-collapsed, #stripDiag.is-collapsed, #stripVal.is-collapsed{ max-height:0!important; opacity:0; transform:translateY(6px); pointer-events:none; margin-top:0!important; margin-bottom:0!important; border-width:0; }
   </style>
 
   <!-- Pinta verde la tarjeta ODA si el LinkButton existe/habilitado -->
@@ -876,6 +880,111 @@
 
 
     <asp:HiddenField ID="hidDiagSrc" runat="server" ClientIDMode="Static" />
+  </div>
+
+  <!-- ====== CONTENEDOR VALUACIÓN ====== -->
+  <div id="valSection" class="d-none">
+    <div class="d-flex justify-content-center mt-3">
+      <button type="button" id="btnToggleStripVal" class="btn-toggle-strip" data-target="#stripVal" title="Mostrar/Ocultar valuación">
+        <i class="bi bi-calculator"></i>
+        PROCESO VALUACIÓN
+        <i class="bi bi-chevron-down chev"></i>
+      </button>
+    </div>
+
+    <div id="stripVal" class="card-pane doc-strip compacto p-2 mt-4">
+      <!-- === FILA DE FECHAS === -->
+      <div class="row g-2 mb-3">
+        <div class="col text-center">
+          <small class="text-muted d-block">Fecha Inicio Valuación</small>
+          <asp:Label ID="lblFechaIniVal" runat="server" Text="—" ClientIDMode="Static" CssClass="fw-bold" />
+        </div>
+        <div class="col text-center">
+          <small class="text-muted d-block">Fecha límite envío valuación</small>
+          <asp:Label ID="lblFechaLimEnvVal" runat="server" Text="—" ClientIDMode="Static" CssClass="fw-bold" />
+        </div>
+        <div class="col text-center">
+          <small class="text-muted d-block">Fecha envío valuación</small>
+          <asp:Label ID="lblFechaEnvVal" runat="server" Text="—" ClientIDMode="Static" CssClass="fw-bold" />
+        </div>
+        <div class="col text-center">
+          <small class="text-muted d-block">Fecha autorización valuación</small>
+          <asp:Label ID="lblFechaAutVal" runat="server" Text="—" ClientIDMode="Static" CssClass="fw-bold" />
+        </div>
+        <div class="col text-center">
+          <small class="text-muted d-block">Fecha límite autorización</small>
+          <asp:Label ID="lblFechaLimAutVal" runat="server" Text="—" ClientIDMode="Static" CssClass="fw-bold" />
+        </div>
+      </div>
+
+      <!-- === TILES DE DOCUMENTOS === -->
+      <div class="doc-strip-grid">
+        <!-- Hoja de trabajo sin autorizar -->
+        <div id="tileHojaTrabajo" runat="server" class="tile compacto">
+          <div class="title">Hoja trabajo sin autorizar</div>
+          <div class="icon-row compacto">
+            <a href="#" class="icon-btn compacto" id="btnSubirHojaTrabajo" title="Subir hoja de trabajo">
+              <i class="bi bi-cloud-upload"></i>
+            </a>
+            <asp:LinkButton ID="btnVerHojaTrabajo" runat="server" CssClass="icon-btn compacto" ToolTip="Ver hoja de trabajo" aria-label="Ver hoja de trabajo">
+              <i class="bi bi-eye"></i>
+            </asp:LinkButton>
+          </div>
+        </div>
+
+        <!-- Valuación sin autorizar PDF -->
+        <div id="tileValSinAut" runat="server" class="tile compacto">
+          <div class="title">Valuación sin autorizar</div>
+          <div class="icon-row compacto">
+            <a href="#" class="icon-btn compacto" id="btnSubirValSinAut" title="Subir valuación sin autorizar">
+              <i class="bi bi-cloud-upload"></i>
+            </a>
+            <asp:LinkButton ID="btnVerValSinAut" runat="server" CssClass="icon-btn compacto" ToolTip="Ver valuación sin autorizar" aria-label="Ver valuación sin autorizar">
+              <i class="bi bi-eye"></i>
+            </asp:LinkButton>
+          </div>
+        </div>
+
+        <!-- Valuación autorizada PDF -->
+        <div id="tileValAutPdf" runat="server" class="tile compacto">
+          <div class="title">Valuación autorizada PDF</div>
+          <div class="icon-row compacto">
+            <a href="#" class="icon-btn compacto" id="btnSubirValAutPdf" title="Subir valuación autorizada PDF">
+              <i class="bi bi-cloud-upload"></i>
+            </a>
+            <asp:LinkButton ID="btnVerValAutPdf" runat="server" CssClass="icon-btn compacto" ToolTip="Ver valuación autorizada PDF" aria-label="Ver valuación autorizada PDF">
+              <i class="bi bi-eye"></i>
+            </asp:LinkButton>
+          </div>
+        </div>
+
+        <!-- Hoja de trabajo autorizada -->
+        <div id="tileHojaTrabajoAut" runat="server" class="tile compacto">
+          <div class="title">Hoja trabajo autorizada</div>
+          <div class="icon-row compacto">
+            <a href="#" class="icon-btn compacto" id="btnSubirHojaTrabajoAut" title="Subir hoja de trabajo autorizada">
+              <i class="bi bi-cloud-upload"></i>
+            </a>
+            <asp:LinkButton ID="btnVerHojaTrabajoAut" runat="server" CssClass="icon-btn compacto" ToolTip="Ver hoja de trabajo autorizada" aria-label="Ver hoja de trabajo autorizada">
+              <i class="bi bi-eye"></i>
+            </asp:LinkButton>
+          </div>
+        </div>
+
+        <!-- Seguimiento a complementos -->
+        <div id="tileSeguimientoCompl" runat="server" class="tile compacto">
+          <div class="title">Seguimiento complementos</div>
+          <div class="icon-row compacto">
+            <a href="#" class="icon-btn compacto" id="btnSubirSeguimientoCompl" title="Subir seguimiento a complementos">
+              <i class="bi bi-cloud-upload"></i>
+            </a>
+            <asp:LinkButton ID="btnVerSeguimientoCompl" runat="server" CssClass="icon-btn compacto" ToolTip="Ver seguimiento a complementos" aria-label="Ver seguimiento a complementos">
+              <i class="bi bi-eye"></i>
+            </asp:LinkButton>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Hidden helpers -->
@@ -1777,6 +1886,37 @@
             } catch (e) { }
         };
 
+        // ---------- Mostrar/ocultar valuación (visible cuando diagnóstico completo) ----------
+        function refreshValVisibility() {
+            const valWrap = document.getElementById('valSection');
+            const valBtn = document.getElementById('btnToggleStripVal');
+            const valStrip = document.getElementById('stripVal');
+            if (!valWrap) return;
+
+            // Mostrar valuación cuando ambos tiles de diagnóstico están en verde
+            const tileMec = document.getElementById('tileMec');
+            const tileCol = document.getElementById('tileCol');
+            const chkMec = document.getElementById('chkMecSi');
+            const chkHoja = document.getElementById('chkHojaSi');
+
+            // Mostrar si: (tileMec verde Y chkMecSi) O (tileCol verde Y chkHojaSi)
+            const mecOk = tileMec && tileMec.classList.contains('ok') && chkMec && chkMec.checked;
+            const hojaOk = tileCol && tileCol.classList.contains('ok') && chkHoja && chkHoja.checked;
+
+            if (mecOk || hojaOk) {
+                valWrap.classList.remove('d-none');
+                if (valBtn && valStrip) refreshIndicatorsFor(valStrip, valBtn);
+            } else {
+                if (valBtn && valStrip && !valStrip.classList.contains('is-collapsed')) {
+                    collapse(valStrip, valBtn, true);
+                }
+                valWrap.classList.add('d-none');
+            }
+        }
+
+        // Expone refresco de valuación
+        window.__refreshValVisibility = refreshValVisibility;
+
         // Expone refresco para que el servidor pueda llamarlo
         window.__refreshDiagVisibility = refreshDiagVisibility;
 
@@ -1837,10 +1977,12 @@
         document.addEventListener('DOMContentLoaded', function () {
             initAllToggles();
             ensureDiagTimer();
+            refreshValVisibility();
         });
         window.addEventListener('pageshow', function () {
             initAllToggles();
             refreshDiagVisibility();
+            refreshValVisibility();
             ensureDiagTimer();
         });
 
@@ -1850,6 +1992,7 @@
                 prm.add_endRequest(() => setTimeout(() => {
                     initAllToggles();
                     refreshDiagVisibility();
+                    refreshValVisibility();
                     ensureDiagTimer();
                 }, 60));
             } catch (e) { }
@@ -2808,6 +2951,10 @@
                    if (typeof applyDiagGateUI === 'function') {
                        applyDiagGateUI();
                    }
+                   // Refrescar visibilidad de valuación
+                   if (typeof refreshValVisibility === 'function') {
+                       refreshValVisibility();
+                   }
                }
                if (e.data && e.data.type === 'HOJA_UPDATED') {
                    // Actualizar el label de fin diagnóstico sin recargar
@@ -2832,6 +2979,10 @@
                    // Actualizar estado del botón de diagnóstico
                    if (typeof applyDiagGateUI === 'function') {
                        applyDiagGateUI();
+                   }
+                   // Refrescar visibilidad de valuación
+                   if (typeof refreshValVisibility === 'function') {
+                       refreshValVisibility();
                    }
                }
            });
