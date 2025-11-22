@@ -3184,11 +3184,11 @@
                 setFlagUI('flagMec', 'icoMec', !!mec);
                 setFlagUI('flagHoja', 'icoHoja', !!hoja);
 
-                // Bloquear/permitir clic visualmente (pointer-events: none ya existe en .disabled)
-                const lnkM = document.querySelector('a#<%= btnDiagnosticoMecanica.ClientID %>');
-                const lnkH = document.querySelector('a#<%= btnDiagnosticoHojalateria.ClientID %>');
-                if(lnkM) lnkM.classList.toggle('disabled', !mec);
-                if(lnkH) lnkH.classList.toggle('disabled', !hoja);
+                // TEMPORALMENTE DESHABILITADO: No bloquear los botones
+                // const lnkM = document.querySelector('a#<%= btnDiagnosticoMecanica.ClientID %>');
+                // const lnkH = document.querySelector('a#<%= btnDiagnosticoHojalateria.ClientID %>');
+                // if(lnkM) lnkM.classList.toggle('disabled', !mec);
+                // if(lnkH) lnkH.classList.toggle('disabled', !hoja);
 
                 // Actualizar estado del botón PROCESO DE DIAGNOSTICO y el contenedor
                 const btnDiag = document.getElementById('btnToggleStripDiag');
@@ -3248,31 +3248,9 @@
             // Exponer globalmente para que pueda ser llamada desde otros scripts
             window.applyDiagGateUI = applyDiagGateUI;
 
-            // Endurecemos openDiagPage: si está en rojo, no abrimos
-            const __origOpenDiagPage = window.openDiagPage;
-            window.openDiagPage = function (pageUrl) {
-                const isMec = /Mecanica\.aspx$/i.test(pageUrl);
-                const isHoja = /Hojalateria\.aspx$/i.test(pageUrl);
-                const allowMec = !!document.getElementById('chkMecSi')?.checked;
-                const allowHoja = !!document.getElementById('chkHojaSi')?.checked;
-
-                // DEBUG: Mostrar estado de checkboxes
-                console.log('openDiagPage llamada:', pageUrl);
-                console.log('chkMecSi checked:', allowMec);
-                console.log('chkHojaSi checked:', allowHoja);
-                console.log('__origOpenDiagPage es función:', typeof __origOpenDiagPage === 'function');
-
-                if ((isMec && !allowMec) || (isHoja && !allowHoja)) {
-                    alert('Este módulo está bloqueado (rojo). Activa el switch para continuar.');
-                    return false;
-                }
-                if (typeof __origOpenDiagPage === 'function') {
-                    return __origOpenDiagPage(pageUrl);
-                } else {
-                    console.error('__origOpenDiagPage no es una función!');
-                    alert('Error: función openDiagPage original no encontrada');
-                }
-            };
+            // TEMPORALMENTE: openDiagPage sin validaciones para debug
+            // La función original ya está definida arriba, solo la exponemos
+            // No sobrescribimos para evitar problemas de captura
         })();
     </script>
 
