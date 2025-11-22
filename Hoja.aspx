@@ -1398,7 +1398,7 @@
         <div class="modal-body">
           <div class="mb-3">
             <label class="form-label">Seleccione el archivo PDF</label>
-            <asp:FileUpload ID="fuValSinAut" runat="server" CssClass="form-control" ClientIDMode="Static" />
+            <asp:FileUpload ID="fuValSinAut" runat="server" CssClass="form-control" ClientIDMode="Static" accept=".pdf" />
             <div class="form-text">Se guardará como <strong>valsin.pdf</strong> en <em>4. VALUACION</em>.</div>
           </div>
         </div>
@@ -1436,7 +1436,7 @@
         <div class="modal-body">
           <div class="mb-3">
             <label class="form-label">Seleccione el archivo PDF</label>
-            <asp:FileUpload ID="fuValAutPdf" runat="server" CssClass="form-control" ClientIDMode="Static" />
+            <asp:FileUpload ID="fuValAutPdf" runat="server" CssClass="form-control" ClientIDMode="Static" accept=".pdf" />
             <div class="form-text">Se guardará como <strong>valaut.pdf</strong> en <em>4. VALUACION</em>.</div>
           </div>
         </div>

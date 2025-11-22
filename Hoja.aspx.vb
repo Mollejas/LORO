@@ -404,6 +404,7 @@ END"
             CargarFinesDiagnostico(admId)
             ProcesarValuacion(admId)
             CargarFechasValuacion(admId)
+            PintarTilesValuacion()
         End If
         ' <<< ADD
 
@@ -2291,6 +2292,27 @@ Paint:
             chkHojaSi.Checked = False
         End If
     End Sub
+
+    Private Sub PintarTilesValuacion()
+        Dim tileValSin As HtmlGenericControl = TryCast(FindControlRecursive(Me, "tileValSinAut"), HtmlGenericControl)
+        Dim tileValAut As HtmlGenericControl = TryCast(FindControlRecursive(Me, "tileValAutPdf"), HtmlGenericControl)
+
+        If String.IsNullOrWhiteSpace(hidCarpeta.Value) Then
+            SetTileOk(tileValSin, False)
+            SetTileOk(tileValAut, False)
+            Exit Sub
+        End If
+
+        Dim baseFolder As String = ResolverCarpetaFisica(hidCarpeta.Value)
+        Dim valFolder As String = Path.Combine(baseFolder, "4. VALUACION")
+
+        Dim hasValSin As Boolean = File.Exists(Path.Combine(valFolder, "valsin.pdf"))
+        Dim hasValAut As Boolean = File.Exists(Path.Combine(valFolder, "valaut.pdf"))
+
+        SetTileOk(tileValSin, hasValSin)
+        SetTileOk(tileValAut, hasValAut)
+    End Sub
+
     Private Sub CargarFinesDiagnostico(admId As Integer)
         Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
         Dim finMecObj As Object = Nothing
@@ -2509,6 +2531,9 @@ Paint:
             CargarFechasValuacion(admId)
         End If
 
+        ' Pintar tiles
+        PintarTilesValuacion()
+
         ' Abrir modal de visualización automáticamente
         Dim url As String = ResolveUrl("~/ViewPdf.ashx?id=" & hidId.Value & "&kind=valsin&v=" & DateTime.Now.Ticks.ToString())
         EmitStartupScript("autoOpenValSin", "
@@ -2565,6 +2590,9 @@ Paint:
             ' Recargar fechas
             CargarFechasValuacion(admId)
         End If
+
+        ' Pintar tiles
+        PintarTilesValuacion()
 
         ' Abrir modal de visualización automáticamente
         Dim url As String = ResolveUrl("~/ViewPdf.ashx?id=" & hidId.Value & "&kind=valaut&v=" & DateTime.Now.Ticks.ToString())
