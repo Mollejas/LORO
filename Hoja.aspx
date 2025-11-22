@@ -502,6 +502,21 @@
 }
 .tile-disabled{ opacity:.55; pointer-events:none; filter:grayscale(.5); }
 
+/* === Estilos para Hoja de Trabajo Grid === */
+.ht-grid { font-size: 0.85rem; }
+.ht-grid th { vertical-align: middle !important; }
+.ht-toggle {
+  cursor: pointer;
+  display: inline-block;
+  min-width: 20px;
+  font-weight: bold;
+  user-select: none;
+}
+.ht-toggle:hover { opacity: 0.7; }
+.ht-si { color: #16a34a; } /* verde */
+.ht-no { color: #dc2626; } /* rojo */
+.ht-status { color: #2563eb; } /* azul */
+
 </style>
 
 
@@ -1386,7 +1401,7 @@
 
   <!-- ===================== MODAL: Hoja de Trabajo Sin Autorizar ===================== -->
   <div class="modal fade" id="modalHojaTrabajo" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-dialog modal-fullscreen">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Hoja de Trabajo Sin Autorizar</h5>
@@ -1426,23 +1441,53 @@
           <!-- GridViews de Mecánica -->
           <h6 class="fw-bold text-primary mb-2"><i class="bi bi-wrench"></i> Mecánica</h6>
           <div class="row mb-4">
-            <div class="col-md-6">
+            <div class="col-lg-6">
               <h6 class="text-muted">Reparación</h6>
-              <asp:GridView ID="gvMecReparacion" runat="server" CssClass="table table-sm table-striped table-bordered" AutoGenerateColumns="False" EmptyDataText="Sin registros">
+              <asp:GridView ID="gvMecReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
                 <Columns>
-                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="50px" />
+                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                   <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
+                  <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# If(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# If(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# If(Eval("estatus")?.ToString() = "P", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# If(Eval("estatus")?.ToString() = "E", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# If(Eval("estatus")?.ToString() = "D", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
                 </Columns>
               </asp:GridView>
             </div>
-            <div class="col-md-6">
+            <div class="col-lg-6">
               <h6 class="text-muted">Sustitución</h6>
-              <asp:GridView ID="gvMecSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered" AutoGenerateColumns="False" EmptyDataText="Sin registros">
+              <asp:GridView ID="gvMecSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
                 <Columns>
-                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="50px" />
+                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                   <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
+                  <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# If(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# If(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# If(Eval("estatus")?.ToString() = "P", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# If(Eval("estatus")?.ToString() = "E", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# If(Eval("estatus")?.ToString() = "D", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
                 </Columns>
               </asp:GridView>
             </div>
@@ -1451,23 +1496,53 @@
           <!-- GridViews de Hojalatería -->
           <h6 class="fw-bold text-warning mb-2"><i class="bi bi-tools"></i> Hojalatería</h6>
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-lg-6">
               <h6 class="text-muted">Reparación</h6>
-              <asp:GridView ID="gvHojReparacion" runat="server" CssClass="table table-sm table-striped table-bordered" AutoGenerateColumns="False" EmptyDataText="Sin registros">
+              <asp:GridView ID="gvHojReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
                 <Columns>
-                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="50px" />
+                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                   <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
+                  <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# If(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# If(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# If(Eval("estatus")?.ToString() = "P", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# If(Eval("estatus")?.ToString() = "E", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# If(Eval("estatus")?.ToString() = "D", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
                 </Columns>
               </asp:GridView>
             </div>
-            <div class="col-md-6">
+            <div class="col-lg-6">
               <h6 class="text-muted">Sustitución</h6>
-              <asp:GridView ID="gvHojSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered" AutoGenerateColumns="False" EmptyDataText="Sin registros">
+              <asp:GridView ID="gvHojSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
                 <Columns>
-                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="50px" />
+                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                   <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
+                  <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# If(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# If(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# If(Eval("estatus")?.ToString() = "P", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# If(Eval("estatus")?.ToString() = "E", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# If(Eval("estatus")?.ToString() = "D", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
                 </Columns>
               </asp:GridView>
             </div>
@@ -3187,6 +3262,45 @@
                }
            });
        });
+   </script>
+
+   <script>
+   // Toggle handlers para Hoja de Trabajo
+   document.addEventListener('click', function(e) {
+       const toggle = e.target.closest('.ht-toggle');
+       if (!toggle) return;
+
+       const id = toggle.dataset.id;
+       const field = toggle.dataset.field;
+       const val = toggle.dataset.val;
+
+       // Encontrar la fila
+       const row = toggle.closest('tr');
+       if (!row) return;
+
+       if (field === 'autorizado') {
+           // Toggle Si/No - mutuamente excluyente
+           const siSpan = row.querySelector('.ht-si');
+           const noSpan = row.querySelector('.ht-no');
+
+           if (val === '1') {
+               siSpan.textContent = '✓';
+               noSpan.textContent = '';
+           } else {
+               siSpan.textContent = '';
+               noSpan.textContent = '✗';
+           }
+       } else if (field === 'estatus') {
+           // Toggle P/E/D - mutuamente excluyente
+           const statusSpans = row.querySelectorAll('.ht-status');
+           statusSpans.forEach(span => {
+               span.textContent = span.dataset.val === val ? '●' : '';
+           });
+       }
+
+       // Enviar al servidor (opcional - por ahora solo visual)
+       // fetch('UpdateRefaccion.ashx', { method: 'POST', body: JSON.stringify({id, field, val}) });
+   });
    </script>
 
 
