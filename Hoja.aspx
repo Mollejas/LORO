@@ -186,16 +186,14 @@
     /* Espaciado consistente entre toggles */
     #diagSection > .d-flex, #valSection > .d-flex{margin-top:1rem!important;}
 
-    /* Todas las tiras con mismo estilo base */
+    /* Todas las tiras con mismo estilo base y altura consistente */
     #strip, #stripDiag, #stripVal{
       max-width:100%;
       box-sizing:border-box;
       margin-left:auto;
       margin-right:auto;
+      min-height:120px;
     }
-
-    /* Altura mínima consistente para las tiras */
-    .doc-strip.compacto{min-height:auto;}
   </style>
 
   <!-- Pinta verde la tarjeta ODA si el LinkButton existe/habilitado -->
