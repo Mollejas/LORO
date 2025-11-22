@@ -154,6 +154,10 @@
     #btnToggleStrip.blink-danger{animation:blinkBtnDanger 1.1s ease-in-out infinite!important;background:#fee2e2!important;border-color:#ef4444!important;color:#dc2626!important;}
     @keyframes blinkBtnDanger{0%{box-shadow:0 0 0 0 rgba(239,68,68,.55);}50%{box-shadow:0 0 0 8px rgba(239,68,68,0);}100%{box-shadow:0 0 0 0 rgba(239,68,68,.55);}}
     #btnToggleStrip.blink-success{background:#dcfce7!important;border-color:#16a34a!important;color:#15803d!important;}
+
+    /* Blink para botón PROCESO DE DIAGNOSTICO */
+    #btnToggleStripDiag.blink-danger{animation:blinkBtnDanger 1.1s ease-in-out infinite!important;background:#fee2e2!important;border-color:#ef4444!important;color:#dc2626!important;}
+    #btnToggleStripDiag.blink-success{background:#dcfce7!important;border-color:#16a34a!important;color:#15803d!important;}
     #strip{overflow:hidden;transition:max-height .35s ease,opacity .25s ease,transform .35s ease;}
     #strip.is-collapsed{max-height:0!important;opacity:0;transform:translateY(6px);pointer-events:none;margin-top:0!important;margin-bottom:0!important;border-width:0;}
 
@@ -2689,10 +2693,32 @@
 
                 // Bloquear/permitir clic visualmente (pointer-events: none ya existe en .disabled)
                 const lnkM = document.querySelector('a#<%= btnDiagnosticoMecanica.ClientID %>');
-      const lnkH = document.querySelector('a#<%= btnDiagnosticoHojalateria.ClientID %>');
-    if(lnkM) lnkM.classList.toggle('disabled', !mec);
-    if(lnkH) lnkH.classList.toggle('disabled', !hoja);
-  }
+                const lnkH = document.querySelector('a#<%= btnDiagnosticoHojalateria.ClientID %>');
+                if(lnkM) lnkM.classList.toggle('disabled', !mec);
+                if(lnkH) lnkH.classList.toggle('disabled', !hoja);
+
+                // Actualizar estado del botón PROCESO DE DIAGNOSTICO
+                const btnDiag = document.getElementById('btnToggleStripDiag');
+                const tileMec = document.getElementById('tileMec');
+                const tileCol = document.getElementById('tileCol');
+
+                if (btnDiag) {
+                    const mecOk = tileMec && tileMec.classList.contains('ok');
+                    const hojaOk = tileCol && tileCol.classList.contains('ok');
+
+                    // Si algún checkbox está activo pero su tile no está verde -> parpadear rojo
+                    const mecPending = mec && !mecOk;
+                    const hojaPending = hoja && !hojaOk;
+                    const anyPending = mecPending || hojaPending;
+
+                    // Si hay al menos un checkbox activo y todos los activos están verdes -> verde
+                    const anyActive = mec || hoja;
+                    const allActiveOk = (!mec || mecOk) && (!hoja || hojaOk) && anyActive;
+
+                    btnDiag.classList.toggle('blink-danger', anyPending);
+                    btnDiag.classList.toggle('blink-success', allActiveOk && !anyPending);
+                }
+            }
 
   function saveGate(area, enabled){
     const idTxt = (document.getElementById('lblId')?.textContent || document.getElementById('hidId')?.value || '0').trim();
@@ -2720,6 +2746,9 @@
             });
 
             document.addEventListener('DOMContentLoaded', applyDiagGateUI);
+
+            // Exponer globalmente para que pueda ser llamada desde otros scripts
+            window.applyDiagGateUI = applyDiagGateUI;
 
             // Endurecemos openDiagPage: si está en rojo, no abrimos
             const __origOpenDiagPage = window.openDiagPage;
@@ -2766,6 +2795,10 @@
                        if (!tile.classList.contains('ok')) {
                            tile.classList.add('ok');
                        }
+                   }
+                   // Actualizar estado del botón de diagnóstico
+                   if (typeof applyDiagGateUI === 'function') {
+                       applyDiagGateUI();
                    }
                }
            });
