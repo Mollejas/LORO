@@ -522,6 +522,22 @@
 .ht-no { color: #dc2626; } /* rojo */
 .ht-status { color: #2563eb; } /* azul */
 
+/* Ocultar solo los placeholders vacíos (○) de estatus cuando no están validados */
+.ht-status-hidden .ht-status:empty::after { content: none !important; }
+.ht-status-hidden .ht-status { cursor: default !important; }
+.ht-status-hidden .ht-status:hover { background: transparent !important; }
+
+/* Bloquear autorización cuando está validado */
+.ht-auth-locked .ht-si,
+.ht-auth-locked .ht-no {
+    cursor: not-allowed !important;
+    opacity: 0.6;
+}
+.ht-auth-locked .ht-si:hover,
+.ht-auth-locked .ht-no:hover {
+    background: transparent !important;
+}
+
 </style>
 
 
@@ -3321,10 +3337,27 @@
                return;
            }
 
+           // Verificar si las 3 validaciones están completas
+           const hfValidado = document.getElementById('<%= hfHTValidado.ClientID %>');
+           const validado = hfValidado && hfValidado.value === '1';
+
+           const field = toggle.dataset.field;
+
+           // Si las 3 validaciones están completas, bloquear cambios en autorización
+           if (validado && field === 'autorizado') {
+               console.log('Cambios bloqueados: las 3 validaciones están completas');
+               return;
+           }
+
+           // Si NO están las 3 validaciones, bloquear cambios en estatus
+           if (!validado && field === 'estatus') {
+               console.log('Estatus bloqueado: faltan validaciones');
+               return;
+           }
+
            console.log('Toggle encontrado:', toggle);
 
            const id = toggle.dataset.id;
-           const field = toggle.dataset.field;
            const val = toggle.dataset.val;
 
            console.log('Datos:', { id, field, val });
@@ -3366,6 +3399,39 @@
                })
                .catch(err => console.error('Error:', err));
        });
+
+       // Función para actualizar visibilidad de estatus y bloqueo de autorización
+       function updateHTGridState() {
+           const hfValidado = document.getElementById('<%= hfHTValidado.ClientID %>');
+           const validado = hfValidado && hfValidado.value === '1';
+           const modal = document.getElementById('modalHojaTrabajo');
+
+           if (!modal) return;
+
+           const grids = modal.querySelectorAll('.ht-grid');
+           grids.forEach(grid => {
+               if (validado) {
+                   // Las 3 validaciones completas: mostrar estatus, bloquear autorización
+                   grid.classList.remove('ht-status-hidden');
+                   grid.classList.add('ht-auth-locked');
+               } else {
+                   // Faltan validaciones: ocultar estatus, permitir autorización
+                   grid.classList.add('ht-status-hidden');
+                   grid.classList.remove('ht-auth-locked');
+               }
+           });
+       }
+
+       // Actualizar estado cuando se abre el modal
+       document.getElementById('modalHojaTrabajo')?.addEventListener('shown.bs.modal', updateHTGridState);
+
+       // También actualizar después de un postback
+       if (typeof Sys !== 'undefined' && Sys.WebForms) {
+           Sys.WebForms.PageRequestManager.getInstance().add_endRequest(updateHTGridState);
+       }
+
+       // Ejecutar al cargar
+       document.addEventListener('DOMContentLoaded', updateHTGridState);
    </script>
 
 
