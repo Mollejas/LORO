@@ -170,7 +170,7 @@
 
     /* Transición y colapso para todas las tiras */
     #strip, #stripDiag, #stripVal{ overflow:hidden; transition:max-height .35s ease, opacity .25s ease, transform .35s ease; }
-    #strip.is-collapsed, #stripDiag.is-collapsed, #stripVal.is-collapsed{ max-height:0!important; opacity:0; transform:translateY(6px); pointer-events:none; margin:0!important; padding:0!important; border-width:0; }
+    #strip.is-collapsed, #stripDiag.is-collapsed, #stripVal.is-collapsed{ max-height:0!important; min-height:0!important; height:0!important; opacity:0; transform:translateY(6px); pointer-events:none; margin:0!important; padding:0!important; border-width:0; }
 
     /* Tiles de fechas en valuación */
     .fecha-tile{min-height:60px!important;padding:8px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;}
