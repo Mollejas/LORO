@@ -2372,19 +2372,7 @@
       };
     }
     function openDiagPage(pageUrl) {
-      // Destruir TODOS los modales (no solo los visibles) antes de abrir diagModal
-      document.querySelectorAll('.modal').forEach(function(m) {
-        if (m.id === 'diagModal') return;
-        var instance = bootstrap.Modal.getInstance(m);
-        if (instance) {
-          instance.dispose();
-        }
-        m.classList.remove('show');
-        m.style.display = '';
-        m.removeAttribute('aria-modal');
-        m.removeAttribute('role');
-      });
-      // Limpiar backdrops huérfanos
+      // Limpiar backdrops huérfanos primero
       document.querySelectorAll('.modal-backdrop').forEach(function(b) { b.remove(); });
       document.body.classList.remove('modal-open');
       document.body.style.overflow = '';
@@ -2392,22 +2380,29 @@
 
       const iframe = document.getElementById('diagFrame');
       const modalEl = document.getElementById('diagModal');
-      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
 
+      if (!modalEl || !iframe) {
+        alert('Error: No se encontró diagModal o diagFrame');
+        return;
+      }
+
+      // Construir URL
       const d = getExpedienteData();
       const qs = new URLSearchParams(d).toString();
       const finalUrl = pageUrl + '?' + qs;
 
+      // Cargar iframe
       iframe.src = finalUrl;
-      iframe.onload = () => {
-        try {
-          iframe.contentWindow.postMessage({ type: 'EXP_PREFILL', payload: d }, window.location.origin);
-        } catch (e) { console.warn('postMessage falló:', e); }
-      };
 
+      // Disponer modal existente si hay
+      var existing = bootstrap.Modal.getInstance(modalEl);
+      if (existing) {
+        existing.dispose();
+      }
+
+      // Crear nuevo modal y mostrar
+      var modal = new bootstrap.Modal(modalEl);
       modal.show();
-      const hid = document.getElementById('hidDiagSrc');
-      if (hid) hid.value = finalUrl;
     }
     window.addEventListener('message', (e) => {
       if (e.origin !== window.location.origin) return;
