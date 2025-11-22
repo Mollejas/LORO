@@ -2372,6 +2372,16 @@
       };
     }
     window.openDiagPage = function(pageUrl) {
+      // Verificar si el módulo está habilitado
+      const isMec = /Mecanica\.aspx$/i.test(pageUrl);
+      const isHoja = /Hojalateria\.aspx$/i.test(pageUrl);
+      const allowMec = !!document.getElementById('chkMecSi')?.checked;
+      const allowHoja = !!document.getElementById('chkHojaSi')?.checked;
+      if ((isMec && !allowMec) || (isHoja && !allowHoja)) {
+        alert('Este módulo está bloqueado (rojo). Activa el switch para continuar.');
+        return false;
+      }
+
       // Destruir TODOS los modales (no solo los visibles) antes de abrir diagModal
       document.querySelectorAll('.modal').forEach(function(m) {
         if (m.id === 'diagModal') return; // No destruir el que vamos a abrir
@@ -3254,19 +3264,6 @@
             // Exponer globalmente para que pueda ser llamada desde otros scripts
             window.applyDiagGateUI = applyDiagGateUI;
 
-            // Endurecemos openDiagPage: si está en rojo, no abrimos
-            const __origOpenDiagPage = window.openDiagPage;
-            window.openDiagPage = function (pageUrl) {
-                const isMec = /Mecanica\.aspx$/i.test(pageUrl);
-                const isHoja = /Hojalateria\.aspx$/i.test(pageUrl);
-                const allowMec = !!document.getElementById('chkMecSi')?.checked;
-                const allowHoja = !!document.getElementById('chkHojaSi')?.checked;
-                if ((isMec && !allowMec) || (isHoja && !allowHoja)) {
-                    alert('Este módulo está bloqueado (rojo). Activa el switch para continuar.');
-                    return false;
-                }
-                if (typeof __origOpenDiagPage === 'function') return __origOpenDiagPage(pageUrl);
-            };
         })();
     </script>
 
