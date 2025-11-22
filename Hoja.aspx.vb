@@ -2374,16 +2374,16 @@ Paint:
         End Using
     End Sub
 
-    ' Calcular fecha límite agregando horas hábiles (L-V 8am-7pm)
+    ' Calcular fecha límite agregando horas hábiles (L-V 8am-7pm) con minutos
     Private Function CalcularFechaLimite(fechaInicio As DateTime, horasHabiles As Integer) As DateTime
         Dim resultado As DateTime = fechaInicio
-        Dim horasRestantes As Integer = horasHabiles
+        Dim minutosRestantes As Integer = horasHabiles * 60
 
-        ' Horario laboral: 8:00 AM a 7:00 PM (11 horas por día)
+        ' Horario laboral: 8:00 AM a 7:00 PM (11 horas por día = 660 minutos)
         Dim horaInicio As Integer = 8
         Dim horaFin As Integer = 19
 
-        While horasRestantes > 0
+        While minutosRestantes > 0
             ' Si es fin de semana, avanzar al lunes
             If resultado.DayOfWeek = DayOfWeek.Saturday Then
                 resultado = resultado.AddDays(2).Date.AddHours(horaInicio)
@@ -2404,16 +2404,17 @@ Paint:
                 Continue While
             End If
 
-            ' Calcular horas disponibles hoy
-            Dim horasDisponiblesHoy As Integer = horaFin - resultado.Hour
+            ' Calcular minutos disponibles hoy (desde la hora:minuto actual hasta las 19:00)
+            Dim finHoy As DateTime = resultado.Date.AddHours(horaFin)
+            Dim minutosDisponiblesHoy As Integer = CInt((finHoy - resultado).TotalMinutes)
 
-            If horasRestantes <= horasDisponiblesHoy Then
+            If minutosRestantes <= minutosDisponiblesHoy Then
                 ' Podemos completar hoy
-                resultado = resultado.AddHours(horasRestantes)
-                horasRestantes = 0
+                resultado = resultado.AddMinutes(minutosRestantes)
+                minutosRestantes = 0
             Else
-                ' Usar las horas disponibles hoy y continuar mañana
-                horasRestantes -= horasDisponiblesHoy
+                ' Usar los minutos disponibles hoy y continuar mañana
+                minutosRestantes -= minutosDisponiblesHoy
                 resultado = resultado.AddDays(1).Date.AddHours(horaInicio)
             End If
         End While
