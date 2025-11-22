@@ -671,6 +671,71 @@ Partial Public Class Hoja
     Protected WithEvents btnDeleteDiag As Global.System.Web.UI.WebControls.LinkButton
 
     '''<summary>
+    '''Control hfHTValidado.
+    '''</summary>
+    Protected WithEvents hfHTValidado As Global.System.Web.UI.WebControls.HiddenField
+
+    '''<summary>
+    '''Control litValRef1.
+    '''</summary>
+    Protected WithEvents litValRef1 As Global.System.Web.UI.WebControls.Literal
+
+    '''<summary>
+    '''Control litValRef2.
+    '''</summary>
+    Protected WithEvents litValRef2 As Global.System.Web.UI.WebControls.Literal
+
+    '''<summary>
+    '''Control litValRef3.
+    '''</summary>
+    Protected WithEvents litValRef3 As Global.System.Web.UI.WebControls.Literal
+
+    '''<summary>
+    '''Control ddlValRef1.
+    '''</summary>
+    Protected WithEvents ddlValRef1 As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''Control ddlValRef2.
+    '''</summary>
+    Protected WithEvents ddlValRef2 As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''Control ddlValRef3.
+    '''</summary>
+    Protected WithEvents ddlValRef3 As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''Control txtPassValRef1.
+    '''</summary>
+    Protected WithEvents txtPassValRef1 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtPassValRef2.
+    '''</summary>
+    Protected WithEvents txtPassValRef2 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtPassValRef3.
+    '''</summary>
+    Protected WithEvents txtPassValRef3 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control btnValidarRef1.
+    '''</summary>
+    Protected WithEvents btnValidarRef1 As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''Control btnValidarRef2.
+    '''</summary>
+    Protected WithEvents btnValidarRef2 As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''Control btnValidarRef3.
+    '''</summary>
+    Protected WithEvents btnValidarRef3 As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
     '''Propiedad Master.
     '''</summary>
     '''<remarks>
