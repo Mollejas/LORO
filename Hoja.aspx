@@ -179,6 +179,15 @@
 
     /* Consistencia de ancho máximo para todas las tiras */
     #strip, #stripDiag, #stripVal{max-width:100%;box-sizing:border-box;}
+
+    /* Asegurar mismo tamaño para todos los toggle buttons */
+    .btn-toggle-strip{min-width:280px;padding:10px 20px;font-size:.9rem;display:inline-flex;align-items:center;justify-content:center;gap:8px;}
+
+    /* Contenedores de las secciones con mismo ancho */
+    #diagSection, #valSection{width:100%;}
+
+    /* Espaciado consistente entre toggles */
+    #diagSection > .d-flex, #valSection > .d-flex{margin-top:1rem!important;}
   </style>
 
   <!-- Pinta verde la tarjeta ODA si el LinkButton existe/habilitado -->
