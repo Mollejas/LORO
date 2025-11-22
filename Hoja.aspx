@@ -819,8 +819,8 @@
 
         <div id="flagMec" runat="server" ClientIDMode="Static" class="diag-flag off">
           <asp:CheckBox ID="chkMecSi" runat="server" ClientIDMode="Static" CssClass="form-check-input" />
-          <i id="icoMec" runat="server" ClientIDMode="Static" class="bi bi-x-circle-fill" aria-hidden="true"></i>
-          <span class="state">Bloqueado</span>
+          <i id="icoMec" runat="server" ClientIDMode="Static" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
+          <span class="state">Deshabilitado</span>
         </div>
 
         <div class="icon-row compacto">
@@ -849,8 +849,8 @@
 
         <div id="flagHoja" class="diag-flag off">
           <asp:CheckBox ID="chkHojaSi" runat="server" ClientIDMode="Static" CssClass="form-check-input" />
-          <i id="icoHoja" class="bi bi-x-circle-fill" aria-hidden="true"></i>
-          <span class="state">Bloqueado</span>
+          <i id="icoHoja" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
+          <span class="state">Deshabilitado</span>
         </div>
 
         <div class="icon-row compacto">
@@ -2676,9 +2676,9 @@
 
                 flag.classList.toggle('on', !!checked);
                 flag.classList.toggle('off', !checked);
-                ico.classList.toggle('bi-check-circle-fill', !!checked);
-                ico.classList.toggle('bi-x-circle-fill', !checked);
-                txt.textContent = checked ? 'Con daño' : 'Sin Daño';
+                ico.classList.toggle('bi-toggle-on', !!checked);
+                ico.classList.toggle('bi-toggle-off', !checked);
+                txt.textContent = checked ? 'Habilitado' : 'Deshabilitado';
             }
 
             function applyDiagGateUI() {

@@ -2245,12 +2245,12 @@ Paint:
         If allOk Then
             If Not cls.Contains(" ok") Then tileMec.Attributes("class") = cls & " ok"
             flagMec.Attributes("class") = "diag-flag on"
-            icoMec.Attributes("class") = "bi bi-check-circle-fill"
+            icoMec.Attributes("class") = "bi bi-toggle-on fs-4"
             chkMecSi.Checked = True
         Else
             tileMec.Attributes("class") = cls.Replace(" ok", "")
             flagMec.Attributes("class") = "diag-flag off"
-            icoMec.Attributes("class") = "bi bi-x-circle-fill"
+            icoMec.Attributes("class") = "bi bi-toggle-off fs-4"
             chkMecSi.Checked = False
         End If
     End Sub
