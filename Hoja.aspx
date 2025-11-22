@@ -177,17 +177,25 @@
     .fecha-tile small{font-size:.7rem;line-height:1.2;margin-bottom:4px;}
     .fecha-valor{font-size:.8rem;color:var(--brand-900);}
 
-    /* Consistencia de ancho máximo para todas las tiras */
-    #strip, #stripDiag, #stripVal{max-width:100%;box-sizing:border-box;}
-
     /* Asegurar mismo tamaño para todos los toggle buttons */
-    .btn-toggle-strip{min-width:280px;padding:10px 20px;font-size:.9rem;display:inline-flex;align-items:center;justify-content:center;gap:8px;}
+    .btn-toggle-strip{min-width:280px;max-width:320px;padding:10px 20px;font-size:.9rem;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;}
 
-    /* Contenedores de las secciones con mismo ancho */
-    #diagSection, #valSection{width:100%;}
+    /* Contenedores de las secciones - heredar mismo layout */
+    #diagSection, #valSection{width:100%;padding:0;margin:0;}
 
     /* Espaciado consistente entre toggles */
     #diagSection > .d-flex, #valSection > .d-flex{margin-top:1rem!important;}
+
+    /* Todas las tiras con mismo estilo base */
+    #strip, #stripDiag, #stripVal{
+      max-width:100%;
+      box-sizing:border-box;
+      margin-left:auto;
+      margin-right:auto;
+    }
+
+    /* Altura mínima consistente para las tiras */
+    .doc-strip.compacto{min-height:auto;}
   </style>
 
   <!-- Pinta verde la tarjeta ODA si el LinkButton existe/habilitado -->
