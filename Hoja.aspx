@@ -521,6 +521,11 @@
 .ht-no { color: #dc2626; } /* rojo */
 .ht-status { color: #2563eb; } /* azul */
 
+/* Cuando está validado, ocultar placeholders y deshabilitar */
+.ht-validated .ht-toggle { cursor: default; pointer-events: none; }
+.ht-validated .ht-toggle:empty::after { content: ""; }
+.ht-validated .ht-toggle:hover { background: transparent; }
+
 </style>
 
 
@@ -1550,6 +1555,63 @@
                 </Columns>
               </asp:GridView>
             </div>
+          </div>
+
+          <!-- Sección de Validaciones -->
+          <hr class="my-4" />
+          <h6 class="fw-bold text-success mb-3"><i class="bi bi-shield-check"></i> Validaciones</h6>
+          <asp:HiddenField ID="hfHTValidado" runat="server" ClientIDMode="Static" Value="0" />
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="mb-2 fw-bold">Validación 1</div>
+                  <asp:DropDownList ID="ddlValRef1" runat="server" CssClass="form-select"></asp:DropDownList>
+                  <asp:TextBox ID="txtPassValRef1" runat="server" CssClass="form-control mt-2" TextMode="Password" placeholder="Contraseña" />
+                  <div class="d-grid mt-2">
+                    <asp:Button ID="btnValidarRef1" runat="server" CssClass="btn btn-success" Text="Validar" UseSubmitBehavior="false" OnClick="btnValidarRef1_Click" />
+                  </div>
+                  <div class="mt-2">
+                    <asp:Literal ID="litValRef1" runat="server" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="mb-2 fw-bold">Validación 2</div>
+                  <asp:DropDownList ID="ddlValRef2" runat="server" CssClass="form-select"></asp:DropDownList>
+                  <asp:TextBox ID="txtPassValRef2" runat="server" CssClass="form-control mt-2" TextMode="Password" placeholder="Contraseña" />
+                  <div class="d-grid mt-2">
+                    <asp:Button ID="btnValidarRef2" runat="server" CssClass="btn btn-success" Text="Validar" UseSubmitBehavior="false" OnClick="btnValidarRef2_Click" />
+                  </div>
+                  <div class="mt-2">
+                    <asp:Literal ID="litValRef2" runat="server" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="mb-2 fw-bold">Validación 3</div>
+                  <asp:DropDownList ID="ddlValRef3" runat="server" CssClass="form-select"></asp:DropDownList>
+                  <asp:TextBox ID="txtPassValRef3" runat="server" CssClass="form-control mt-2" TextMode="Password" placeholder="Contraseña" />
+                  <div class="d-grid mt-2">
+                    <asp:Button ID="btnValidarRef3" runat="server" CssClass="btn btn-success" Text="Validar" UseSubmitBehavior="false" OnClick="btnValidarRef3_Click" />
+                  </div>
+                  <div class="mt-2">
+                    <asp:Literal ID="litValRef3" runat="server" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="small text-muted mt-2">
+            Cuando las 3 validaciones estén completas, los toggles se deshabilitarán automáticamente.
           </div>
         </div>
         <div class="modal-footer">
@@ -3269,10 +3331,31 @@
    </script>
 
    <script>
+   // Check validation state and apply class
+   function checkHTValidationState() {
+       const validado = document.getElementById('hfHTValidado');
+       const modalBody = document.querySelector('#modalHojaTrabajo .modal-body');
+       if (validado && modalBody) {
+           if (validado.value === '1') {
+               modalBody.classList.add('ht-validated');
+           } else {
+               modalBody.classList.remove('ht-validated');
+           }
+       }
+   }
+
+   // Check on page load and when modal shows
+   window.addEventListener('load', checkHTValidationState);
+   document.getElementById('modalHojaTrabajo')?.addEventListener('shown.bs.modal', checkHTValidationState);
+
    // Toggle handlers para Hoja de Trabajo
    document.addEventListener('click', function(e) {
        const toggle = e.target.closest('.ht-toggle');
        if (!toggle) return;
+
+       // Check if validated (disabled)
+       const modalBody = toggle.closest('.modal-body');
+       if (modalBody && modalBody.classList.contains('ht-validated')) return;
 
        const id = toggle.dataset.id;
        const field = toggle.dataset.field;

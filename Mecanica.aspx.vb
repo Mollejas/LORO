@@ -80,41 +80,13 @@ Public Class Mecanica
     Private Sub BindAll()
         BindGrid(gvSust, "SUSTITUCION")
         BindGrid(gvRep, "REPARACION")
-        CheckValidationState()
-    End Sub
-
-    ' Check if all 3 valrefmec validations are complete (for disabling toggles)
-    Private Sub CheckValidationState()
-        Dim expediente = GetExpediente()
-        If String.IsNullOrWhiteSpace(expediente) Then
-            hfValidado.Value = "0"
-            Exit Sub
-        End If
-
-        Dim isValidated As Boolean = False
-        Using cn As New SqlConnection(CS)
-            Using cmd As New SqlCommand("
-                SELECT TOP 1
-                    CASE WHEN ISNULL(valrefmec1,0)=1 AND ISNULL(valrefmec2,0)=1 AND ISNULL(valrefmec3,0)=1
-                         THEN 1 ELSE 0 END AS Validado
-                FROM dbo.Admisiones WHERE Expediente=@exp;", cn)
-                cmd.Parameters.AddWithValue("@exp", expediente)
-                cn.Open()
-                Dim obj = cmd.ExecuteScalar()
-                If obj IsNot Nothing AndAlso obj IsNot DBNull.Value Then
-                    isValidated = Convert.ToBoolean(obj)
-                End If
-            End Using
-        End Using
-        hfValidado.Value = If(isValidated, "1", "0")
     End Sub
 
     Private Sub BindGrid(gv As GridView, categoria As String)
         Dim dt As New DataTable()
         Using cn As New SqlConnection(CS)
             Using cmd As New SqlCommand("
-                SELECT Id, Cantidad, Descripcion, NumParte, Observ1,
-                       ISNULL(Autorizado, 0) AS Autorizado, ISNULL(Estatus, '') AS Estatus
+                SELECT Id, Cantidad, Descripcion, NumParte, Observ1
                 FROM dbo.Refacciones
                 WHERE Area=@Area AND Categoria=@Categoria AND Expediente=@Expediente
                 ORDER BY Id DESC;", cn)
@@ -666,9 +638,6 @@ Public Class Mecanica
             litAutMec1.Text = "" : litAutMec2.Text = "" : litAutMec3.Text = ""
             Exit Sub
         End If
-
-        ' Check and update validation state
-        CheckValidationState()
 
         Dim a1 As Boolean = False, a2 As Boolean = False, a3 As Boolean = False
         Dim n1 As String = "", n2 As String = "", n3 As String = ""
