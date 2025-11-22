@@ -2755,7 +2755,11 @@
            window.addEventListener('message', function (e) {
                if (e.origin !== window.location.origin) return;
                if (e.data && e.data.type === 'MECA_UPDATED') {
-                   window.location.reload();
+                   // Actualizar el label de fin diagnóstico sin recargar
+                   const lbl = document.getElementById('lblDiagFinMecanica');
+                   if (lbl && e.data.finmec) {
+                       lbl.textContent = e.data.finmec;
+                   }
                }
            });
        });
