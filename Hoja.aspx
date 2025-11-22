@@ -509,10 +509,14 @@
   cursor: pointer;
   display: inline-block;
   min-width: 20px;
+  min-height: 20px;
+  line-height: 20px;
   font-weight: bold;
   user-select: none;
+  text-align: center;
 }
-.ht-toggle:hover { opacity: 0.7; }
+.ht-toggle:hover { background: #f0f0f0; border-radius: 3px; }
+.ht-toggle:empty::after { content: "○"; color: #ccc; } /* placeholder cuando está vacío */
 .ht-si { color: #16a34a; } /* verde */
 .ht-no { color: #dc2626; } /* rojo */
 .ht-status { color: #2563eb; } /* azul */
