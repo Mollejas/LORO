@@ -3255,6 +3255,7 @@
             window.applyDiagGateUI = applyDiagGateUI;
 
             // Endurecemos openDiagPage: si está en rojo, no abrimos
+            // Guardamos referencia SOLO si ya existe
             const __origOpenDiagPage = window.openDiagPage;
             window.openDiagPage = function (pageUrl) {
                 const isMec = /Mecanica\.aspx$/i.test(pageUrl);
@@ -3265,7 +3266,39 @@
                     alert('Este módulo está bloqueado (rojo). Activa el switch para continuar.');
                     return false;
                 }
-                if (typeof __origOpenDiagPage === 'function') return __origOpenDiagPage(pageUrl);
+                // Llamar a la función original
+                if (typeof __origOpenDiagPage === 'function') {
+                    return __origOpenDiagPage(pageUrl);
+                } else {
+                    // Fallback: abrir el modal directamente si la función original no existe
+                    console.warn('openDiagPage original no encontrada, usando fallback');
+                    const iframe = document.getElementById('diagFrame');
+                    const modalEl = document.getElementById('diagModal');
+                    if (!modalEl || !iframe) return;
+
+                    // Limpiar modales y backdrops
+                    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+                    document.body.classList.remove('modal-open');
+
+                    // Crear datos del expediente
+                    const d = {};
+                    ['lblId', 'lblCarpeta', 'lblExpediente', 'lblSiniestro', 'lblAsegurado',
+                     'lblTelefono', 'lblCorreo', 'lblReporte', 'lblVehiculo',
+                     'lblFechaCreacion', 'lblDiasTranscurridos'].forEach(id => {
+                        const el = document.getElementById(id);
+                        const key = id.replace('lbl', '').toLowerCase();
+                        d[key === 'id' ? 'id' : key] = el ? (el.textContent || '').trim() : '';
+                    });
+                    d.carpeta = document.getElementById('hidCarpeta')?.value || d.carpeta;
+
+                    const qs = new URLSearchParams(d).toString();
+                    iframe.src = pageUrl + '?' + qs;
+
+                    var existingModal = bootstrap.Modal.getInstance(modalEl);
+                    if (existingModal) existingModal.dispose();
+                    const modal = new bootstrap.Modal(modalEl);
+                    modal.show();
+                }
             };
         })();
     </script>
