@@ -2657,7 +2657,13 @@ Paint:
             ddl.DataTextField = "Nombre"
             ddl.DataValueField = "UsuarioId"
             ddl.DataBind()
+            ddl.SelectedIndex = 0
         Next
+
+        ' Limpiar campos de contraseña
+        txtPassValRef1.Text = ""
+        txtPassValRef2.Text = ""
+        txtPassValRef3.Text = ""
     End Sub
 
     Private Sub PaintHTValFlags(cn As SqlConnection, expediente As String)
