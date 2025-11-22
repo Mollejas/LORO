@@ -2657,7 +2657,8 @@ Paint:
             ddl.DataTextField = "Nombre"
             ddl.DataValueField = "UsuarioId"
             ddl.DataBind()
-            ddl.SelectedIndex = 0
+            ddl.ClearSelection()
+            ddl.SelectedValue = ""
         Next
 
         ' Limpiar campos de contraseña
