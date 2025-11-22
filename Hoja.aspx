@@ -2760,6 +2760,12 @@
                    if (lbl && e.data.finmec) {
                        lbl.textContent = e.data.finmec;
                    }
+                   // Pintar el tile de verde
+                   const tile = document.getElementById('tileMec');
+                   if (tile && e.data.finmec) {
+                       tile.style.background = 'linear-gradient(135deg, #d1fae5, #a7f3d0)';
+                       tile.style.borderColor = '#10b981';
+                   }
                }
            });
        });
