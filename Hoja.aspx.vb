@@ -402,6 +402,8 @@ END"
             PintarTileMecanica(admId)
             PintarTileColision(admId)
             CargarFinesDiagnostico(admId)
+            ProcesarValuacion(admId)
+            CargarFechasValuacion(admId)
         End If
         ' <<< ADD
 
@@ -2320,6 +2322,138 @@ Paint:
         End If
         Return "—"
     End Function
+
+    ' ====== PROCESO DE VALUACIÓN ======
+
+    ' Procesar y establecer inival/limival si condiciones se cumplen
+    Private Sub ProcesarValuacion(admId As Integer)
+        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+
+        Using cn As New SqlConnection(cs)
+            cn.Open()
+
+            ' Leer estado actual
+            Dim mecSi As Boolean = False, hojaSi As Boolean = False
+            Dim autMec1 As Boolean = False, autMec2 As Boolean = False, autMec3 As Boolean = False
+            Dim autHoj1 As Boolean = False, autHoj2 As Boolean = False, autHoj3 As Boolean = False
+            Dim inivalExiste As Boolean = False
+
+            Using cmd As New SqlCommand("SELECT mecsi, hojasi, autmec1, autmec2, autmec3, authoj1, authoj2, authoj3, inival FROM admisiones WHERE id = @id", cn)
+                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+                Using rd = cmd.ExecuteReader()
+                    If rd.Read() Then
+                        mecSi = Not rd.IsDBNull(0) AndAlso Convert.ToBoolean(rd(0))
+                        hojaSi = Not rd.IsDBNull(1) AndAlso Convert.ToBoolean(rd(1))
+                        autMec1 = Not rd.IsDBNull(2) AndAlso Convert.ToBoolean(rd(2))
+                        autMec2 = Not rd.IsDBNull(3) AndAlso Convert.ToBoolean(rd(3))
+                        autMec3 = Not rd.IsDBNull(4) AndAlso Convert.ToBoolean(rd(4))
+                        autHoj1 = Not rd.IsDBNull(5) AndAlso Convert.ToBoolean(rd(5))
+                        autHoj2 = Not rd.IsDBNull(6) AndAlso Convert.ToBoolean(rd(6))
+                        autHoj3 = Not rd.IsDBNull(7) AndAlso Convert.ToBoolean(rd(7))
+                        inivalExiste = Not rd.IsDBNull(8)
+                    End If
+                End Using
+            End Using
+
+            ' Condición: mecánica completa O hojalatería completa
+            Dim mecCompleto As Boolean = mecSi AndAlso autMec1 AndAlso autMec2 AndAlso autMec3
+            Dim hojCompleto As Boolean = hojaSi AndAlso autHoj1 AndAlso autHoj2 AndAlso autHoj3
+
+            ' Si alguno está completo y no existe inival, insertarlo
+            If (mecCompleto OrElse hojCompleto) AndAlso Not inivalExiste Then
+                Dim ahora As DateTime = DateTime.Now
+                Dim limival As DateTime = CalcularFechaLimite(ahora, 8) ' 8 horas hábiles
+
+                Using cmdUpd As New SqlCommand("UPDATE admisiones SET inival = @inival, limival = @limival WHERE id = @id AND inival IS NULL", cn)
+                    cmdUpd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+                    cmdUpd.Parameters.Add("@inival", SqlDbType.DateTime).Value = ahora
+                    cmdUpd.Parameters.Add("@limival", SqlDbType.DateTime).Value = limival
+                    cmdUpd.ExecuteNonQuery()
+                End Using
+            End If
+        End Using
+    End Sub
+
+    ' Calcular fecha límite agregando horas hábiles (L-V 8am-7pm)
+    Private Function CalcularFechaLimite(fechaInicio As DateTime, horasHabiles As Integer) As DateTime
+        Dim resultado As DateTime = fechaInicio
+        Dim horasRestantes As Integer = horasHabiles
+
+        ' Horario laboral: 8:00 AM a 7:00 PM (11 horas por día)
+        Dim horaInicio As Integer = 8
+        Dim horaFin As Integer = 19
+
+        While horasRestantes > 0
+            ' Si es fin de semana, avanzar al lunes
+            If resultado.DayOfWeek = DayOfWeek.Saturday Then
+                resultado = resultado.AddDays(2).Date.AddHours(horaInicio)
+                Continue While
+            ElseIf resultado.DayOfWeek = DayOfWeek.Sunday Then
+                resultado = resultado.AddDays(1).Date.AddHours(horaInicio)
+                Continue While
+            End If
+
+            ' Si estamos antes del horario laboral, mover al inicio
+            If resultado.Hour < horaInicio Then
+                resultado = resultado.Date.AddHours(horaInicio)
+            End If
+
+            ' Si estamos después del horario laboral, mover al siguiente día hábil
+            If resultado.Hour >= horaFin Then
+                resultado = resultado.AddDays(1).Date.AddHours(horaInicio)
+                Continue While
+            End If
+
+            ' Calcular horas disponibles hoy
+            Dim horasDisponiblesHoy As Integer = horaFin - resultado.Hour
+
+            If horasRestantes <= horasDisponiblesHoy Then
+                ' Podemos completar hoy
+                resultado = resultado.AddHours(horasRestantes)
+                horasRestantes = 0
+            Else
+                ' Usar las horas disponibles hoy y continuar mañana
+                horasRestantes -= horasDisponiblesHoy
+                resultado = resultado.AddDays(1).Date.AddHours(horaInicio)
+            End If
+        End While
+
+        Return resultado
+    End Function
+
+    ' Cargar y mostrar fechas de valuación
+    Private Sub CargarFechasValuacion(admId As Integer)
+        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+
+        Dim inivalObj As Object = Nothing
+        Dim limivalObj As Object = Nothing
+        Dim envvalObj As Object = Nothing
+        Dim autvalObj As Object = Nothing
+        Dim limautvalObj As Object = Nothing
+
+        Using cn As New SqlConnection(cs)
+            Using cmd As New SqlCommand("SELECT inival, limival, envval, autval, limautval FROM admisiones WHERE id = @id", cn)
+                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+                cn.Open()
+                Using rd = cmd.ExecuteReader()
+                    If rd.Read() Then
+                        inivalObj = If(rd.IsDBNull(0), Nothing, rd.GetValue(0))
+                        limivalObj = If(rd.IsDBNull(1), Nothing, rd.GetValue(1))
+                        envvalObj = If(rd.IsDBNull(2), Nothing, rd.GetValue(2))
+                        autvalObj = If(rd.IsDBNull(3), Nothing, rd.GetValue(3))
+                        limautvalObj = If(rd.IsDBNull(4), Nothing, rd.GetValue(4))
+                    End If
+                End Using
+            End Using
+        End Using
+
+        ' Asignar a los labels
+        lblFechaIniVal.Text = FormatearFechaCortaHora(inivalObj)
+        lblFechaLimEnvVal.Text = FormatearFechaCortaHora(limivalObj)
+        lblFechaEnvVal.Text = FormatearFechaCortaHora(envvalObj)
+        lblFechaAutVal.Text = FormatearFechaCortaHora(autvalObj)
+        lblFechaLimAutVal.Text = FormatearFechaCortaHora(limautvalObj)
+    End Sub
 
     ' Helper para leer Estatus (TRANSITO / PISO)
     Private Function GetAdmEstatusById(admId As Integer) As String
