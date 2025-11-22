@@ -957,10 +957,10 @@
         <div id="tileValSinAut" runat="server" class="tile compacto">
           <div class="title">Valuación sin autorizar</div>
           <div class="icon-row compacto">
-            <a href="#" class="icon-btn compacto" id="btnSubirValSinAut" title="Subir valuación sin autorizar">
+            <a href="#" class="icon-btn compacto" id="btnSubirValSinAut" data-bs-toggle="modal" data-bs-target="#modalValSinAut" title="Subir valuación sin autorizar">
               <i class="bi bi-cloud-upload"></i>
             </a>
-            <asp:LinkButton ID="btnVerValSinAut" runat="server" CssClass="icon-btn compacto" ToolTip="Ver valuación sin autorizar" aria-label="Ver valuación sin autorizar">
+            <asp:LinkButton ID="btnVerValSinAut" runat="server" CssClass="icon-btn compacto" ToolTip="Ver valuación sin autorizar" aria-label="Ver valuación sin autorizar" OnClick="btnVerValSinAut_Click">
               <i class="bi bi-eye"></i>
             </asp:LinkButton>
           </div>
@@ -970,10 +970,10 @@
         <div id="tileValAutPdf" runat="server" class="tile compacto">
           <div class="title">Valuación autorizada PDF</div>
           <div class="icon-row compacto">
-            <a href="#" class="icon-btn compacto" id="btnSubirValAutPdf" title="Subir valuación autorizada PDF">
+            <a href="#" class="icon-btn compacto" id="btnSubirValAutPdf" data-bs-toggle="modal" data-bs-target="#modalValAutPdf" title="Subir valuación autorizada PDF">
               <i class="bi bi-cloud-upload"></i>
             </a>
-            <asp:LinkButton ID="btnVerValAutPdf" runat="server" CssClass="icon-btn compacto" ToolTip="Ver valuación autorizada PDF" aria-label="Ver valuación autorizada PDF">
+            <asp:LinkButton ID="btnVerValAutPdf" runat="server" CssClass="icon-btn compacto" ToolTip="Ver valuación autorizada PDF" aria-label="Ver valuación autorizada PDF" OnClick="btnVerValAutPdf_Click">
               <i class="bi bi-eye"></i>
             </asp:LinkButton>
           </div>
@@ -1382,6 +1382,82 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
           <asp:LinkButton ID="btnUploadInePdfGo" runat="server" CssClass="btn btn-brand" UseSubmitBehavior="true" OnClick="btnUploadInePdfGo_Click">Subir PDF</asp:LinkButton>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: Subir Valuación Sin Autorizar (PDF) ===================== -->
+  <div class="modal fade" id="modalValSinAut" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Subir Valuación Sin Autorizar</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Seleccione el archivo PDF</label>
+            <asp:FileUpload ID="fuValSinAut" runat="server" CssClass="form-control" ClientIDMode="Static" />
+            <div class="form-text">Se guardará como <strong>valsin.pdf</strong> en <em>4. VALUACION</em>.</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <asp:LinkButton ID="btnUploadValSinAut" runat="server" CssClass="btn btn-primary" OnClick="btnUploadValSinAut_Click">Subir PDF</asp:LinkButton>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: Ver Valuación Sin Autorizar ===================== -->
+  <div class="modal fade" id="modalVerValSinAut" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content" style="height:90vh;">
+        <div class="modal-header">
+          <h5 class="modal-title">Valuación Sin Autorizar</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-0">
+          <iframe id="iframeValSinAut" style="width:100%;height:100%;border:0;"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: Subir Valuación Autorizada (PDF) ===================== -->
+  <div class="modal fade" id="modalValAutPdf" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Subir Valuación Autorizada</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Seleccione el archivo PDF</label>
+            <asp:FileUpload ID="fuValAutPdf" runat="server" CssClass="form-control" ClientIDMode="Static" />
+            <div class="form-text">Se guardará como <strong>valaut.pdf</strong> en <em>4. VALUACION</em>.</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <asp:LinkButton ID="btnUploadValAutPdf" runat="server" CssClass="btn btn-primary" OnClick="btnUploadValAutPdf_Click">Subir PDF</asp:LinkButton>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: Ver Valuación Autorizada ===================== -->
+  <div class="modal fade" id="modalVerValAutPdf" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content" style="height:90vh;">
+        <div class="modal-header">
+          <h5 class="modal-title">Valuación Autorizada</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-0">
+          <iframe id="iframeValAutPdf" style="width:100%;height:100%;border:0;"></iframe>
         </div>
       </div>
     </div>

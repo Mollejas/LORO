@@ -2471,6 +2471,121 @@ Paint:
         End Using
     End Function
 
+    ' ====== VALUACIÓN: Subir y Ver PDFs ======
+
+    ' Subir Valuación Sin Autorizar (valsin.pdf)
+    Protected Sub btnUploadValSinAut_Click(sender As Object, e As EventArgs)
+        If String.IsNullOrWhiteSpace(hidCarpeta.Value) Then Exit Sub
+
+        Dim fu As FileUpload = TryCast(FindControlRecursive(Me, "fuValSinAut"), FileUpload)
+        If fu Is Nothing OrElse Not fu.HasFile Then Exit Sub
+
+        Dim ext As String = Path.GetExtension(fu.FileName).ToLowerInvariant()
+        If ext <> ".pdf" Then Exit Sub
+
+        ' Crear carpeta 4. VALUACION si no existe
+        Dim baseFolder As String = hidCarpeta.Value
+        Dim valFolder As String = Path.Combine(baseFolder, "4. VALUACION")
+        If Not Directory.Exists(valFolder) Then Directory.CreateDirectory(valFolder)
+
+        ' Guardar como valsin.pdf
+        Dim destino As String = Path.Combine(valFolder, "valsin.pdf")
+        fu.SaveAs(destino)
+
+        ' Actualizar envval en la base de datos
+        Dim admId As Integer
+        If Integer.TryParse(hidId.Value, admId) Then
+            Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+            Using cn As New SqlConnection(cs)
+                Using cmd As New SqlCommand("UPDATE admisiones SET envval = @envval WHERE id = @id", cn)
+                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+                    cmd.Parameters.Add("@envval", SqlDbType.DateTime).Value = DateTime.Now
+                    cn.Open()
+                    cmd.ExecuteNonQuery()
+                End Using
+            End Using
+
+            ' Recargar fechas
+            CargarFechasValuacion(admId)
+        End If
+
+        ' Abrir modal de visualización automáticamente
+        Dim url As String = ResolveUrl("~/ViewPdf.ashx?id=" & hidId.Value & "&kind=valsin&v=" & DateTime.Now.Ticks.ToString())
+        EmitStartupScript("autoOpenValSin", "
+            document.getElementById('iframeValSinAut').src = '" & url & "';
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('modalVerValSinAut')).show();
+        ")
+
+        UpdateBottomWidgets()
+    End Sub
+
+    ' Ver Valuación Sin Autorizar
+    Protected Sub btnVerValSinAut_Click(sender As Object, e As EventArgs)
+        If String.IsNullOrWhiteSpace(hidId.Value) Then Exit Sub
+
+        Dim url As String = ResolveUrl("~/ViewPdf.ashx?id=" & hidId.Value & "&kind=valsin&v=" & DateTime.Now.Ticks.ToString())
+        EmitStartupScript("openValSin", "
+            document.getElementById('iframeValSinAut').src = '" & url & "';
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('modalVerValSinAut')).show();
+        ")
+    End Sub
+
+    ' Subir Valuación Autorizada (valaut.pdf)
+    Protected Sub btnUploadValAutPdf_Click(sender As Object, e As EventArgs)
+        If String.IsNullOrWhiteSpace(hidCarpeta.Value) Then Exit Sub
+
+        Dim fu As FileUpload = TryCast(FindControlRecursive(Me, "fuValAutPdf"), FileUpload)
+        If fu Is Nothing OrElse Not fu.HasFile Then Exit Sub
+
+        Dim ext As String = Path.GetExtension(fu.FileName).ToLowerInvariant()
+        If ext <> ".pdf" Then Exit Sub
+
+        ' Crear carpeta 4. VALUACION si no existe
+        Dim baseFolder As String = hidCarpeta.Value
+        Dim valFolder As String = Path.Combine(baseFolder, "4. VALUACION")
+        If Not Directory.Exists(valFolder) Then Directory.CreateDirectory(valFolder)
+
+        ' Guardar como valaut.pdf
+        Dim destino As String = Path.Combine(valFolder, "valaut.pdf")
+        fu.SaveAs(destino)
+
+        ' Actualizar autval en la base de datos
+        Dim admId As Integer
+        If Integer.TryParse(hidId.Value, admId) Then
+            Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+            Using cn As New SqlConnection(cs)
+                Using cmd As New SqlCommand("UPDATE admisiones SET autval = @autval WHERE id = @id", cn)
+                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+                    cmd.Parameters.Add("@autval", SqlDbType.DateTime).Value = DateTime.Now
+                    cn.Open()
+                    cmd.ExecuteNonQuery()
+                End Using
+            End Using
+
+            ' Recargar fechas
+            CargarFechasValuacion(admId)
+        End If
+
+        ' Abrir modal de visualización automáticamente
+        Dim url As String = ResolveUrl("~/ViewPdf.ashx?id=" & hidId.Value & "&kind=valaut&v=" & DateTime.Now.Ticks.ToString())
+        EmitStartupScript("autoOpenValAut", "
+            document.getElementById('iframeValAutPdf').src = '" & url & "';
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('modalVerValAutPdf')).show();
+        ")
+
+        UpdateBottomWidgets()
+    End Sub
+
+    ' Ver Valuación Autorizada
+    Protected Sub btnVerValAutPdf_Click(sender As Object, e As EventArgs)
+        If String.IsNullOrWhiteSpace(hidId.Value) Then Exit Sub
+
+        Dim url As String = ResolveUrl("~/ViewPdf.ashx?id=" & hidId.Value & "&kind=valaut&v=" & DateTime.Now.Ticks.ToString())
+        EmitStartupScript("openValAut", "
+            document.getElementById('iframeValAutPdf').src = '" & url & "';
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('modalVerValAutPdf')).show();
+        ")
+    End Sub
 
 End Class
 
