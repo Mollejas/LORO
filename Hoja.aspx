@@ -851,13 +851,11 @@
           </span>
         </div>
 
-        <div id="flagMec" runat="server" ClientIDMode="Static" class="diag-flag off">
-          <asp:CheckBox ID="chkMecSi" runat="server" ClientIDMode="Static" CssClass="form-check-input" />
-          <i id="icoMec" runat="server" ClientIDMode="Static" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
-          <span class="state">Deshabilitado</span>
-        </div>
-
-        <div class="icon-row compacto">
+        <div class="d-flex align-items-center justify-content-center gap-2">
+          <div id="flagMec" runat="server" ClientIDMode="Static" class="diag-flag off">
+            <asp:CheckBox ID="chkMecSi" runat="server" ClientIDMode="Static" CssClass="form-check-input" />
+            <i id="icoMec" runat="server" ClientIDMode="Static" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
+          </div>
           <asp:LinkButton ID="btnDiagnosticoMecanica" runat="server" CssClass="icon-btn compacto"
             ToolTip="Abrir módulo de diagnóstico mecánico"
             UseSubmitBehavior="false"
@@ -881,13 +879,11 @@
           </span>
         </div>
 
-        <div id="flagHoja" runat="server" ClientIDMode="Static" class="diag-flag off">
-          <asp:CheckBox ID="chkHojaSi" runat="server" ClientIDMode="Static" CssClass="form-check-input" />
-          <i id="icoHoja" runat="server" ClientIDMode="Static" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
-          <span class="state">Deshabilitado</span>
-        </div>
-
-        <div class="icon-row compacto">
+        <div class="d-flex align-items-center justify-content-center gap-2">
+          <div id="flagHoja" runat="server" ClientIDMode="Static" class="diag-flag off">
+            <asp:CheckBox ID="chkHojaSi" runat="server" ClientIDMode="Static" CssClass="form-check-input" />
+            <i id="icoHoja" runat="server" ClientIDMode="Static" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
+          </div>
           <asp:LinkButton ID="btnDiagnosticoHojalateria" runat="server" CssClass="icon-btn compacto"
             ToolTip="Abrir módulo de diagnóstico de hojalatería"
             UseSubmitBehavior="false"
