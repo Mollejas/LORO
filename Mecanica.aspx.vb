@@ -28,6 +28,10 @@ Public Class Mecanica
     Private Const AREA As String = "MECANICA"
     Private Const SUBFOLDER_MECA As String = "2. FOTOS DIAGNOSTICO MECANICA"
 
+    ' === Constantes para validación de contraseña (deben coincidir con Login/CreateUser) ===
+    Private Const HASH_LEN As Integer = 64            ' PasswordHash VARBINARY(64) para PBKDF2
+    Private Const PBKDF2_ITER As Integer = 100000     ' Iteraciones PBKDF2
+
     ' ====== Page ======
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
         If Not IsPostBack Then
@@ -479,7 +483,7 @@ Public Class Mecanica
         End Try
     End Sub
 
-    ' ====== Validación contra VARBINARY (SHA-256) ======
+    ' ====== Validación contra VARBINARY (PBKDF2 o SHA-256 legado) ======
     Private Function ValidateUserById(userId As Integer, password As String) As Boolean
         Using cn As New SqlConnection(CS)
             Using cmd As New SqlCommand("
@@ -498,14 +502,42 @@ Public Class Mecanica
                     Dim salt As Byte() = TryCast(rd("PasswordSalt"), Byte())
                     If dbHash Is Nothing OrElse salt Is Nothing Then Return False
 
-                    Dim passBytes = Encoding.UTF8.GetBytes(password)
-                    Dim toHash As Byte() = CombineBytes(salt, passBytes)
-                    Dim calc As Byte() = SHA256.Create().ComputeHash(toHash)
-
-                    Return BytesEqual(calc, dbHash)
+                    Return VerifyPassword(password, salt, dbHash)
                 End Using
             End Using
         End Using
+    End Function
+
+    ' Verifica contraseña admitiendo:
+    ' - Nuevo: PBKDF2-SHA256 100k (64 bytes)
+    ' - Legado: SHA256( salt + password ) (32 bytes)
+    Private Function VerifyPassword(pass As String, salt As Byte(), stored As Byte()) As Boolean
+        If String.IsNullOrEmpty(pass) OrElse salt Is Nothing OrElse stored Is Nothing Then Return False
+
+        Dim calc() As Byte
+
+        If stored.Length = HASH_LEN Then
+            ' === PBKDF2-SHA256 (como CreateUser) ===
+            Using kdf As New Rfc2898DeriveBytes(pass, salt, PBKDF2_ITER, HashAlgorithmName.SHA256)
+                calc = kdf.GetBytes(HASH_LEN) ' 64 bytes
+            End Using
+
+        ElseIf stored.Length = 32 Then
+            ' === Compatibilidad con usuarios viejos ===
+            Dim passBytes = Encoding.UTF8.GetBytes(pass)
+            Dim mix(salt.Length + passBytes.Length - 1) As Byte
+            System.Buffer.BlockCopy(salt, 0, mix, 0, salt.Length)
+            System.Buffer.BlockCopy(passBytes, 0, mix, salt.Length, passBytes.Length)
+            Using sha As SHA256 = SHA256.Create()
+                calc = sha.ComputeHash(mix) ' 32 bytes
+            End Using
+
+        Else
+            ' Tamaño inesperado: formato no reconocido
+            Return False
+        End If
+
+        Return BytesEqual(calc, stored)
     End Function
 
     Private Function CombineBytes(a As Byte(), b As Byte()) As Byte()
