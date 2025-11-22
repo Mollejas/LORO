@@ -481,7 +481,33 @@ Public Class Mecanica
                        $"<span class='text-success'><i class='bi bi-person-check me-1'></i>{safeName}</span>"
         Catch
         End Try
+
+        ' Si finmec fue timbrado, notificar al padre (hoja.aspx)
+        Dim finmecStr As String = GetFinMecFormatted(expediente)
+        If Not String.IsNullOrEmpty(finmecStr) Then
+            Dim js As String = $"try {{ window.parent.postMessage({{ type: 'MECA_UPDATED', finmec: '{finmecStr}' }}, window.location.origin); }} catch(e) {{}}"
+            ScriptManager.RegisterStartupScript(Me, Me.GetType(), "notifyParent" & Guid.NewGuid().ToString("N"), js, True)
+        End If
     End Sub
+
+    ' Obtener finmec formateado si existe
+    Private Function GetFinMecFormatted(expediente As String) As String
+        Try
+            Using cn As New SqlConnection(CS)
+                Using cmd As New SqlCommand("SELECT TOP 1 finmec FROM dbo.Admisiones WHERE Expediente=@exp AND finmec IS NOT NULL;", cn)
+                    cmd.Parameters.AddWithValue("@exp", expediente)
+                    cn.Open()
+                    Dim obj = cmd.ExecuteScalar()
+                    If obj IsNot Nothing AndAlso obj IsNot DBNull.Value Then
+                        Dim dt As DateTime = Convert.ToDateTime(obj)
+                        Return dt.ToString("dd/MM/yyyy HH:mm")
+                    End If
+                End Using
+            End Using
+        Catch
+        End Try
+        Return String.Empty
+    End Function
 
     ' ====== Validación contra VARBINARY (PBKDF2 o SHA-256 legado) ======
     Private Function ValidateUserById(userId As Integer, password As String) As Boolean
