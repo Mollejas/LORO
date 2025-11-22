@@ -901,8 +901,6 @@
       </div>
     </div>
   </div>
-</div>
-
 
     <asp:HiddenField ID="hidDiagSrc" runat="server" ClientIDMode="Static" />
   </div>
