@@ -886,7 +886,6 @@
           </div>
           <asp:LinkButton ID="btnDiagnosticoMecanica" runat="server" CssClass="icon-btn compacto"
             ToolTip="Abrir módulo de diagnóstico mecánico"
-            UseSubmitBehavior="false"
             OnClientClick="openDiagPage('Mecanica.aspx'); return false;"
             aria-label="Diagnóstico Mecánica">
             <i class="bi bi-wrench-adjustable"></i>
@@ -914,7 +913,6 @@
           </div>
           <asp:LinkButton ID="btnDiagnosticoHojalateria" runat="server" CssClass="icon-btn compacto"
             ToolTip="Abrir módulo de diagnóstico de hojalatería"
-            UseSubmitBehavior="false"
             OnClientClick="openDiagPage('Hojalateria.aspx'); return false;"
             aria-label="Diagnóstico Hojalatería">
             <i class="bi bi-hammer"></i>
@@ -2355,7 +2353,7 @@
 
   <script>
     /* 7) Diagnóstico: abrir páginas hijas + postMessage */
-    function getExpedienteData() {
+    window.getExpedienteData = function() {
       function gt(id) { const el = document.getElementById(id); return el ? (el.textContent || el.innerText || '').trim() : ''; }
       return {
         id: gt('lblId'),
@@ -2370,8 +2368,8 @@
         fechaCreacion: gt('lblFechaCreacion'),
         diasTranscurridos: gt('lblDiasTranscurridos')
       };
-    }
-    function openDiagPage(pageUrl) {
+    };
+    window.openDiagPage = function(pageUrl) {
       // Limpiar backdrops huérfanos primero
       document.querySelectorAll('.modal-backdrop').forEach(function(b) { b.remove(); });
       document.body.classList.remove('modal-open');
@@ -2387,7 +2385,7 @@
       }
 
       // Construir URL
-      const d = getExpedienteData();
+      const d = window.getExpedienteData();
       const qs = new URLSearchParams(d).toString();
       const finalUrl = pageUrl + '?' + qs;
 
@@ -2403,12 +2401,12 @@
       // Crear nuevo modal y mostrar
       var modal = new bootstrap.Modal(modalEl);
       modal.show();
-    }
+    };
     window.addEventListener('message', (e) => {
       if (e.origin !== window.location.origin) return;
       if (e.data?.type === 'EXP_REQUEST') {
         const frame = document.getElementById('diagFrame');
-        frame?.contentWindow?.postMessage({ type: 'EXP_PREFILL', payload: getExpedienteData() }, window.location.origin);
+        frame?.contentWindow?.postMessage({ type: 'EXP_PREFILL', payload: window.getExpedienteData() }, window.location.origin);
       }
     });
   </script>
