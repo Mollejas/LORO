@@ -3248,9 +3248,19 @@
             // Exponer globalmente para que pueda ser llamada desde otros scripts
             window.applyDiagGateUI = applyDiagGateUI;
 
-            // TEMPORALMENTE: openDiagPage sin validaciones para debug
-            // La función original ya está definida arriba, solo la exponemos
-            // No sobrescribimos para evitar problemas de captura
+            // Endurecemos openDiagPage: si está en rojo, no abrimos
+            const __origOpenDiagPage = window.openDiagPage;
+            window.openDiagPage = function (pageUrl) {
+                const isMec = /Mecanica\.aspx$/i.test(pageUrl);
+                const isHoja = /Hojalateria\.aspx$/i.test(pageUrl);
+                const allowMec = !!document.getElementById('chkMecSi')?.checked;
+                const allowHoja = !!document.getElementById('chkHojaSi')?.checked;
+                if ((isMec && !allowMec) || (isHoja && !allowHoja)) {
+                    alert('Este módulo está bloqueado (rojo). Activa el switch para continuar.');
+                    return false;
+                }
+                if (typeof __origOpenDiagPage === 'function') return __origOpenDiagPage(pageUrl);
+            };
         })();
     </script>
 
