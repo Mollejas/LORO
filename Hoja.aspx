@@ -843,7 +843,7 @@
       </div>
 
       <!-- === TILE COLISIÓN === -->
-      <div class="tile compacto">
+      <div id="tileCol" class="tile compacto">
         <div class="title text-center">Colisión</div>
 
         <!-- Fin diagnóstico Colisión (arriba y centrado) -->
