@@ -1448,8 +1448,12 @@
           </div>
 
           <!-- GridViews de Mecánica -->
-          <h6 class="fw-bold text-primary mb-2"><i class="bi bi-wrench"></i> Mecánica</h6>
-          <div class="row mb-4">
+          <div class="card border-primary mb-4">
+            <div class="card-header bg-primary text-white">
+              <h6 class="mb-0"><i class="bi bi-wrench"></i> Mecánica</h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
             <div class="col-lg-6">
               <h6 class="text-muted">Reparación</h6>
               <asp:GridView ID="gvMecReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
@@ -1499,12 +1503,17 @@
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
+              </div>
             </div>
           </div>
 
           <!-- GridViews de Hojalatería -->
-          <h6 class="fw-bold text-warning mb-2"><i class="bi bi-tools"></i> Hojalatería</h6>
-          <div class="row">
+          <div class="card border-warning mb-4">
+            <div class="card-header bg-warning text-dark">
+              <h6 class="mb-0"><i class="bi bi-tools"></i> Hojalatería</h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
             <div class="col-lg-6">
               <h6 class="text-muted">Reparación</h6>
               <asp:GridView ID="gvHojReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
@@ -1554,7 +1563,9 @@
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
+              </div>
             </div>
+          </div>
           </div>
 
           <!-- Sección de Validaciones -->
