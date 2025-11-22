@@ -8,7 +8,8 @@ Imports System.Configuration
 Public Class ViewPdf
         Implements IHttpHandler
 
-        Private Const SUBFOLDER_NAME As String = "1. DOCUMENTOS DE INGRESO"
+        Private Const SUBFOLDER_DOCUMENTOS As String = "1. DOCUMENTOS DE INGRESO"
+        Private Const SUBFOLDER_VALUACION As String = "4. VALUACION"
 
         Public ReadOnly Property IsReusable As Boolean Implements IHttpHandler.IsReusable
             Get
@@ -28,15 +29,18 @@ Public Class ViewPdf
             End If
 
             Dim fileName As String
+            Dim subFolder As String = SUBFOLDER_DOCUMENTOS
             Select Case kind
                 Case "oda" : fileName = "ODA.pdf"
                 Case "ine" : fileName = "INE.pdf"
-            Case "ct" : fileName = "CT.pdf"
-            Case "inv" : fileName = "inv.pdf"
-            Case "inetransito" : fileName = "inetransito.pdf"
-            Case "transitoaseg" : fileName = "transitoaseg.pdf"
-            Case "comple" : fileName = "comple.pdf"
-            Case Else
+                Case "ct" : fileName = "CT.pdf"
+                Case "inv" : fileName = "inv.pdf"
+                Case "inetransito" : fileName = "inetransito.pdf"
+                Case "transitoaseg" : fileName = "transitoaseg.pdf"
+                Case "comple" : fileName = "comple.pdf"
+                Case "valsin" : fileName = "valsin.pdf" : subFolder = SUBFOLDER_VALUACION
+                Case "valaut" : fileName = "valaut.pdf" : subFolder = SUBFOLDER_VALUACION
+                Case Else
                     context.Response.StatusCode = 400 : context.Response.Write("Kind inválido.") : Return
             End Select
 
@@ -47,7 +51,7 @@ Public Class ViewPdf
             End If
 
             Dim baseFolder As String = ResolverCarpetaFisica(context, carpetaRel)
-            Dim pdfPath As String = Path.Combine(baseFolder, SUBFOLDER_NAME, fileName)
+            Dim pdfPath As String = Path.Combine(baseFolder, subFolder, fileName)
             If Not File.Exists(pdfPath) Then
                 context.Response.StatusCode = 404 : context.Response.Write("Archivo no encontrado.") : Return
             End If
