@@ -517,24 +517,17 @@
   text-align: center;
 }
 .ht-toggle:hover { background: #f0f0f0; border-radius: 3px; }
-.ht-toggle:empty::after { content: "○"; color: #ccc; } /* placeholder cuando está vacío */
+.ht-toggle:empty::after { content: none; } /* Sin placeholder - ocultar círculos vacíos */
 .ht-si { color: #16a34a; } /* verde */
 .ht-no { color: #dc2626; } /* rojo */
 .ht-status { color: #2563eb; } /* azul */
 
-/* Ocultar solo los placeholders vacíos (○) de estatus cuando no están validados */
-.ht-status-hidden .ht-status:empty::after { content: none !important; }
-.ht-status-hidden .ht-status { cursor: default !important; }
-.ht-status-hidden .ht-status:hover { background: transparent !important; }
-
-/* Bloquear autorización cuando está validado */
-.ht-auth-locked .ht-si,
-.ht-auth-locked .ht-no {
+/* Bloquear todo cuando está validado */
+.ht-all-locked .ht-toggle {
     cursor: not-allowed !important;
     opacity: 0.6;
 }
-.ht-auth-locked .ht-si:hover,
-.ht-auth-locked .ht-no:hover {
+.ht-all-locked .ht-toggle:hover {
     background: transparent !important;
 }
 
@@ -3341,17 +3334,9 @@
            const hfValidado = document.getElementById('<%= hfHTValidado.ClientID %>');
            const validado = hfValidado && hfValidado.value === '1';
 
-           const field = toggle.dataset.field;
-
-           // Si las 3 validaciones están completas, bloquear cambios en autorización
-           if (validado && field === 'autorizado') {
+           // Si las 3 validaciones están completas, bloquear todo
+           if (validado) {
                console.log('Cambios bloqueados: las 3 validaciones están completas');
-               return;
-           }
-
-           // Si NO están las 3 validaciones, bloquear cambios en estatus
-           if (!validado && field === 'estatus') {
-               console.log('Estatus bloqueado: faltan validaciones');
                return;
            }
 
@@ -3400,7 +3385,7 @@
                .catch(err => console.error('Error:', err));
        });
 
-       // Función para actualizar visibilidad de estatus y bloqueo de autorización
+       // Función para bloquear todo cuando las 3 validaciones están completas
        function updateHTGridState() {
            const hfValidado = document.getElementById('<%= hfHTValidado.ClientID %>');
            const validado = hfValidado && hfValidado.value === '1';
@@ -3411,13 +3396,11 @@
            const grids = modal.querySelectorAll('.ht-grid');
            grids.forEach(grid => {
                if (validado) {
-                   // Las 3 validaciones completas: mostrar estatus, bloquear autorización
-                   grid.classList.remove('ht-status-hidden');
-                   grid.classList.add('ht-auth-locked');
+                   // Las 3 validaciones completas: bloquear todo
+                   grid.classList.add('ht-all-locked');
                } else {
-                   // Faltan validaciones: ocultar estatus, permitir autorización
-                   grid.classList.add('ht-status-hidden');
-                   grid.classList.remove('ht-auth-locked');
+                   // Faltan validaciones: permitir cambios
+                   grid.classList.remove('ht-all-locked');
                }
            });
        }
