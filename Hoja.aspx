@@ -171,6 +171,14 @@
     /* Transición y colapso para todas las tiras */
     #strip, #stripDiag, #stripVal{ overflow:hidden; transition:max-height .35s ease, opacity .25s ease, transform .35s ease; }
     #strip.is-collapsed, #stripDiag.is-collapsed, #stripVal.is-collapsed{ max-height:0!important; opacity:0; transform:translateY(6px); pointer-events:none; margin-top:0!important; margin-bottom:0!important; border-width:0; }
+
+    /* Tiles de fechas en valuación */
+    .fecha-tile{min-height:60px!important;padding:8px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;}
+    .fecha-tile small{font-size:.7rem;line-height:1.2;margin-bottom:4px;}
+    .fecha-valor{font-size:.8rem;color:var(--brand-900);}
+
+    /* Consistencia de ancho máximo para todas las tiras */
+    #strip, #stripDiag, #stripVal{max-width:100%;box-sizing:border-box;}
   </style>
 
   <!-- Pinta verde la tarjeta ODA si el LinkButton existe/habilitado -->
@@ -894,26 +902,26 @@
 
     <div id="stripVal" class="card-pane doc-strip compacto p-2 mt-4">
       <!-- === FILA DE FECHAS === -->
-      <div class="row g-2 mb-3">
-        <div class="col text-center">
+      <div class="doc-strip-grid mb-2">
+        <div class="tile compacto fecha-tile">
           <small class="text-muted d-block">Fecha Inicio Valuación</small>
-          <asp:Label ID="lblFechaIniVal" runat="server" Text="—" ClientIDMode="Static" CssClass="fw-bold" />
+          <asp:Label ID="lblFechaIniVal" runat="server" Text="—" ClientIDMode="Static" CssClass="fw-bold fecha-valor" />
         </div>
-        <div class="col text-center">
-          <small class="text-muted d-block">Fecha límite envío valuación</small>
-          <asp:Label ID="lblFechaLimEnvVal" runat="server" Text="—" ClientIDMode="Static" CssClass="fw-bold" />
+        <div class="tile compacto fecha-tile">
+          <small class="text-muted d-block">Fecha límite envío</small>
+          <asp:Label ID="lblFechaLimEnvVal" runat="server" Text="—" ClientIDMode="Static" CssClass="fw-bold fecha-valor" />
         </div>
-        <div class="col text-center">
+        <div class="tile compacto fecha-tile">
           <small class="text-muted d-block">Fecha envío valuación</small>
-          <asp:Label ID="lblFechaEnvVal" runat="server" Text="—" ClientIDMode="Static" CssClass="fw-bold" />
+          <asp:Label ID="lblFechaEnvVal" runat="server" Text="—" ClientIDMode="Static" CssClass="fw-bold fecha-valor" />
         </div>
-        <div class="col text-center">
-          <small class="text-muted d-block">Fecha autorización valuación</small>
-          <asp:Label ID="lblFechaAutVal" runat="server" Text="—" ClientIDMode="Static" CssClass="fw-bold" />
+        <div class="tile compacto fecha-tile">
+          <small class="text-muted d-block">Fecha autorización</small>
+          <asp:Label ID="lblFechaAutVal" runat="server" Text="—" ClientIDMode="Static" CssClass="fw-bold fecha-valor" />
         </div>
-        <div class="col text-center">
-          <small class="text-muted d-block">Fecha límite autorización</small>
-          <asp:Label ID="lblFechaLimAutVal" runat="server" Text="—" ClientIDMode="Static" CssClass="fw-bold" />
+        <div class="tile compacto fecha-tile">
+          <small class="text-muted d-block">Fecha límite autoriz.</small>
+          <asp:Label ID="lblFechaLimAutVal" runat="server" Text="—" ClientIDMode="Static" CssClass="fw-bold fecha-valor" />
         </div>
       </div>
 
