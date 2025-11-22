@@ -1552,6 +1552,40 @@
               </asp:GridView>
             </div>
           </div>
+
+          <!-- Sección de Validaciones -->
+          <hr class="my-4" />
+          <h6 class="fw-bold text-success mb-3"><i class="bi bi-check-circle"></i> Validaciones de Refacciones</h6>
+          <asp:HiddenField ID="hfHTValidado" runat="server" Value="0" />
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Validación 1</label>
+              <div class="mb-2"><asp:Literal ID="litValRef1" runat="server" /></div>
+              <asp:DropDownList ID="ddlValRef1" runat="server" CssClass="form-select form-select-sm mb-2" />
+              <asp:TextBox ID="txtPassValRef1" runat="server" TextMode="Password" CssClass="form-control form-control-sm mb-2" placeholder="Contraseña" />
+              <asp:LinkButton ID="btnValidarRef1" runat="server" CssClass="btn btn-sm btn-success" OnClick="btnValidarRef1_Click">
+                <i class="bi bi-check"></i> Validar
+              </asp:LinkButton>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Validación 2</label>
+              <div class="mb-2"><asp:Literal ID="litValRef2" runat="server" /></div>
+              <asp:DropDownList ID="ddlValRef2" runat="server" CssClass="form-select form-select-sm mb-2" />
+              <asp:TextBox ID="txtPassValRef2" runat="server" TextMode="Password" CssClass="form-control form-control-sm mb-2" placeholder="Contraseña" />
+              <asp:LinkButton ID="btnValidarRef2" runat="server" CssClass="btn btn-sm btn-success" OnClick="btnValidarRef2_Click">
+                <i class="bi bi-check"></i> Validar
+              </asp:LinkButton>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Validación 3</label>
+              <div class="mb-2"><asp:Literal ID="litValRef3" runat="server" /></div>
+              <asp:DropDownList ID="ddlValRef3" runat="server" CssClass="form-select form-select-sm mb-2" />
+              <asp:TextBox ID="txtPassValRef3" runat="server" TextMode="Password" CssClass="form-control form-control-sm mb-2" placeholder="Contraseña" />
+              <asp:LinkButton ID="btnValidarRef3" runat="server" CssClass="btn btn-sm btn-success" OnClick="btnValidarRef3_Click">
+                <i class="bi bi-check"></i> Validar
+              </asp:LinkButton>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
