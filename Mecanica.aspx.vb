@@ -83,7 +83,7 @@ Public Class Mecanica
         CheckValidationState()
     End Sub
 
-    ' Check if all 3 autmec validations are complete
+    ' Check if all 3 valrefmec validations are complete (for disabling toggles)
     Private Sub CheckValidationState()
         Dim expediente = GetExpediente()
         If String.IsNullOrWhiteSpace(expediente) Then
@@ -95,7 +95,7 @@ Public Class Mecanica
         Using cn As New SqlConnection(CS)
             Using cmd As New SqlCommand("
                 SELECT TOP 1
-                    CASE WHEN ISNULL(autmec1,0)=1 AND ISNULL(autmec2,0)=1 AND ISNULL(autmec3,0)=1
+                    CASE WHEN ISNULL(valrefmec1,0)=1 AND ISNULL(valrefmec2,0)=1 AND ISNULL(valrefmec3,0)=1
                          THEN 1 ELSE 0 END AS Validado
                 FROM dbo.Admisiones WHERE Expediente=@exp;", cn)
                 cmd.Parameters.AddWithValue("@exp", expediente)
