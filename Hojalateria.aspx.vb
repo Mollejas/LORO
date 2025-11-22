@@ -482,19 +482,19 @@ Public Class Hojalateria
         Catch
         End Try
 
-        ' Si finhoj fue timbrado, notificar al padre (hoja.aspx)
-        Dim finhojStr As String = GetFinHojFormatted(expediente)
-        If Not String.IsNullOrEmpty(finhojStr) Then
-            Dim js As String = $"try {{ window.parent.postMessage({{ type: 'HOJA_UPDATED', finhoj: '{finhojStr}' }}, window.location.origin); }} catch(e) {{}}"
+        ' Si fincol fue timbrado, notificar al padre (hoja.aspx)
+        Dim fincolStr As String = GetFinColFormatted(expediente)
+        If Not String.IsNullOrEmpty(fincolStr) Then
+            Dim js As String = $"try {{ window.parent.postMessage({{ type: 'HOJA_UPDATED', fincol: '{fincolStr}' }}, window.location.origin); }} catch(e) {{}}"
             ScriptManager.RegisterStartupScript(Me, Me.GetType(), "notifyParent" & Guid.NewGuid().ToString("N"), js, True)
         End If
     End Sub
 
-    ' Obtener finhoj formateado si existe
-    Private Function GetFinHojFormatted(expediente As String) As String
+    ' Obtener fincol formateado si existe
+    Private Function GetFinColFormatted(expediente As String) As String
         Try
             Using cn As New SqlConnection(CS)
-                Using cmd As New SqlCommand("SELECT TOP 1 finhoj FROM dbo.Admisiones WHERE Expediente=@exp AND finhoj IS NOT NULL;", cn)
+                Using cmd As New SqlCommand("SELECT TOP 1 fincol FROM dbo.Admisiones WHERE Expediente=@exp AND fincol IS NOT NULL;", cn)
                     cmd.Parameters.AddWithValue("@exp", expediente)
                     cn.Open()
                     Dim obj = cmd.ExecuteScalar()
@@ -585,7 +585,7 @@ Public Class Hojalateria
         Return diff = 0
     End Function
 
-    ' ====== Actualizar bit + nombre en Admisiones (con timbrado de finhoj) ======
+    ' ====== Actualizar bit + nombre en Admisiones (con timbrado de fincol) ======
     Private Function UpdateAdmisionAuth(expediente As String, fieldName As String, value As Boolean, authName As String) As Boolean
         Dim allowed = New HashSet(Of String)(StringComparer.OrdinalIgnoreCase) From {"authoj1", "authoj2", "authoj3"}
         If Not allowed.Contains(fieldName) Then Return False
@@ -607,17 +607,17 @@ Public Class Hojalateria
                     ok = (cmd.ExecuteNonQuery() > 0)
                 End Using
 
-                ' 2) Si quedó en True, intenta TIMBRAR finhoj SOLO LA PRIMERA VEZ y SOLO si ya se cumple todo
+                ' 2) Si quedó en True, intenta TIMBRAR fincol SOLO LA PRIMERA VEZ y SOLO si ya se cumple todo
                 If ok AndAlso value Then
                     Using cmd2 As New SqlCommand("
                     UPDATE dbo.Admisiones
-                       SET finhoj = COALESCE(finhoj, GETDATE())
+                       SET fincol = COALESCE(fincol, GETDATE())
                      WHERE Expediente = @exp
                        AND ISNULL(hojsi,0)  = 1
                        AND ISNULL(authoj1,0)= 1
                        AND ISNULL(authoj2,0)= 1
                        AND ISNULL(authoj3,0)= 1
-                       AND finhoj IS NULL;", cn, tr)
+                       AND fincol IS NULL;", cn, tr)
                         cmd2.Parameters.Add("@exp", SqlDbType.NVarChar, 50).Value = expediente
                         cmd2.ExecuteNonQuery()
                     End Using
