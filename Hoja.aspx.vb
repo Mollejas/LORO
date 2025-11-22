@@ -2558,14 +2558,14 @@ Paint:
             cn.Open()
 
             ' Obtener datos de admisiones
-            Using cmd As New SqlCommand("SELECT expediente, marca, modelo, anio, color, placas FROM admisiones WHERE id = @id", cn)
+            Using cmd As New SqlCommand("SELECT expediente, marca, tipo, modelo, color, placas FROM admisiones WHERE id = @id", cn)
                 cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
                 Using rd = cmd.ExecuteReader()
                     If rd.Read() Then
                         lblHTExpediente.Text = If(rd.IsDBNull(0), "", rd.GetString(0))
                         lblHTMarca.Text = If(rd.IsDBNull(1), "", rd.GetString(1))
-                        lblHTModelo.Text = If(rd.IsDBNull(2), "", rd.GetString(2))
-                        lblHTAnio.Text = If(rd.IsDBNull(3), "", rd.GetValue(3).ToString())
+                        lblHTModelo.Text = If(rd.IsDBNull(2), "", rd.GetString(2))  ' Tipo es el modelo del vehículo
+                        lblHTAnio.Text = If(rd.IsDBNull(3), "", rd.GetValue(3).ToString())  ' Modelo es el año
                         lblHTColor.Text = If(rd.IsDBNull(4), "", rd.GetString(4))
                         lblHTPlacas.Text = If(rd.IsDBNull(5), "", rd.GetString(5))
                     End If
