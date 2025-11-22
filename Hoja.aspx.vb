@@ -2675,9 +2675,9 @@ Paint:
             End Using
         End Using
 
-        litValRef1.Text = If(v1, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n1)}</span>", "<span class='badge bg-secondary'>Pendiente</span>")
-        litValRef2.Text = If(v2, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n2)}</span>", "<span class='badge bg-secondary'>Pendiente</span>")
-        litValRef3.Text = If(v3, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n3)}</span>", "<span class='badge bg-secondary'>Pendiente</span>")
+        litValRef1.Text = If(v1, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n1)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
+        litValRef2.Text = If(v2, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n2)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
+        litValRef3.Text = If(v3, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n3)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
 
         ddlValRef1.Enabled = Not v1 : txtPassValRef1.Enabled = Not v1 : btnValidarRef1.Enabled = Not v1
         ddlValRef2.Enabled = Not v2 : txtPassValRef2.Enabled = Not v2 : btnValidarRef2.Enabled = Not v2
@@ -2839,6 +2839,9 @@ Paint:
 
         ' Deshabilitar controles
         ddl.Enabled = False : txtPass.Enabled = False
+
+        ' Reabrir el modal después del postback
+        EmitStartupScript("reopenHTModal", "bootstrap.Modal.getOrCreateInstance(document.getElementById('modalHojaTrabajo')).show();")
     End Sub
 
     Private Function ValidateHTUser(userId As Integer, password As String, cs As String) As Boolean
