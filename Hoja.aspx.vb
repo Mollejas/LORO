@@ -2544,6 +2544,94 @@ Paint:
         UpdateBottomWidgets()
     End Sub
 
+    ' Ver Hoja de Trabajo Sin Autorizar
+    Protected Sub btnVerHojaTrabajo_Click(sender As Object, e As EventArgs)
+        If String.IsNullOrWhiteSpace(hidId.Value) Then Exit Sub
+
+        Dim admId As Integer
+        If Not Integer.TryParse(hidId.Value, admId) Then Exit Sub
+
+        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+
+        ' Cargar datos del vehículo
+        Using cn As New SqlConnection(cs)
+            cn.Open()
+
+            ' Obtener datos de admisiones
+            Using cmd As New SqlCommand("SELECT expediente, marca, modelo, anio, color, placas FROM admisiones WHERE id = @id", cn)
+                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+                Using rd = cmd.ExecuteReader()
+                    If rd.Read() Then
+                        lblHTExpediente.Text = If(rd.IsDBNull(0), "", rd.GetString(0))
+                        lblHTMarca.Text = If(rd.IsDBNull(1), "", rd.GetString(1))
+                        lblHTModelo.Text = If(rd.IsDBNull(2), "", rd.GetString(2))
+                        lblHTAnio.Text = If(rd.IsDBNull(3), "", rd.GetValue(3).ToString())
+                        lblHTColor.Text = If(rd.IsDBNull(4), "", rd.GetString(4))
+                        lblHTPlacas.Text = If(rd.IsDBNull(5), "", rd.GetString(5))
+                    End If
+                End Using
+            End Using
+
+            ' Cargar imagen principal
+            If Not String.IsNullOrWhiteSpace(hidCarpeta.Value) Then
+                Dim baseFolder As String = ResolverCarpetaFisica(hidCarpeta.Value)
+                Dim imgPath As String = Path.Combine(baseFolder, "1. DOCUMENTOS DE INGRESO", "principal.jpg")
+                If File.Exists(imgPath) Then
+                    imgHTPrincipal.ImageUrl = "~/ImageHandler.ashx?path=" & Server.UrlEncode(imgPath) & "&v=" & DateTime.Now.Ticks.ToString()
+                Else
+                    imgHTPrincipal.ImageUrl = ""
+                End If
+            End If
+
+            ' Cargar refacciones - Mecánica Reparación
+            Dim dtMecRep As New DataTable()
+            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE admisionid = @id AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
+                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+                Using da As New SqlDataAdapter(cmd)
+                    da.Fill(dtMecRep)
+                End Using
+            End Using
+            gvMecReparacion.DataSource = dtMecRep
+            gvMecReparacion.DataBind()
+
+            ' Cargar refacciones - Mecánica Sustitución
+            Dim dtMecSus As New DataTable()
+            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE admisionid = @id AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
+                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+                Using da As New SqlDataAdapter(cmd)
+                    da.Fill(dtMecSus)
+                End Using
+            End Using
+            gvMecSustitucion.DataSource = dtMecSus
+            gvMecSustitucion.DataBind()
+
+            ' Cargar refacciones - Hojalatería Reparación
+            Dim dtHojRep As New DataTable()
+            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE admisionid = @id AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
+                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+                Using da As New SqlDataAdapter(cmd)
+                    da.Fill(dtHojRep)
+                End Using
+            End Using
+            gvHojReparacion.DataSource = dtHojRep
+            gvHojReparacion.DataBind()
+
+            ' Cargar refacciones - Hojalatería Sustitución
+            Dim dtHojSus As New DataTable()
+            Using cmd As New SqlCommand("SELECT cantidad, descripcion, numparte, observ1 FROM refacciones WHERE admisionid = @id AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
+                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+                Using da As New SqlDataAdapter(cmd)
+                    da.Fill(dtHojSus)
+                End Using
+            End Using
+            gvHojSustitucion.DataSource = dtHojSus
+            gvHojSustitucion.DataBind()
+        End Using
+
+        ' Abrir modal
+        EmitStartupScript("openHojaTrabajo", "bootstrap.Modal.getOrCreateInstance(document.getElementById('modalHojaTrabajo')).show();")
+    End Sub
+
     ' Ver Valuación Sin Autorizar
     Protected Sub btnVerValSinAut_Click(sender As Object, e As EventArgs)
         If String.IsNullOrWhiteSpace(hidId.Value) Then Exit Sub
