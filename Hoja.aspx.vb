@@ -2484,7 +2484,7 @@ Paint:
         If ext <> ".pdf" Then Exit Sub
 
         ' Crear carpeta 4. VALUACION si no existe
-        Dim baseFolder As String = hidCarpeta.Value
+        Dim baseFolder As String = ResolverCarpetaFisica(hidCarpeta.Value)
         Dim valFolder As String = Path.Combine(baseFolder, "4. VALUACION")
         If Not Directory.Exists(valFolder) Then Directory.CreateDirectory(valFolder)
 
@@ -2541,7 +2541,7 @@ Paint:
         If ext <> ".pdf" Then Exit Sub
 
         ' Crear carpeta 4. VALUACION si no existe
-        Dim baseFolder As String = hidCarpeta.Value
+        Dim baseFolder As String = ResolverCarpetaFisica(hidCarpeta.Value)
         Dim valFolder As String = Path.Combine(baseFolder, "4. VALUACION")
         If Not Directory.Exists(valFolder) Then Directory.CreateDirectory(valFolder)
 
