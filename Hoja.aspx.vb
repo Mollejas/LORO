@@ -2611,7 +2611,6 @@ Paint:
             End Using
             gvMecReparacion.DataSource = dtMecRep
             gvMecReparacion.DataBind()
-            AddHTGridGroupHeader(gvMecReparacion)
 
             ' Cargar refacciones - Mecánica Sustitución
             Dim dtMecSus As New DataTable()
@@ -2623,7 +2622,6 @@ Paint:
             End Using
             gvMecSustitucion.DataSource = dtMecSus
             gvMecSustitucion.DataBind()
-            AddHTGridGroupHeader(gvMecSustitucion)
 
             ' Cargar refacciones - Hojalatería Reparación
             Dim dtHojRep As New DataTable()
@@ -2635,7 +2633,6 @@ Paint:
             End Using
             gvHojReparacion.DataSource = dtHojRep
             gvHojReparacion.DataBind()
-            AddHTGridGroupHeader(gvHojReparacion)
 
             ' Cargar refacciones - Hojalatería Sustitución
             Dim dtHojSus As New DataTable()
@@ -2647,7 +2644,6 @@ Paint:
             End Using
             gvHojSustitucion.DataSource = dtHojSus
             gvHojSustitucion.DataBind()
-            AddHTGridGroupHeader(gvHojSustitucion)
 
             ' Cargar admins para validaciones
             LoadAdminsForHTValidation(cn)
