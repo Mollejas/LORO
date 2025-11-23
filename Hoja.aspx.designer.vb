@@ -676,19 +676,19 @@ Partial Public Class Hoja
     Protected WithEvents hfHTValidado As Global.System.Web.UI.WebControls.HiddenField
 
     '''<summary>
-    '''Control litValRef1.
+    '''Control lblValRef1.
     '''</summary>
-    Protected WithEvents litValRef1 As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents lblValRef1 As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''Control litValRef2.
+    '''Control lblValRef2.
     '''</summary>
-    Protected WithEvents litValRef2 As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents lblValRef2 As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''Control litValRef3.
+    '''Control lblValRef3.
     '''</summary>
-    Protected WithEvents litValRef3 As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents lblValRef3 As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
     '''Control ddlValRef1.
