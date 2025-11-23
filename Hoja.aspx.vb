@@ -2930,19 +2930,16 @@ Paint:
                 cn.Open()
                 cmd.ExecuteNonQuery()
             End Using
-
-            ' Recargar los grids para evitar problemas con encabezados
-            ReloadHTGrids(cn, expediente)
-
-            ' Repintar estado
-            PaintHTValFlags(cn, expediente)
         End Using
 
-        ' Deshabilitar controles
-        ddl.Enabled = False : txtPass.Enabled = False
-
-        ' Reabrir el modal después del postback
-        EmitStartupScript("reopenHTModal", "bootstrap.Modal.getOrCreateInstance(document.getElementById('modalHojaTrabajo')).show();")
+        ' Cerrar modal completamente y reabrirlo con click en el botón
+        EmitStartupScript("reopenHTModal", "
+            var modal = bootstrap.Modal.getInstance(document.getElementById('modalHojaTrabajo'));
+            if (modal) modal.hide();
+            setTimeout(function() {
+                document.getElementById('" & btnVerHojaTrabajo.ClientID & "').click();
+            }, 300);
+        ")
     End Sub
 
     Private Sub ReloadHTGrids(cn As SqlConnection, expediente As String)
