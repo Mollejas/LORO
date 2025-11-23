@@ -529,7 +529,6 @@
 </asp:Content>
 
 <asp:Content ID="MainContent" ContentPlaceHolderID="MainContent" runat="server">
-  <asp:ScriptManager ID="sm" runat="server" EnablePartialRendering="true" />
   <div class="container py-4">
     <div class="page-header mb-4">
       <h3>Hoja de trabajo</h3>
