@@ -522,13 +522,9 @@
 .ht-no { color: #dc2626; } /* rojo */
 .ht-status { color: #2563eb; } /* azul */
 
-/* Bloquear todo cuando está validado */
+/* Visual cuando está validado */
 .ht-all-locked .ht-toggle {
-    cursor: default !important;
-    pointer-events: none;
-}
-.ht-all-locked .ht-toggle:hover {
-    background: transparent !important;
+    opacity: 0.6;
 }
 
 </style>
