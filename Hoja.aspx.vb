@@ -391,6 +391,12 @@ END"
             UpdateInvGruaButtons()
         End If
 
+        ' Agregar handler para PreRender de los grids HT
+        AddHandler gvMecReparacion.PreRender, AddressOf HTGrid_PreRender
+        AddHandler gvMecSustitucion.PreRender, AddressOf HTGrid_PreRender
+        AddHandler gvHojReparacion.PreRender, AddressOf HTGrid_PreRender
+        AddHandler gvHojSustitucion.PreRender, AddressOf HTGrid_PreRender
+
         UpdateUIFromPrincipal()
         UpdateBottomWidgets()
         UpdateMetaLabels()
@@ -2770,6 +2776,29 @@ Paint:
         headerRow.Cells.Add(cellEst)
 
         gv.Controls(0).Controls.AddAt(0, headerRow)
+    End Sub
+
+    ' PreRender handler para agregar encabezados a los grids HT durante postbacks
+    Private Sub HTGrid_PreRender(sender As Object, e As EventArgs)
+        Dim gv As GridView = TryCast(sender, GridView)
+        If gv Is Nothing OrElse gv.Rows.Count = 0 Then Exit Sub
+
+        ' Verificar si ya existe el encabezado agrupado
+        If gv.Controls.Count > 0 Then
+            Dim table As Table = TryCast(gv.Controls(0), Table)
+            If table IsNot Nothing Then
+                For Each row As TableRow In table.Rows
+                    For Each cell As TableCell In row.Cells
+                        If cell.Text.Contains("Autorización") Then
+                            Exit Sub ' Ya existe
+                        End If
+                    Next
+                Next
+            End If
+        End If
+
+        ' Agregar el encabezado
+        AddHTGridGroupHeader(gv)
     End Sub
 
     ' Ver Valuación Sin Autorizar
