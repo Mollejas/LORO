@@ -438,13 +438,13 @@ END"
     Private lblInvGruaInfo As Object
     Private ddlValRef1 As Object
     Private txtPassValRef1 As TextBox
-    Private litValRef1 As Literal
+    Private lblValRef1 As Label
     Private ddlValRef2 As DropDownList
     Private txtPassValRef2 As TextBox
-    Private litValRef2 As Literal
+    Private lblValRef2 As Label
     Private ddlValRef3 As DropDownList
     Private txtPassValRef3 As TextBox
-    Private litValRef3 As Literal
+    Private lblValRef3 As Label
     Private btnValidarRef3 As Object
     Private hfHTValidado As Object
     Private ReadOnly btnValidarRef1 As Object
@@ -2712,13 +2712,13 @@ Paint:
         End Using
 
         ' Buscar controles usando FindControl
-        Dim lit1 As Literal = TryCast(FindControlRecursive(Me, "litValRef1"), Literal)
-        Dim lit2 As Literal = TryCast(FindControlRecursive(Me, "litValRef2"), Literal)
-        Dim lit3 As Literal = TryCast(FindControlRecursive(Me, "litValRef3"), Literal)
+        Dim lbl1 As Label = TryCast(FindControlRecursive(Me, "lblValRef1"), Label)
+        Dim lbl2 As Label = TryCast(FindControlRecursive(Me, "lblValRef2"), Label)
+        Dim lbl3 As Label = TryCast(FindControlRecursive(Me, "lblValRef3"), Label)
 
-        If lit1 IsNot Nothing Then lit1.Text = If(v1, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n1)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
-        If lit2 IsNot Nothing Then lit2.Text = If(v2, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n2)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
-        If lit3 IsNot Nothing Then lit3.Text = If(v3, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n3)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
+        If lbl1 IsNot Nothing Then lbl1.Text = If(v1, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n1)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
+        If lbl2 IsNot Nothing Then lbl2.Text = If(v2, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n2)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
+        If lbl3 IsNot Nothing Then lbl3.Text = If(v3, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n3)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
 
         ' Buscar controles de validación
         Dim ddl1 As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef1"), DropDownList)
@@ -2857,31 +2857,31 @@ Paint:
     Protected Sub btnValidarRef1_Click(sender As Object, e As EventArgs)
         Dim ddl As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef1"), DropDownList)
         Dim txt As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef1"), TextBox)
-        Dim lit As Literal = TryCast(FindControlRecursive(Me, "litValRef1"), Literal)
+        Dim lbl As Label = TryCast(FindControlRecursive(Me, "lblValRef1"), Label)
         If ddl IsNot Nothing AndAlso txt IsNot Nothing Then
-            HandleHTValidation(ddl, txt, "valrefmec1", lit)
+            HandleHTValidation(ddl, txt, "valrefmec1", lbl)
         End If
     End Sub
 
     Protected Sub btnValidarRef2_Click(sender As Object, e As EventArgs)
         Dim ddl As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef2"), DropDownList)
         Dim txt As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef2"), TextBox)
-        Dim lit As Literal = TryCast(FindControlRecursive(Me, "litValRef2"), Literal)
+        Dim lbl As Label = TryCast(FindControlRecursive(Me, "lblValRef2"), Label)
         If ddl IsNot Nothing AndAlso txt IsNot Nothing Then
-            HandleHTValidation(ddl, txt, "valrefmec2", lit)
+            HandleHTValidation(ddl, txt, "valrefmec2", lbl)
         End If
     End Sub
 
     Protected Sub btnValidarRef3_Click(sender As Object, e As EventArgs)
         Dim ddl As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef3"), DropDownList)
         Dim txt As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef3"), TextBox)
-        Dim lit As Literal = TryCast(FindControlRecursive(Me, "litValRef3"), Literal)
+        Dim lbl As Label = TryCast(FindControlRecursive(Me, "lblValRef3"), Label)
         If ddl IsNot Nothing AndAlso txt IsNot Nothing Then
-            HandleHTValidation(ddl, txt, "valrefmec3", lit)
+            HandleHTValidation(ddl, txt, "valrefmec3", lbl)
         End If
     End Sub
 
-    Private Sub HandleHTValidation(ddl As DropDownList, txtPass As TextBox, fieldName As String, lit As Literal)
+    Private Sub HandleHTValidation(ddl As DropDownList, txtPass As TextBox, fieldName As String, lbl As Label)
         Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
         Dim expediente As String = lblHTExpediente.Text
         If String.IsNullOrWhiteSpace(expediente) Then Exit Sub

@@ -1559,7 +1559,7 @@
           <div class="row">
             <div class="col-md-4 mb-3">
               <label class="form-label">Validación 1</label>
-              <div class="mb-2"><asp:Literal ID="litValRef1" runat="server" /></div>
+              <div class="mb-2"><asp:Label ID="lblValRef1" runat="server" /></div>
               <asp:DropDownList ID="ddlValRef1" runat="server" CssClass="form-select form-select-sm mb-2" />
               <asp:TextBox ID="txtPassValRef1" runat="server" TextMode="Password" CssClass="form-control form-control-sm mb-2" placeholder="Contraseña" />
               <asp:LinkButton ID="btnValidarRef1" runat="server" CssClass="btn btn-sm btn-success" OnClick="btnValidarRef1_Click">
@@ -1568,7 +1568,7 @@
             </div>
             <div class="col-md-4 mb-3">
               <label class="form-label">Validación 2</label>
-              <div class="mb-2"><asp:Literal ID="litValRef2" runat="server" /></div>
+              <div class="mb-2"><asp:Label ID="lblValRef2" runat="server" /></div>
               <asp:DropDownList ID="ddlValRef2" runat="server" CssClass="form-select form-select-sm mb-2" />
               <asp:TextBox ID="txtPassValRef2" runat="server" TextMode="Password" CssClass="form-control form-control-sm mb-2" placeholder="Contraseña" />
               <asp:LinkButton ID="btnValidarRef2" runat="server" CssClass="btn btn-sm btn-success" OnClick="btnValidarRef2_Click">
@@ -1577,7 +1577,7 @@
             </div>
             <div class="col-md-4 mb-3">
               <label class="form-label">Validación 3</label>
-              <div class="mb-2"><asp:Literal ID="litValRef3" runat="server" /></div>
+              <div class="mb-2"><asp:Label ID="lblValRef3" runat="server" /></div>
               <asp:DropDownList ID="ddlValRef3" runat="server" CssClass="form-select form-select-sm mb-2" />
               <asp:TextBox ID="txtPassValRef3" runat="server" TextMode="Password" CssClass="form-control form-control-sm mb-2" placeholder="Contraseña" />
               <asp:LinkButton ID="btnValidarRef3" runat="server" CssClass="btn btn-sm btn-success" OnClick="btnValidarRef3_Click">
@@ -3315,13 +3315,13 @@
            if (!toggle) return;
 
            // Verificar si las 3 validaciones están completas (buscar texto "Validado" en los labels)
-           var lit1 = document.getElementById('<%= litValRef1.ClientID %>');
-           var lit2 = document.getElementById('<%= litValRef2.ClientID %>');
-           var lit3 = document.getElementById('<%= litValRef3.ClientID %>');
+           var lbl1 = document.getElementById('<%= lblValRef1.ClientID %>');
+           var lbl2 = document.getElementById('<%= lblValRef2.ClientID %>');
+           var lbl3 = document.getElementById('<%= lblValRef3.ClientID %>');
 
-           var v1 = lit1 && lit1.innerText.indexOf('Validado') >= 0;
-           var v2 = lit2 && lit2.innerText.indexOf('Validado') >= 0;
-           var v3 = lit3 && lit3.innerText.indexOf('Validado') >= 0;
+           var v1 = lbl1 && lbl1.innerText.indexOf('Validado') >= 0;
+           var v2 = lbl2 && lbl2.innerText.indexOf('Validado') >= 0;
+           var v3 = lbl3 && lbl3.innerText.indexOf('Validado') >= 0;
 
            if (v1 && v2 && v3) {
                alert('Las 3 validaciones están completas. No se puede modificar.');
