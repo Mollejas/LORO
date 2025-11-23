@@ -1447,7 +1447,7 @@
           <div class="row mb-4">
             <div class="col-lg-6">
               <h6 class="text-muted">Reparación</h6>
-              <asp:GridView ID="gvMecReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
+              <asp:GridView ID="gvMecReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros">
                 <Columns>
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
@@ -1472,7 +1472,7 @@
             </div>
             <div class="col-lg-6">
               <h6 class="text-muted">Sustitución</h6>
-              <asp:GridView ID="gvMecSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
+              <asp:GridView ID="gvMecSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros">
                 <Columns>
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
@@ -1502,7 +1502,7 @@
           <div class="row">
             <div class="col-lg-6">
               <h6 class="text-muted">Reparación</h6>
-              <asp:GridView ID="gvHojReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
+              <asp:GridView ID="gvHojReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros">
                 <Columns>
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
@@ -1527,7 +1527,7 @@
             </div>
             <div class="col-lg-6">
               <h6 class="text-muted">Sustitución</h6>
-              <asp:GridView ID="gvHojSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
+              <asp:GridView ID="gvHojSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros">
                 <Columns>
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
