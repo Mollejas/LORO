@@ -27,9 +27,6 @@ Imports System.Globalization
 Partial Public Class Hoja
     Inherits System.Web.UI.Page
 
-    ' Flag para saber si estamos haciendo DataBind explícito en los grids de HT
-    Private _htGridsBinding As Boolean = False
-
     ' ===================== API: Gate de diagnóstico (Mec/Hoj) =====================
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json), WebMethod()>
     Public Shared Function SetDiagGate(admisionId As Integer, area As String, enabled As Boolean) As Object
@@ -2606,11 +2603,9 @@ Paint:
                     da.Fill(dtMecRep)
                 End Using
             End Using
-            ' Activar bandera para agregar encabezados agrupados
-            _htGridsBinding = True
-
             gvMecReparacion.DataSource = dtMecRep
             gvMecReparacion.DataBind()
+            AddHTGridGroupHeader(gvMecReparacion)
 
             ' Cargar refacciones - Mecánica Sustitución
             Dim dtMecSus As New DataTable()
@@ -2622,6 +2617,7 @@ Paint:
             End Using
             gvMecSustitucion.DataSource = dtMecSus
             gvMecSustitucion.DataBind()
+            AddHTGridGroupHeader(gvMecSustitucion)
 
             ' Cargar refacciones - Hojalatería Reparación
             Dim dtHojRep As New DataTable()
@@ -2633,6 +2629,7 @@ Paint:
             End Using
             gvHojReparacion.DataSource = dtHojRep
             gvHojReparacion.DataBind()
+            AddHTGridGroupHeader(gvHojReparacion)
 
             ' Cargar refacciones - Hojalatería Sustitución
             Dim dtHojSus As New DataTable()
@@ -2644,9 +2641,7 @@ Paint:
             End Using
             gvHojSustitucion.DataSource = dtHojSus
             gvHojSustitucion.DataBind()
-
-            ' Desactivar bandera
-            _htGridsBinding = False
+            AddHTGridGroupHeader(gvHojSustitucion)
 
             ' Cargar admins para validaciones
             LoadAdminsForHTValidation(cn)
@@ -2745,41 +2740,36 @@ Paint:
         If hf IsNot Nothing Then hf.Value = If(v1 AndAlso v2 AndAlso v3, "1", "0")
     End Sub
 
-    ' Handler para agregar encabezados agrupados a los GridViews de Hoja de Trabajo
-    Protected Sub gvHT_RowDataBound(sender As Object, e As GridViewRowEventArgs)
-        If e.Row.RowType = DataControlRowType.Header Then
-            ' Solo agregar encabezado durante DataBind explícito, no durante reconstrucción de ViewState
-            If Not _htGridsBinding Then Exit Sub
+    ' Agregar encabezados agrupados a los GridViews de Hoja de Trabajo
+    Private Sub AddHTGridGroupHeader(gv As GridView)
+        If gv.Controls.Count = 0 Then Exit Sub
 
-            Dim gv As GridView = DirectCast(sender, GridView)
+        Dim headerRow As New GridViewRow(0, 0, DataControlRowType.Header, DataControlRowState.Normal)
 
-            Dim headerRow As New GridViewRow(0, 0, DataControlRowType.Header, DataControlRowState.Normal)
+        ' Determinar número de columnas base (3 para todos)
+        Dim baseColSpan As Integer = 3
 
-            ' Determinar número de columnas base (3 para todos)
-            Dim baseColSpan As Integer = 3
+        ' Columnas base
+        Dim cellBase As New TableHeaderCell()
+        cellBase.ColumnSpan = baseColSpan
+        cellBase.Text = ""
+        headerRow.Cells.Add(cellBase)
 
-            ' Columnas base
-            Dim cellBase As New TableHeaderCell()
-            cellBase.ColumnSpan = baseColSpan
-            cellBase.Text = ""
-            headerRow.Cells.Add(cellBase)
+        ' Autorización (2 columnas: Si, No)
+        Dim cellAut As New TableHeaderCell()
+        cellAut.ColumnSpan = 2
+        cellAut.Text = "Autorización"
+        cellAut.CssClass = "text-center bg-light"
+        headerRow.Cells.Add(cellAut)
 
-            ' Autorización (2 columnas: Si, No)
-            Dim cellAut As New TableHeaderCell()
-            cellAut.ColumnSpan = 2
-            cellAut.Text = "Autorización"
-            cellAut.CssClass = "text-center bg-light"
-            headerRow.Cells.Add(cellAut)
+        ' Estatus (3 columnas: P, E, D)
+        Dim cellEst As New TableHeaderCell()
+        cellEst.ColumnSpan = 3
+        cellEst.Text = "Estatus"
+        cellEst.CssClass = "text-center bg-light"
+        headerRow.Cells.Add(cellEst)
 
-            ' Estatus (3 columnas: P, E, D)
-            Dim cellEst As New TableHeaderCell()
-            cellEst.ColumnSpan = 3
-            cellEst.Text = "Estatus"
-            cellEst.CssClass = "text-center bg-light"
-            headerRow.Cells.Add(cellEst)
-
-            gv.Controls(0).Controls.AddAt(0, headerRow)
-        End If
+        gv.Controls(0).Controls.AddAt(0, headerRow)
     End Sub
 
     ' Ver Valuación Sin Autorizar
