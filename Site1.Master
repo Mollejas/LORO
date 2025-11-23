@@ -251,6 +251,7 @@
 
     <!-- CONTENIDO -->
     <main class="page" id="MainHost">
+      <asp:ScriptManager ID="smMain" runat="server" EnablePartialRendering="true" />
       <asp:ContentPlaceHolder ID="MainContent" runat="server" />
     </main>
 
