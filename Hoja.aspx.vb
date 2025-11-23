@@ -27,6 +27,9 @@ Imports System.Globalization
 Partial Public Class Hoja
     Inherits System.Web.UI.Page
 
+    ' Flag para saber si estamos haciendo DataBind explícito en los grids de HT
+    Private _htGridsBinding As Boolean = False
+
     ' ===================== API: Gate de diagnóstico (Mec/Hoj) =====================
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json), WebMethod()>
     Public Shared Function SetDiagGate(admisionId As Integer, area As String, enabled As Boolean) As Object
@@ -2603,6 +2606,9 @@ Paint:
                     da.Fill(dtMecRep)
                 End Using
             End Using
+            ' Activar bandera para agregar encabezados agrupados
+            _htGridsBinding = True
+
             gvMecReparacion.DataSource = dtMecRep
             gvMecReparacion.DataBind()
 
@@ -2638,6 +2644,9 @@ Paint:
             End Using
             gvHojSustitucion.DataSource = dtHojSus
             gvHojSustitucion.DataBind()
+
+            ' Desactivar bandera
+            _htGridsBinding = False
 
             ' Cargar admins para validaciones
             LoadAdminsForHTValidation(cn)
@@ -2739,21 +2748,10 @@ Paint:
     ' Handler para agregar encabezados agrupados a los GridViews de Hoja de Trabajo
     Protected Sub gvHT_RowDataBound(sender As Object, e As GridViewRowEventArgs)
         If e.Row.RowType = DataControlRowType.Header Then
-            Dim gv As GridView = DirectCast(sender, GridView)
+            ' Solo agregar encabezado durante DataBind explícito, no durante reconstrucción de ViewState
+            If Not _htGridsBinding Then Exit Sub
 
-            ' Verificar si ya existe el encabezado agrupado (evitar duplicados)
-            If gv.Controls.Count > 0 Then
-                Dim table As Table = TryCast(gv.Controls(0), Table)
-                If table IsNot Nothing Then
-                    For Each row As TableRow In table.Rows
-                        For Each cell As TableCell In row.Cells
-                            If cell.Text.Contains("Autorización") Then
-                                Exit Sub ' Ya existe
-                            End If
-                        Next
-                    Next
-                End If
-            End If
+            Dim gv As GridView = DirectCast(sender, GridView)
 
             Dim headerRow As New GridViewRow(0, 0, DataControlRowType.Header, DataControlRowState.Normal)
 
