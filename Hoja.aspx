@@ -3318,10 +3318,16 @@
        // Toggle handlers para Hoja de Trabajo
        document.addEventListener('click', function (e) {
            var toggle = e.target.closest('.ht-toggle');
-           if (!toggle) return;
+           if (!toggle) {
+               return;
+           }
+
+           console.log('Toggle click detectado:', toggle);
 
            // Verificar si las 3 validaciones están completas
            var hfValidado = document.getElementById('<%= hfHTValidado.ClientID %>');
+           console.log('hfValidado element:', hfValidado, 'value:', hfValidado ? hfValidado.value : 'N/A');
+
            if (hfValidado && hfValidado.value === '1') {
                alert('Las 3 validaciones están completas. No se puede modificar.');
                return;
@@ -3331,8 +3337,10 @@
            var field = toggle.getAttribute('data-field');
            var val = toggle.getAttribute('data-val');
 
+           console.log('Datos del toggle - id:', id, 'field:', field, 'val:', val);
+
            if (!id || !field || !val) {
-               console.log('Datos incompletos:', id, field, val);
+               console.log('Datos incompletos, abortando');
                return;
            }
 
