@@ -3309,10 +3309,24 @@
    </script>
 
    <script>
-       // Toggle handlers para Hoja de Trabajo - versión limpia
+       // Toggle handlers para Hoja de Trabajo
        document.addEventListener('click', function (e) {
            var toggle = e.target.closest('.ht-toggle');
            if (!toggle) return;
+
+           // Verificar si las 3 validaciones están completas (buscar texto "Validado" en los labels)
+           var lit1 = document.getElementById('<%= litValRef1.ClientID %>');
+           var lit2 = document.getElementById('<%= litValRef2.ClientID %>');
+           var lit3 = document.getElementById('<%= litValRef3.ClientID %>');
+
+           var v1 = lit1 && lit1.innerText.indexOf('Validado') >= 0;
+           var v2 = lit2 && lit2.innerText.indexOf('Validado') >= 0;
+           var v3 = lit3 && lit3.innerText.indexOf('Validado') >= 0;
+
+           if (v1 && v2 && v3) {
+               alert('Las 3 validaciones están completas. No se puede modificar.');
+               return;
+           }
 
            var id = toggle.getAttribute('data-id');
            var field = toggle.getAttribute('data-field');
@@ -3335,22 +3349,20 @@
                    siSpan.textContent = '';
                    noSpan.textContent = '✗';
                }
-               alert('Cambio visual aplicado: ' + (val === '1' ? 'SI' : 'NO'));
            } else if (field === 'estatus') {
                var statusSpans = row.querySelectorAll('.ht-status');
                for (var i = 0; i < statusSpans.length; i++) {
                    statusSpans[i].textContent = statusSpans[i].getAttribute('data-val') === val ? '●' : '';
                }
-               alert('Estatus cambiado a: ' + val);
            }
 
            // Guardar en la base de datos
            fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val)
                .then(function(r) { return r.json(); })
                .then(function(data) {
-                   if (!data.ok) alert('Error guardando: ' + data.error);
+                   if (!data.ok) console.error('Error guardando:', data.error);
                })
-               .catch(function(err) { alert('Error: ' + err); });
+               .catch(function(err) { console.error('Error:', err); });
        });
    </script>
 
