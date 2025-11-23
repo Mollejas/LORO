@@ -2691,9 +2691,9 @@ Paint:
             cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
             Using rd = cmd.ExecuteReader()
                 If rd.Read() Then
-                    v1 = rd.GetBoolean(0) : n1 = rd.GetString(1)
-                    v2 = rd.GetBoolean(2) : n2 = rd.GetString(3)
-                    v3 = rd.GetBoolean(4) : n3 = rd.GetString(5)
+                    v1 = Convert.ToInt32(rd(0)) = 1 : n1 = Convert.ToString(rd(1))
+                    v2 = Convert.ToInt32(rd(2)) = 1 : n2 = Convert.ToString(rd(3))
+                    v3 = Convert.ToInt32(rd(4)) = 1 : n3 = Convert.ToString(rd(5))
                 End If
             End Using
         End Using
