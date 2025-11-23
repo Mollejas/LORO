@@ -3317,45 +3317,32 @@
    <script>
        // Toggle handlers para Hoja de Trabajo
        document.addEventListener('click', function (e) {
-           const toggle = e.target.closest('.ht-toggle');
-           if (!toggle) {
-               // Debug: ver si click llega pero no encuentra toggle
-               if (e.target.closest('#modalHojaTrabajo')) {
-                   console.log('Click en modal pero no en toggle:', e.target);
-               }
-               return;
-           }
+           var toggle = e.target.closest('.ht-toggle');
+           if (!toggle) return;
 
            // Verificar si las 3 validaciones están completas
-           const hfValidado = document.getElementById('<%= hfHTValidado.ClientID %>');
-           const validado = hfValidado && hfValidado.value === '1';
-
-           // Si las 3 validaciones están completas, bloquear todo
-           if (validado) {
-               console.log('Cambios bloqueados: las 3 validaciones están completas');
+           var hfValidado = document.getElementById('<%= hfHTValidado.ClientID %>');
+           if (hfValidado && hfValidado.value === '1') {
+               alert('Las 3 validaciones están completas. No se puede modificar.');
                return;
            }
 
-           console.log('Toggle encontrado:', toggle);
+           var id = toggle.getAttribute('data-id');
+           var field = toggle.getAttribute('data-field');
+           var val = toggle.getAttribute('data-val');
 
-           const id = toggle.dataset.id;
-           const field = toggle.dataset.field;
-           const val = toggle.dataset.val;
-
-           console.log('Datos:', { id, field, val });
+           if (!id || !field || !val) {
+               console.log('Datos incompletos:', id, field, val);
+               return;
+           }
 
            // Encontrar la fila
-           const row = toggle.closest('tr');
-           if (!row) {
-               console.log('No se encontró la fila');
-               return;
-           }
+           var row = toggle.closest('tr');
+           if (!row) return;
 
            if (field === 'autorizado') {
-               // Toggle Si/No - mutuamente excluyente
-               const siSpan = row.querySelector('.ht-si');
-               const noSpan = row.querySelector('.ht-no');
-
+               var siSpan = row.querySelector('.ht-si');
+               var noSpan = row.querySelector('.ht-no');
                if (val === '1') {
                    siSpan.textContent = '✓';
                    noSpan.textContent = '';
@@ -3364,59 +3351,20 @@
                    noSpan.textContent = '✗';
                }
            } else if (field === 'estatus') {
-               // Toggle P/E/D - mutuamente excluyente
-               const statusSpans = row.querySelectorAll('.ht-status');
-               statusSpans.forEach(span => {
-                   span.textContent = span.dataset.val === val ? '●' : '';
-               });
+               var statusSpans = row.querySelectorAll('.ht-status');
+               for (var i = 0; i < statusSpans.length; i++) {
+                   statusSpans[i].textContent = statusSpans[i].getAttribute('data-val') === val ? '●' : '';
+               }
            }
 
            // Guardar en la base de datos
            fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val)
-               .then(r => r.json())
-               .then(data => {
-                   if (!data.ok) {
-                       console.error('Error al guardar:', data.error);
-                   }
+               .then(function(r) { return r.json(); })
+               .then(function(data) {
+                   if (!data.ok) console.error('Error:', data.error);
                })
-               .catch(err => console.error('Error:', err));
+               .catch(function(err) { console.error('Error:', err); });
        });
-
-       // Función para bloquear todo cuando las 3 validaciones están completas
-       function updateHTGridState() {
-           const hfValidado = document.getElementById('<%= hfHTValidado.ClientID %>');
-           const validado = hfValidado && hfValidado.value === '1';
-           const modal = document.getElementById('modalHojaTrabajo');
-
-           console.log('updateHTGridState - hfValidado:', hfValidado ? hfValidado.value : 'NOT FOUND', 'validado:', validado);
-
-           if (!modal) return;
-
-           const grids = modal.querySelectorAll('.ht-grid');
-           grids.forEach(grid => {
-               if (validado) {
-                   // Las 3 validaciones completas: bloquear todo
-                   grid.classList.add('ht-all-locked');
-               } else {
-                   // Faltan validaciones: permitir cambios
-                   grid.classList.remove('ht-all-locked');
-               }
-           });
-       }
-
-       // Actualizar estado cuando se abre el modal
-       const htModal = document.getElementById('modalHojaTrabajo');
-       if (htModal) {
-           htModal.addEventListener('shown.bs.modal', updateHTGridState);
-       }
-
-       // También actualizar después de un postback
-       if (typeof Sys !== 'undefined' && Sys.WebForms) {
-           Sys.WebForms.PageRequestManager.getInstance().add_endRequest(updateHTGridState);
-       }
-
-       // Ejecutar al cargar
-       document.addEventListener('DOMContentLoaded', updateHTGridState);
    </script>
 
 
