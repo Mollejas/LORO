@@ -3323,6 +3323,7 @@
            }
 
            console.log('Toggle click detectado:', toggle);
+           console.log('Toggle HTML:', toggle.outerHTML);
 
            // Verificar si las 3 validaciones están completas
            var hfValidado = document.getElementById('<%= hfHTValidado.ClientID %>');
@@ -3338,6 +3339,7 @@
            var val = toggle.getAttribute('data-val');
 
            console.log('Datos del toggle - id:', id, 'field:', field, 'val:', val);
+           console.log('Llegamos aquí - procesando toggle');
 
            if (!id || !field || !val) {
                console.log('Datos incompletos, abortando');
