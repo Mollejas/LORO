@@ -391,12 +391,6 @@ END"
             UpdateInvGruaButtons()
         End If
 
-        ' Agregar handler para PreRender de los grids HT
-        AddHandler gvMecReparacion.PreRender, AddressOf HTGrid_PreRender
-        AddHandler gvMecSustitucion.PreRender, AddressOf HTGrid_PreRender
-        AddHandler gvHojReparacion.PreRender, AddressOf HTGrid_PreRender
-        AddHandler gvHojSustitucion.PreRender, AddressOf HTGrid_PreRender
-
         UpdateUIFromPrincipal()
         UpdateBottomWidgets()
         UpdateMetaLabels()
@@ -437,6 +431,37 @@ END"
         If fuCompl IsNot Nothing Then fuCompl.Attributes("accept") = "application/pdf"
     End Sub
 
+    Protected Sub Page_PreRender(ByVal sender As Object, ByVal e As EventArgs) Handles Me.PreRender
+        ' Re-add HojaTrabajo grid headers during postbacks if grids have data
+        If IsPostBack Then
+            EnsureHTGridHeaders(gvMecReparacion)
+            EnsureHTGridHeaders(gvMecSustitucion)
+            EnsureHTGridHeaders(gvHojReparacion)
+            EnsureHTGridHeaders(gvHojSustitucion)
+        End If
+    End Sub
+
+    Private Sub EnsureHTGridHeaders(gv As GridView)
+        If gv Is Nothing OrElse gv.Rows.Count = 0 Then Exit Sub
+        If gv.Controls.Count = 0 Then Exit Sub
+
+        ' Check if grouped header already exists (should have 2 header rows)
+        Dim table As Table = TryCast(gv.Controls(0), Table)
+        If table Is Nothing Then Exit Sub
+
+        Dim headerCount As Integer = 0
+        For Each ctrl As Control In table.Controls
+            Dim row As GridViewRow = TryCast(ctrl, GridViewRow)
+            If row IsNot Nothing AndAlso row.RowType = DataControlRowType.Header Then
+                headerCount += 1
+            End If
+        Next
+
+        ' Only add if we have exactly 1 header row (missing the grouped header)
+        If headerCount = 1 Then
+            AddHTGridGroupHeader(gv)
+        End If
+    End Sub
 
     '====================== Datos de admisión ======================
     Private _marca As String = "", _version As String = "", _anio As String = "", _placas As String = ""
@@ -2611,6 +2636,7 @@ Paint:
             End Using
             gvMecReparacion.DataSource = dtMecRep
             gvMecReparacion.DataBind()
+            AddHTGridGroupHeader(gvMecReparacion)
 
             ' Cargar refacciones - Mecánica Sustitución
             Dim dtMecSus As New DataTable()
@@ -2622,6 +2648,7 @@ Paint:
             End Using
             gvMecSustitucion.DataSource = dtMecSus
             gvMecSustitucion.DataBind()
+            AddHTGridGroupHeader(gvMecSustitucion)
 
             ' Cargar refacciones - Hojalatería Reparación
             Dim dtHojRep As New DataTable()
@@ -2633,6 +2660,7 @@ Paint:
             End Using
             gvHojReparacion.DataSource = dtHojRep
             gvHojReparacion.DataBind()
+            AddHTGridGroupHeader(gvHojReparacion)
 
             ' Cargar refacciones - Hojalatería Sustitución
             Dim dtHojSus As New DataTable()
@@ -2644,6 +2672,7 @@ Paint:
             End Using
             gvHojSustitucion.DataSource = dtHojSus
             gvHojSustitucion.DataBind()
+            AddHTGridGroupHeader(gvHojSustitucion)
 
             ' Cargar admins para validaciones
             LoadAdminsForHTValidation(cn)
@@ -2772,32 +2801,6 @@ Paint:
         headerRow.Cells.Add(cellEst)
 
         gv.Controls(0).Controls.AddAt(0, headerRow)
-    End Sub
-
-    ' PreRender handler para agregar encabezados a los grids HT durante postbacks
-    Private Sub HTGrid_PreRender(sender As Object, e As EventArgs)
-        Dim gv As GridView = TryCast(sender, GridView)
-        If gv Is Nothing OrElse gv.Rows.Count = 0 Then Exit Sub
-        If gv.Controls.Count = 0 Then Exit Sub
-
-        ' Verificar si ya existe el encabezado agrupado contando filas de header
-        ' El GridView normal tiene 1 fila de header, con nuestro encabezado tendría 2
-        Dim table As Table = TryCast(gv.Controls(0), Table)
-        If table IsNot Nothing Then
-            Dim headerRowCount As Integer = 0
-            For Each ctrl As Control In table.Controls
-                Dim row As GridViewRow = TryCast(ctrl, GridViewRow)
-                If row IsNot Nothing AndAlso row.RowType = DataControlRowType.Header Then
-                    headerRowCount += 1
-                End If
-            Next
-
-            ' Si ya hay más de 1 fila de header, no agregar
-            If headerRowCount > 1 Then Exit Sub
-        End If
-
-        ' Agregar el encabezado
-        AddHTGridGroupHeader(gv)
     End Sub
 
     ' Ver Valuación Sin Autorizar
