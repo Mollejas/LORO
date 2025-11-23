@@ -3343,6 +3343,7 @@
            console.log('Toggle encontrado:', toggle);
 
            const id = toggle.dataset.id;
+           const field = toggle.dataset.field;
            const val = toggle.dataset.val;
 
            console.log('Datos:', { id, field, val });
