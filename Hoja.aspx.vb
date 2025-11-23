@@ -2740,6 +2740,16 @@ Paint:
     Protected Sub gvHT_RowDataBound(sender As Object, e As GridViewRowEventArgs)
         If e.Row.RowType = DataControlRowType.Header Then
             Dim gv As GridView = DirectCast(sender, GridView)
+
+            ' Verificar si ya existe el encabezado agrupado (evitar duplicados)
+            If gv.Controls.Count > 0 AndAlso gv.Controls(0).Controls.Count > 1 Then
+                Dim firstRow As GridViewRow = TryCast(gv.Controls(0).Controls(0), GridViewRow)
+                If firstRow IsNot Nothing AndAlso firstRow.Cells.Count = 3 Then
+                    ' Ya existe el encabezado agrupado
+                    Exit Sub
+                End If
+            End If
+
             Dim headerRow As New GridViewRow(0, 0, DataControlRowType.Header, DataControlRowState.Normal)
 
             ' Determinar número de columnas base (3 para todos)
