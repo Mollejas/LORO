@@ -2742,11 +2742,16 @@ Paint:
             Dim gv As GridView = DirectCast(sender, GridView)
 
             ' Verificar si ya existe el encabezado agrupado (evitar duplicados)
-            If gv.Controls.Count > 0 AndAlso gv.Controls(0).Controls.Count > 1 Then
-                Dim firstRow As GridViewRow = TryCast(gv.Controls(0).Controls(0), GridViewRow)
-                If firstRow IsNot Nothing AndAlso firstRow.Cells.Count = 3 Then
-                    ' Ya existe el encabezado agrupado
-                    Exit Sub
+            If gv.Controls.Count > 0 Then
+                Dim table As Table = TryCast(gv.Controls(0), Table)
+                If table IsNot Nothing Then
+                    For Each row As TableRow In table.Rows
+                        For Each cell As TableCell In row.Cells
+                            If cell.Text.Contains("Autorización") Then
+                                Exit Sub ' Ya existe
+                            End If
+                        Next
+                    Next
                 End If
             End If
 
