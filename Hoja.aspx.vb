@@ -2778,19 +2778,22 @@ Paint:
     Private Sub HTGrid_PreRender(sender As Object, e As EventArgs)
         Dim gv As GridView = TryCast(sender, GridView)
         If gv Is Nothing OrElse gv.Rows.Count = 0 Then Exit Sub
+        If gv.Controls.Count = 0 Then Exit Sub
 
-        ' Verificar si ya existe el encabezado agrupado
-        If gv.Controls.Count > 0 Then
-            Dim table As Table = TryCast(gv.Controls(0), Table)
-            If table IsNot Nothing Then
-                For Each row As TableRow In table.Rows
-                    For Each cell As TableCell In row.Cells
-                        If cell.Text.Contains("Autorización") Then
-                            Exit Sub ' Ya existe
-                        End If
-                    Next
-                Next
-            End If
+        ' Verificar si ya existe el encabezado agrupado contando filas de header
+        ' El GridView normal tiene 1 fila de header, con nuestro encabezado tendría 2
+        Dim table As Table = TryCast(gv.Controls(0), Table)
+        If table IsNot Nothing Then
+            Dim headerRowCount As Integer = 0
+            For Each ctrl As Control In table.Controls
+                Dim row As GridViewRow = TryCast(ctrl, GridViewRow)
+                If row IsNot Nothing AndAlso row.RowType = DataControlRowType.Header Then
+                    headerRowCount += 1
+                End If
+            Next
+
+            ' Si ya hay más de 1 fila de header, no agregar
+            If headerRowCount > 1 Then Exit Sub
         End If
 
         ' Agregar el encabezado
