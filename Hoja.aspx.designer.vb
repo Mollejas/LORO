@@ -739,6 +739,104 @@ Partial Public Class Hoja
     '''Propiedad Master.
     '''</summary>
     '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents tileCol As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control flagHoja.
+    '''</summary>
+    Protected WithEvents flagHoja As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control icoHoja.
+    '''</summary>
+    Protected WithEvents icoHoja As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control lblFechaIniVal.
+    '''</summary>
+    Protected WithEvents lblFechaIniVal As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblFechaLimEnvVal.
+    '''</summary>
+    Protected WithEvents lblFechaLimEnvVal As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblFechaEnvVal.
+    '''</summary>
+    Protected WithEvents lblFechaEnvVal As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblFechaAutVal.
+    '''</summary>
+    Protected WithEvents lblFechaAutVal As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblFechaLimAutVal.
+    '''</summary>
+    Protected WithEvents lblFechaLimAutVal As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblHTExpediente.
+    '''</summary>
+    Protected WithEvents lblHTExpediente As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblHTMarca.
+    '''</summary>
+    Protected WithEvents lblHTMarca As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblHTModelo.
+    '''</summary>
+    Protected WithEvents lblHTModelo As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblHTAnio.
+    '''</summary>
+    Protected WithEvents lblHTAnio As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblHTColor.
+    '''</summary>
+    Protected WithEvents lblHTColor As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblHTPlacas.
+    '''</summary>
+    Protected WithEvents lblHTPlacas As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control imgHTPrincipal.
+    '''</summary>
+    Protected WithEvents imgHTPrincipal As Global.System.Web.UI.WebControls.Image
+
+    '''<summary>
+    '''Control gvMecReparacion.
+    '''</summary>
+    Protected WithEvents gvMecReparacion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control gvMecSustitucion.
+    '''</summary>
+    Protected WithEvents gvMecSustitucion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control gvHojReparacion.
+    '''</summary>
+    Protected WithEvents gvHojReparacion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control gvHojSustitucion.
+    '''</summary>
+    Protected WithEvents gvHojSustitucion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Propiedad Master.
+    '''</summary>
+    '''<remarks>
     '''Propiedad generada automáticamente.
     '''</remarks>
     Public Shadows ReadOnly Property Master() As DAYTONAMIO.Site1
