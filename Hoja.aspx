@@ -3391,6 +3391,8 @@
            const validado = hfValidado && hfValidado.value === '1';
            const modal = document.getElementById('modalHojaTrabajo');
 
+           console.log('updateHTGridState - hfValidado:', hfValidado ? hfValidado.value : 'NOT FOUND', 'validado:', validado);
+
            if (!modal) return;
 
            const grids = modal.querySelectorAll('.ht-grid');
@@ -3406,7 +3408,10 @@
        }
 
        // Actualizar estado cuando se abre el modal
-       document.getElementById('modalHojaTrabajo')?.addEventListener('shown.bs.modal', updateHTGridState);
+       const htModal = document.getElementById('modalHojaTrabajo');
+       if (htModal) {
+           htModal.addEventListener('shown.bs.modal', updateHTGridState);
+       }
 
        // También actualizar después de un postback
        if (typeof Sys !== 'undefined' && Sys.WebForms) {
