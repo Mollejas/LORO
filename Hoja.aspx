@@ -517,15 +517,9 @@
   text-align: center;
 }
 .ht-toggle:hover { background: #f0f0f0; border-radius: 3px; }
-.ht-toggle:empty { visibility: hidden; } /* Ocultar completamente si está vacío */
 .ht-si { color: #16a34a; } /* verde */
 .ht-no { color: #dc2626; } /* rojo */
 .ht-status { color: #2563eb; } /* azul */
-
-/* Visual cuando está validado */
-.ht-all-locked .ht-toggle {
-    opacity: 0.6;
-}
 
 </style>
 
@@ -3315,73 +3309,44 @@
    </script>
 
    <script>
-       // Toggle handlers para Hoja de Trabajo
+       // Toggle handlers para Hoja de Trabajo - versión limpia
        document.addEventListener('click', function (e) {
            var toggle = e.target.closest('.ht-toggle');
-           if (!toggle) {
-               return;
-           }
-
-           console.log('Toggle click detectado:', toggle);
-           console.log('Toggle HTML:', toggle.outerHTML);
-
-           // Verificar si las 3 validaciones están completas
-           var hfValidado = document.getElementById('<%= hfHTValidado.ClientID %>');
-           console.log('hfValidado element:', hfValidado, 'value:', hfValidado ? hfValidado.value : 'N/A');
-
-           if (hfValidado && hfValidado.value === '1') {
-               alert('Las 3 validaciones están completas. No se puede modificar.');
-               return;
-           }
+           if (!toggle) return;
 
            var id = toggle.getAttribute('data-id');
            var field = toggle.getAttribute('data-field');
            var val = toggle.getAttribute('data-val');
 
-           console.log('Datos del toggle - id:', id, 'field:', field, 'val:', val);
-           console.log('Llegamos aquí - procesando toggle');
-
-           if (!id || !field || !val) {
-               console.log('Datos incompletos, abortando');
-               return;
-           }
+           if (!id || !field || !val) return;
 
            // Encontrar la fila
            var row = toggle.closest('tr');
-           console.log('Row encontrada:', row);
-           if (!row) {
-               console.log('No se encontró la fila, abortando');
-               return;
-           }
+           if (!row) return;
 
+           // Actualizar visualmente
            if (field === 'autorizado') {
                var siSpan = row.querySelector('.ht-si');
                var noSpan = row.querySelector('.ht-no');
-               console.log('siSpan:', siSpan, 'noSpan:', noSpan);
                if (val === '1') {
-                   console.log('Cambiando a SI (✓)');
                    siSpan.textContent = '✓';
                    noSpan.textContent = '';
                } else {
-                   console.log('Cambiando a NO (✗)');
                    siSpan.textContent = '';
                    noSpan.textContent = '✗';
                }
-               console.log('Después del cambio - siSpan:', siSpan.textContent, 'noSpan:', noSpan.textContent);
            } else if (field === 'estatus') {
                var statusSpans = row.querySelectorAll('.ht-status');
-               console.log('statusSpans encontrados:', statusSpans.length);
                for (var i = 0; i < statusSpans.length; i++) {
                    statusSpans[i].textContent = statusSpans[i].getAttribute('data-val') === val ? '●' : '';
                }
            }
 
            // Guardar en la base de datos
-           console.log('Enviando fetch a UpdateRefaccion.ashx');
            fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val)
                .then(function(r) { return r.json(); })
                .then(function(data) {
-                   if (!data.ok) console.error('Error:', data.error);
+                   if (!data.ok) console.error('Error guardando:', data.error);
                })
                .catch(function(err) { console.error('Error:', err); });
        });
