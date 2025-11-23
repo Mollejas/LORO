@@ -3348,26 +3348,36 @@
 
            // Encontrar la fila
            var row = toggle.closest('tr');
-           if (!row) return;
+           console.log('Row encontrada:', row);
+           if (!row) {
+               console.log('No se encontró la fila, abortando');
+               return;
+           }
 
            if (field === 'autorizado') {
                var siSpan = row.querySelector('.ht-si');
                var noSpan = row.querySelector('.ht-no');
+               console.log('siSpan:', siSpan, 'noSpan:', noSpan);
                if (val === '1') {
+                   console.log('Cambiando a SI (✓)');
                    siSpan.textContent = '✓';
                    noSpan.textContent = '';
                } else {
+                   console.log('Cambiando a NO (✗)');
                    siSpan.textContent = '';
                    noSpan.textContent = '✗';
                }
+               console.log('Después del cambio - siSpan:', siSpan.textContent, 'noSpan:', noSpan.textContent);
            } else if (field === 'estatus') {
                var statusSpans = row.querySelectorAll('.ht-status');
+               console.log('statusSpans encontrados:', statusSpans.length);
                for (var i = 0; i < statusSpans.length; i++) {
                    statusSpans[i].textContent = statusSpans[i].getAttribute('data-val') === val ? '●' : '';
                }
            }
 
            // Guardar en la base de datos
+           console.log('Enviando fetch a UpdateRefaccion.ashx');
            fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val)
                .then(function(r) { return r.json(); })
                .then(function(data) {
