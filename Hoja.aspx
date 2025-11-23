@@ -506,20 +506,26 @@
 /* === Estilos para Hoja de Trabajo Grid === */
 .ht-grid { font-size: 0.85rem; }
 .ht-grid th { vertical-align: middle !important; }
-.ht-btn {
+.ht-toggle {
+  cursor: pointer;
   display: inline-block;
   min-width: 20px;
   min-height: 20px;
   line-height: 20px;
   font-weight: bold;
+  user-select: none;
   text-align: center;
-  text-decoration: none !important;
-  cursor: pointer;
 }
-.ht-btn:hover { background: #f0f0f0; border-radius: 3px; }
-.ht-si { color: #16a34a !important; } /* verde */
-.ht-no { color: #dc2626 !important; } /* rojo */
-.ht-status { color: #2563eb !important; } /* azul */
+.ht-toggle:hover { background: #f0f0f0; border-radius: 3px; }
+.ht-toggle:empty { visibility: hidden; } /* Ocultar completamente si está vacío */
+.ht-si { color: #16a34a; } /* verde */
+.ht-no { color: #dc2626; } /* rojo */
+.ht-status { color: #2563eb; } /* azul */
+
+/* Visual cuando está validado */
+.ht-all-locked .ht-toggle {
+    opacity: 0.6;
+}
 
 </style>
 
@@ -1442,57 +1448,55 @@
             </div>
           </div>
 
-          <asp:UpdatePanel ID="upHTGrids" runat="server" UpdateMode="Conditional">
-          <ContentTemplate>
           <!-- GridViews de Mecánica -->
           <h6 class="fw-bold text-primary mb-2"><i class="bi bi-wrench"></i> Mecánica</h6>
           <div class="row mb-4">
             <div class="col-lg-6">
               <h6 class="text-muted">Reparación</h6>
-              <asp:GridView ID="gvMecReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowCommand="gvHT_RowCommand">
+              <asp:GridView ID="gvMecReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
                 <Columns>
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                   <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
                   <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbSi" runat="server" CssClass="ht-btn ht-si" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|autorizado|1" %>' CausesValidation="false"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbNo" runat="server" CssClass="ht-btn ht-no" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|autorizado|0" %>' CausesValidation="false"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbP" runat="server" CssClass="ht-btn ht-status" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|estatus|P" %>' CausesValidation="false"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbE" runat="server" CssClass="ht-btn ht-status" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|estatus|E" %>' CausesValidation="false"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbD" runat="server" CssClass="ht-btn ht-status" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|estatus|D" %>' CausesValidation="false"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
             </div>
             <div class="col-lg-6">
               <h6 class="text-muted">Sustitución</h6>
-              <asp:GridView ID="gvMecSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowCommand="gvHT_RowCommand">
+              <asp:GridView ID="gvMecSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
                 <Columns>
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                   <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
                   <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbSi" runat="server" CssClass="ht-btn ht-si" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|autorizado|1" %>' CausesValidation="false"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbNo" runat="server" CssClass="ht-btn ht-no" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|autorizado|0" %>' CausesValidation="false"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbP" runat="server" CssClass="ht-btn ht-status" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|estatus|P" %>' CausesValidation="false"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbE" runat="server" CssClass="ht-btn ht-status" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|estatus|E" %>' CausesValidation="false"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbD" runat="server" CssClass="ht-btn ht-status" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|estatus|D" %>' CausesValidation="false"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -1504,57 +1508,55 @@
           <div class="row">
             <div class="col-lg-6">
               <h6 class="text-muted">Reparación</h6>
-              <asp:GridView ID="gvHojReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowCommand="gvHT_RowCommand">
+              <asp:GridView ID="gvHojReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
                 <Columns>
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                   <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
                   <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbSi" runat="server" CssClass="ht-btn ht-si" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|autorizado|1" %>' CausesValidation="false"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbNo" runat="server" CssClass="ht-btn ht-no" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|autorizado|0" %>' CausesValidation="false"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbP" runat="server" CssClass="ht-btn ht-status" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|estatus|P" %>' CausesValidation="false"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbE" runat="server" CssClass="ht-btn ht-status" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|estatus|E" %>' CausesValidation="false"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbD" runat="server" CssClass="ht-btn ht-status" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|estatus|D" %>' CausesValidation="false"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
             </div>
             <div class="col-lg-6">
               <h6 class="text-muted">Sustitución</h6>
-              <asp:GridView ID="gvHojSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowCommand="gvHT_RowCommand">
+              <asp:GridView ID="gvHojSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
                 <Columns>
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                   <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
                   <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbSi" runat="server" CssClass="ht-btn ht-si" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|autorizado|1" %>' CausesValidation="false"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbNo" runat="server" CssClass="ht-btn ht-no" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|autorizado|0" %>' CausesValidation="false"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbP" runat="server" CssClass="ht-btn ht-status" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|estatus|P" %>' CausesValidation="false"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbE" runat="server" CssClass="ht-btn ht-status" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|estatus|E" %>' CausesValidation="false"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><asp:LinkButton ID="lbD" runat="server" CssClass="ht-btn ht-status" CommandName="Toggle" CommandArgument='<%# Eval("id") & "|estatus|D" %>' CausesValidation="false"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></asp:LinkButton></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
             </div>
           </div>
-          </ContentTemplate>
-          </asp:UpdatePanel>
 
           <!-- Sección de Validaciones -->
           <hr class="my-4" />
@@ -3312,6 +3314,58 @@
        });
    </script>
 
+   <script>
+       // Toggle handlers para Hoja de Trabajo
+       document.addEventListener('click', function (e) {
+           var toggle = e.target.closest('.ht-toggle');
+           if (!toggle) return;
+
+           // Verificar si las 3 validaciones están completas
+           var hfValidado = document.getElementById('<%= hfHTValidado.ClientID %>');
+           if (hfValidado && hfValidado.value === '1') {
+               alert('Las 3 validaciones están completas. No se puede modificar.');
+               return;
+           }
+
+           var id = toggle.getAttribute('data-id');
+           var field = toggle.getAttribute('data-field');
+           var val = toggle.getAttribute('data-val');
+
+           if (!id || !field || !val) {
+               console.log('Datos incompletos:', id, field, val);
+               return;
+           }
+
+           // Encontrar la fila
+           var row = toggle.closest('tr');
+           if (!row) return;
+
+           if (field === 'autorizado') {
+               var siSpan = row.querySelector('.ht-si');
+               var noSpan = row.querySelector('.ht-no');
+               if (val === '1') {
+                   siSpan.textContent = '✓';
+                   noSpan.textContent = '';
+               } else {
+                   siSpan.textContent = '';
+                   noSpan.textContent = '✗';
+               }
+           } else if (field === 'estatus') {
+               var statusSpans = row.querySelectorAll('.ht-status');
+               for (var i = 0; i < statusSpans.length; i++) {
+                   statusSpans[i].textContent = statusSpans[i].getAttribute('data-val') === val ? '●' : '';
+               }
+           }
+
+           // Guardar en la base de datos
+           fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val)
+               .then(function(r) { return r.json(); })
+               .then(function(data) {
+                   if (!data.ok) console.error('Error:', data.error);
+               })
+               .catch(function(err) { console.error('Error:', err); });
+       });
+   </script>
 
 
 </asp:Content>
