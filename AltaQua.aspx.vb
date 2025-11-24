@@ -130,9 +130,13 @@ Public Class AltaQua
     Protected Sub btnGuardar_Click(ByVal sender As Object, ByVal e As EventArgs)
         Try
             ' Obtener la cadena de conexión del web.config
-            Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("csSetting").ConnectionString
+            Dim csSetting = ConfigurationManager.ConnectionStrings("DaytonaDB")
+            If csSetting Is Nothing OrElse String.IsNullOrWhiteSpace(csSetting.ConnectionString) Then
+                ' Mostrar error si no existe la cadena de conexión
+                Exit Sub
+            End If
 
-            Using cn As New SqlConnection(connectionString)
+            Using cn As New SqlConnection(csSetting.ConnectionString)
                 Const sqlInsert As String = "
             INSERT INTO dbo.Admisiones
             (
