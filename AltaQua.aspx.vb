@@ -3,6 +3,10 @@ Imports System.Data
 Imports System.Data.SqlClient
 Imports System.Configuration
 Imports System.IO
+Imports System.Text
+Imports System.Net
+Imports System.Net.Mail
+Imports System.Net.Mime
 Imports iTextSharp.text
 Imports iTextSharp.text.pdf
 Imports iTextSharp.text.pdf.parser
@@ -211,7 +215,8 @@ Public Class AltaQua
                 End If
             End If
 
-            ' Guardar en la base de datos con CarpetaRel
+            ' === INSERT en Admisiones y obtener el Id (PK=Id) con OUTPUT INSERTED.Id ===
+            Dim newAdmId As Integer = 0
             Using cn As New SqlConnection(csSetting.ConnectionString)
                 Const sqlInsert As String = "
             INSERT INTO dbo.Admisiones
@@ -222,6 +227,7 @@ Public Class AltaQua
                 Marca, Tipo, Modelo, Color, Serie, Placas,
                 CarpetaRel
             )
+            OUTPUT INSERTED.Id
             VALUES
             (
                 @Expediente, @CreadoPor, @FechaCreacion, @SiniestroGen, @TipoIngreso, @DeducibleSI_NO, @Estatus,
@@ -261,13 +267,30 @@ Public Class AltaQua
                     cmd.Parameters.Add("@CarpetaRel", SqlDbType.NVarChar, 300).Value = carpetaRel
 
                     cn.Open()
-                    cmd.ExecuteNonQuery()
+                    Dim obj = cmd.ExecuteScalar()   ' <- Id gracias a OUTPUT INSERTED.Id
+                    If obj IsNot Nothing AndAlso obj IsNot DBNull.Value Then
+                        newAdmId = Convert.ToInt32(obj)
+                    Else
+                        Throw New ApplicationException("No se pudo obtener el Id insertado.")
+                    End If
                 End Using
             End Using
 
-            ' Redirigir o mostrar mensaje de éxito
-            Alert("Expediente guardado exitosamente.")
-            Response.Redirect("AltaQua.aspx?success=1")
+            ' === (Opcional) Correo de bienvenida ===
+            Dim destinatario As String = If(txtEmail IsNot Nothing, txtEmail.Text.Trim(), String.Empty)
+            If Not String.IsNullOrWhiteSpace(destinatario) AndAlso IsValidEmail(destinatario) Then
+                Try
+                    EnviarCorreoBienvenida(destinatario)
+                Catch
+                    ' Si falla el correo, no bloqueamos el flujo
+                End Try
+            End If
+
+            ' === Redirección a Hoja.aspx con el Id (PK) recién creado ===
+            Dim url As String = ResolveUrl("Hoja.aspx?id=" & HttpUtility.UrlEncode(newAdmId.ToString()))
+            Response.Redirect(url, False)
+            Context.ApplicationInstance.CompleteRequest()
+            Return
 
         Catch ex As Exception
             ' Mostrar mensaje de error detallado al usuario
@@ -519,6 +542,254 @@ Public Class AltaQua
         Dim v = ConfigurationManager.AppSettings("InbursaBaseVirtual")
         If String.IsNullOrWhiteSpace(v) Then v = "~/INBURSA"
         Return v.TrimEnd("/"c)
+    End Function
+
+    ' ================================
+    ' ============ CORREO ============
+    ' ================================
+    Private Function ObtenerTelefonoAsesor(nombreCreador As String) As String
+        If String.IsNullOrWhiteSpace(nombreCreador) Then Return String.Empty
+        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+        If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs.ConnectionString) Then Return String.Empty
+
+        Const sql As String = "SELECT TOP 1 Telefono FROM dbo.Usuarios WHERE Nombre = @Nombre"
+        Try
+            Using cn As New SqlConnection(cs.ConnectionString)
+                Using cmd As New SqlCommand(sql, cn)
+                    cmd.Parameters.Add("@Nombre", SqlDbType.NVarChar, 256).Value = nombreCreador.Trim()
+                    cn.Open()
+                    Dim obj = cmd.ExecuteScalar()
+                    If obj IsNot Nothing AndAlso obj IsNot DBNull.Value Then
+                        Return obj.ToString().Trim()
+                    End If
+                End Using
+            End Using
+        Catch
+            Return String.Empty
+        End Try
+        Return String.Empty
+    End Function
+
+    Private Sub EnviarCorreoBienvenida(destinatario As String)
+        ' === SMTP directo (sin Web.config) ===
+        Const SMTP_HOST As String = "mail.loroautomotriz.com.mx"
+        Const SMTP_PORT As Integer = 587
+        Const SMTP_USER As String = "no-responder@loroautomotriz.com.mx"
+        Const SMTP_PASS As String = "2K3Le3z9pqvlo~re"
+        Const FROM_EMAIL As String = "no-responder@loroautomotriz.com.mx"
+        Const FROM_NAME As String = "LORO REPARACION AUTOMOTRIZ"
+
+        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+        Dim expediente As String = txtExpediente.Text.Trim()
+        Dim asunto As String = $"Bienvenido(a) – Expediente {expediente}"
+
+        ' Asesor = txtCreadoPor (o Master)
+        Dim asesorNombre As String = If(Not String.IsNullOrWhiteSpace(txtCreadoPor.Text),
+                                    txtCreadoPor.Text.Trim(),
+                                    If(Master IsNot Nothing, Master.CurrentUserName, String.Empty))
+        Dim asesorTelefono As String = ObtenerTelefonoAsesor(asesorNombre)
+
+        Dim html As String = ConstruirHtmlCorreo(asesorNombre, asesorTelefono)
+        Dim textoPlano As String = QuitarEtiquetas(html)
+
+        Dim msg As New MailMessage() With {
+        .From = New MailAddress(FROM_EMAIL, FROM_NAME),
+        .Subject = asunto,
+        .BodyEncoding = Encoding.UTF8,
+        .IsBodyHtml = True
+    }
+        msg.To.Add(New MailAddress(destinatario))
+
+        ' Vista HTML con logo
+        Dim logoPhysical As String = Server.MapPath("~/images/logo1.png")
+        Dim viewHtml As AlternateView = CrearVistaHtmlConLogo(html, logoPhysical, "logoCID")
+        msg.AlternateViews.Add(viewHtml)
+
+        ' Texto plano (compatibilidad)
+        Dim altText As AlternateView = AlternateView.CreateAlternateViewFromString(textoPlano, Encoding.UTF8, MediaTypeNames.Text.Plain)
+        msg.AlternateViews.Add(altText)
+
+        Using smtp As New SmtpClient(SMTP_HOST, SMTP_PORT)
+            smtp.DeliveryMethod = SmtpDeliveryMethod.Network
+            smtp.UseDefaultCredentials = False
+            smtp.Credentials = New NetworkCredential(SMTP_USER, SMTP_PASS)
+            smtp.EnableSsl = False
+            smtp.Timeout = 30000
+            smtp.Send(msg)
+        End Using
+    End Sub
+
+    Private Function ConstruirHtmlCorreo(asesorNombre As String, asesorTelefono As String) As String
+        Dim marca = E(CleanMarca(RemoveParentheses(txtMarca.Text)))
+        Dim tipo = E(txtTipo.Text)
+        Dim modelo = E(txtModelo.Text)
+        Dim serie = E(txtVin.Text)
+        Dim placas = E(txtPlacas.Text)
+        Dim color = E(txtColor.Text)
+        Dim expediente = E(txtExpediente.Text)
+        Dim clienteNombre = E(txtNombreCliente.Text)
+        Dim clienteTelefono = E(txtTelefono.Text)
+        Dim reporte = E(txtNumeroReporte.Text)
+        Dim tipoIngreso = E(ddlTipoIngreso.Text)
+
+        Dim recepcion = "(55) 8717-4788 / 89 Ext: 103"
+        Dim horario = "Lunes a Viernes<br/>8:00 AM-2:00 PM y de 3:00 PM– 6:00 PM"
+
+        Dim sb As New StringBuilder()
+        sb.AppendLine("<!DOCTYPE html><html lang='es'><head><meta charset='utf-8' />")
+        sb.AppendLine("<meta name='viewport' content='width=device-width, initial-scale=1' /></head>")
+        sb.AppendLine("<body style=""margin:0;padding:0;background:#0b5d7c;font-family:Arial,Helvetica,sans-serif;color:#111827;"">")
+        sb.AppendLine("<table role='presentation' width='100%' cellspacing='0' cellpadding='0' border='0' style='background:#0b5d7c;padding:28px 12px;'><tr><td align='center'>")
+        sb.AppendLine("<table role='presentation' width='740' cellspacing='0' cellpadding='0' border='0' style='background:#ffffff;border-collapse:separate;border-radius:8px;overflow:hidden;box-shadow:0 6px 28px rgba(0,0,0,.08);'>")
+
+        ' Encabezado
+        sb.AppendLine("<tr><td style='padding:24px 24px 10px 24px;'>")
+        sb.AppendLine("<table width='100%' role='presentation' cellspacing='0' cellpadding='0'><tr>")
+        sb.AppendLine("<td style='width:120px;vertical-align:top;'><img src='cid:logoCID' alt='LORO Reparación Automotriz' style='display:block;height:96px;max-width:120px;' /></td>")
+        sb.AppendLine("<td style='vertical-align:middle;text-align:center;'>")
+        sb.AppendLine("<div style='font-size:22px;font-weight:bold;color:#1182b3;margin-bottom:6px;'>¡Bienvenido a su centro de reparación!</div>")
+        sb.AppendLine("<div style='font-size:18px;color:#1182b3;'>LORO Reparación Automotriz</div>")
+        sb.AppendLine("</td><td style='width:120px;'>&nbsp;</td>")
+        sb.AppendLine("</tr></table>")
+        sb.AppendLine("<div style='margin-top:14px;font-size:13px;line-height:1.55;color:#374151;'>")
+        sb.AppendLine("Estimado (a) cliente<br/>")
+        sb.AppendLine("¡Gracias por elegirnos como su taller de reparación automotriz!<br/>")
+        sb.AppendLine("Nos complace tenerlo como cliente y queremos asegurarle que estamos comprometidos en brindar un servicio de calidad.<br/>")
+        sb.AppendLine("Estaremos acompañándolo en todo el proceso de su reparación para asegurarnos de que sus necesidades sean atendidas.")
+        sb.AppendLine("</div>")
+        sb.AppendLine("</td></tr>")
+
+        ' Número de expediente
+        sb.AppendLine("<tr><td style='padding:6px 24px 0 24px;text-align:center;'>")
+        sb.AppendLine("<div style='font-size:16px;color:#111827;'>Número de expediente LORO:</div>")
+        sb.AppendLine("<div style='font-size:42px;line-height:1;font-weight:800;letter-spacing:.5px;margin:8px 0 14px 0;color:#111827;'>" & expediente & "</div>")
+        sb.AppendLine("</td></tr>")
+
+        ' Asesor asignado
+        sb.AppendLine("<tr><td style='padding:0 24px 0 24px;'>")
+        sb.AppendLine("<table role='presentation' width='100%' cellspacing='0' cellpadding='0' style='border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;margin:0 0 18px 0;'>")
+        sb.AppendLine("<tr><td colspan='2' style='background:#f7fbff;padding:10px 14px;font-weight:bold;color:#0b64a3;font-size:14px;'>Asesor asignado:</td></tr>")
+        sb.AppendLine("<tr>")
+        sb.AppendLine("<td style='width:50%;padding:12px 14px;font-size:14px;vertical-align:top;'>")
+        sb.AppendLine("<div style='color:#111827;'>" & E(asesorNombre) & "</div>")
+        sb.AppendLine("<div style='margin-top:10px;'><span style='font-weight:bold;'>Horario de atención:</span><br/>" & horario & "</div>")
+        sb.AppendLine("</td>")
+        sb.AppendLine("<td style='width:50%;padding:12px 14px;font-size:14px;vertical-align:top;'>")
+        sb.AppendLine("<div style='margin-bottom:8px;'><span style='font-weight:bold;'>Teléfono:</span><br/>" & If(String.IsNullOrWhiteSpace(asesorTelefono), "No disponible", E(asesorTelefono)) & "</div>")
+        sb.AppendLine("<div><span style='font-weight:bold;'>Recepción:</span><br/>" & E(recepcion) & "</div>")
+        sb.AppendLine("</td></tr></table>")
+        sb.AppendLine("</td></tr>")
+
+        ' Información General
+        sb.AppendLine("<tr><td style='padding:0 24px;'><div style='color:#6b7280;font-weight:bold;font-size:13px;margin:6px 0 8px 0;'>Información General</div></td></tr>")
+
+        ' Datos del cliente
+        sb.AppendLine("<tr><td style='padding:0 24px;'>")
+        sb.AppendLine("<table role='presentation' width='100%' cellspacing='0' cellpadding='0' style='border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;margin:0 0 14px 0;'>")
+        sb.AppendLine("<tr><td colspan='4' style='background:#f7fbff;padding:10px 14px;font-weight:bold;color:#0b64a3;font-size:14px;'>Datos del cliente</td></tr>")
+        sb.AppendLine("<tr>")
+        sb.AppendLine("<td style='width:25%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Nombre:</span><br/>" & clienteNombre & "</td>")
+        sb.AppendLine("<td style='width:25%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Reporte:</span><br/>" & reporte & "</td>")
+        sb.AppendLine("<td style='width:25%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Tipo de ingreso:</span><br/>" & tipoIngreso & "</td>")
+        sb.AppendLine("<td style='width:25%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Teléfono:</span><br/>" & clienteTelefono & "</td>")
+        sb.AppendLine("</tr></table>")
+        sb.AppendLine("</td></tr>")
+
+        ' Datos del vehículo
+        sb.AppendLine("<tr><td style='padding:0 24px;'>")
+        sb.AppendLine("<table role='presentation' width='100%' cellspacing='0' cellpadding='0' style='border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;margin:0 0 18px 0;'>")
+        sb.AppendLine("<tr><td colspan='6' style='background:#f7fbff;padding:10px 14px;font-weight:bold;color:#0b64a3;font-size:14px;'>Datos del vehículo</td></tr>")
+        sb.AppendLine("<tr>")
+        sb.AppendLine("<td style='width:20%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Marca:</span><br/>" & marca & "</td>")
+        sb.AppendLine("<td style='width:20%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Tipo:</span><br/>" & tipo & "</td>")
+        sb.AppendLine("<td style='width:20%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Modelo:</span><br/>" & modelo & "</td>")
+        sb.AppendLine("<td style='width:20%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Serie (VIN):</span><br/>" & serie & "</td>")
+        sb.AppendLine("<td style='width:20%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Placas:</span><br/>" & placas & "</td>")
+        sb.AppendLine("</tr>")
+        sb.AppendLine("<tr>")
+        sb.AppendLine("<td style='padding:0 14px 14px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Color:</span><br/>" & color & "</td>")
+        sb.AppendLine("<td style='padding:0 14px 14px 14px;'>&nbsp;</td>")
+        sb.AppendLine("<td style='padding:0 14px 14px 14px;'>&nbsp;</td>")
+        sb.AppendLine("<td style='padding:0 14px 14px 14px;'>&nbsp;</td>")
+        sb.AppendLine("<td style='padding:0 14px 14px 14px;'>&nbsp;</td>")
+        sb.AppendLine("</tr>")
+        sb.AppendLine("</table>")
+        sb.AppendLine("</td></tr>")
+
+        ' Conozca el avance
+        sb.AppendLine("<tr><td style='padding:0 24px 10px 24px;'>")
+        sb.AppendLine("<table role='presentation' width='100%' cellspacing='0' cellpadding='0' style='border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;margin:0 0 10px 0;'>")
+        sb.AppendLine("<tr><td style='background:#eef6fb;padding:14px 16px;text-align:center;font-size:18px;color:#1182b3;font-weight:700;'>Conozca el avance de su reparación</td></tr>")
+        sb.AppendLine("<tr><td style='padding:14px 16px;font-size:14px;color:#374151;line-height:1.6;'>")
+        sb.AppendLine("Queremos mantenerte informado sobre el avance de la reparación de tu vehículo. Si tienes alguna duda, no dudes en contactarnos. Estamos para apoyarte.")
+        sb.AppendLine("<div style='margin-top:10px;'>Atentamente<br/>Centro Loro reparación automotriz</div>")
+        sb.AppendLine("<div style='margin-top:8px;'>Teléfonos: (55) 8717-4788 / 89 Ext: 101<br/>E-mail: atencionaclientes@loroautomotriz.com.mx</div>")
+        sb.AppendLine("</td></tr></table>")
+        sb.AppendLine("</td></tr>")
+
+        ' Pie
+        sb.AppendLine("<tr><td style='background:#0b5d7c;padding:12px 24px;color:#e6f4ff;font-size:12px;text-align:center;'>")
+        sb.AppendLine("© " & DateTime.Now.Year.ToString() & " LORO Reparación Automotriz. Todos los derechos reservados.")
+        sb.AppendLine("</td></tr>")
+
+        sb.AppendLine("</table></td></tr></table></body></html>")
+        Return sb.ToString()
+    End Function
+
+    Private Function CrearVistaHtmlConLogo(html As String, logoPhysicalPath As String, contentId As String) As AlternateView
+        Dim view As AlternateView
+        Try
+            If File.Exists(logoPhysicalPath) Then
+                Dim ext As String = Path.GetExtension(logoPhysicalPath).ToLowerInvariant()
+                Dim mediaType As String
+                Select Case ext
+                    Case ".png" : mediaType = "image/png"
+                    Case ".jpg", ".jpeg" : mediaType = MediaTypeNames.Image.Jpeg
+                    Case ".gif" : mediaType = MediaTypeNames.Image.Gif
+                    Case Else : mediaType = "application/octet-stream"
+                End Select
+
+                view = AlternateView.CreateAlternateViewFromString(html, Encoding.UTF8, MediaTypeNames.Text.Html)
+
+                Dim res As New LinkedResource(logoPhysicalPath)
+                res.ContentId = contentId
+                res.TransferEncoding = TransferEncoding.Base64
+                res.ContentType = New ContentType(mediaType)
+                res.ContentType.Name = Path.GetFileName(logoPhysicalPath)
+                res.ContentLink = New Uri("cid:" & contentId)
+
+                view.LinkedResources.Add(res)
+            Else
+                view = AlternateView.CreateAlternateViewFromString(html, Encoding.UTF8, MediaTypeNames.Text.Html)
+            End If
+
+        Catch
+            view = AlternateView.CreateAlternateViewFromString(html, Encoding.UTF8, MediaTypeNames.Text.Html)
+        End Try
+
+        Return view
+    End Function
+
+    Private Function IsValidEmail(email As String) As Boolean
+        Try
+            Dim addr = New MailAddress(email)
+            Return String.Equals(addr.Address, email, StringComparison.OrdinalIgnoreCase)
+        Catch
+            Return False
+        End Try
+    End Function
+
+    Private Function E(s As String) As String
+        If s Is Nothing Then Return String.Empty
+        Return Server.HtmlEncode(s.Trim())
+    End Function
+
+    Private Function QuitarEtiquetas(html As String) As String
+        If String.IsNullOrEmpty(html) Then Return String.Empty
+        Dim tmp As String = System.Text.RegularExpressions.Regex.Replace(html, "<br\s*/?>", vbCrLf, System.Text.RegularExpressions.RegexOptions.IgnoreCase)
+        tmp = System.Text.RegularExpressions.Regex.Replace(tmp, "<.*?>", String.Empty, System.Text.RegularExpressions.RegexOptions.Singleline)
+        Return System.Web.HttpUtility.HtmlDecode(tmp)
     End Function
 
 End Class
