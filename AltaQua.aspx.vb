@@ -162,6 +162,9 @@ Public Class AltaQua
             ' Generar expediente seguro con sp_getapplock
             Dim expedienteId As Integer = ObtenerSiguienteExpedienteSeguro(paridad, csSetting.ConnectionString)
 
+            ' Formatear expediente y actualizar el textbox
+            txtExpediente.Text = expedienteId.ToString("0")
+
             ' Formatear expediente a 5 dígitos: "00001", "00002", etc.
             Dim idFormateado As String = expedienteId.ToString("D5")
 
@@ -234,30 +237,30 @@ Public Class AltaQua
                     cmd.CommandType = CommandType.Text
 
                     ' Generación de Expediente
-                    cmd.Parameters.Add("@Expediente", SqlDbType.NVarChar, 50).Value = idFormateado
-                    cmd.Parameters.Add("@CreadoPor", SqlDbType.NVarChar, 100).Value = If(String.IsNullOrWhiteSpace(creadoPorNombre), DBNull.Value, CType(creadoPorNombre.Trim(), Object))
+                    cmd.Parameters.Add("@Expediente", SqlDbType.NVarChar, 50).Value = txtExpediente.Text.Trim()
+                    cmd.Parameters.Add("@CreadoPor", SqlDbType.NVarChar, 100).Value = creadoPorNombre.Trim()
                     cmd.Parameters.Add("@FechaCreacion", SqlDbType.DateTime2).Value = DateTime.Now
-                    cmd.Parameters.Add("@SiniestroGen", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtSiniestroGen.Text), DBNull.Value, CType(txtSiniestroGen.Text.Trim(), Object))
-                    cmd.Parameters.Add("@TipoIngreso", SqlDbType.NVarChar, 20).Value = If(String.IsNullOrWhiteSpace(ddlTipoIngreso.SelectedValue), DBNull.Value, CType(ddlTipoIngreso.SelectedValue, Object))
-                    cmd.Parameters.Add("@DeducibleSI_NO", SqlDbType.NVarChar, 10).Value = If(String.IsNullOrWhiteSpace(ddlDeducible.SelectedValue), DBNull.Value, CType(ddlDeducible.SelectedValue, Object))
-                    cmd.Parameters.Add("@Estatus", SqlDbType.NVarChar, 20).Value = If(String.IsNullOrWhiteSpace(ddlEstatus.SelectedValue), DBNull.Value, CType(ddlEstatus.SelectedValue, Object))
+                    cmd.Parameters.Add("@SiniestroGen", SqlDbType.NVarChar, 50).Value = txtSiniestroGen.Text.Trim()
+                    cmd.Parameters.Add("@TipoIngreso", SqlDbType.NVarChar, 20).Value = If(ddlTipoIngreso.SelectedValue, String.Empty)
+                    cmd.Parameters.Add("@DeducibleSI_NO", SqlDbType.NVarChar, 2).Value = If(ddlDeducible.SelectedValue, String.Empty)
+                    cmd.Parameters.Add("@Estatus", SqlDbType.NVarChar, 20).Value = If(ddlEstatus.SelectedValue, String.Empty)
 
                     ' Datos del Cliente (extraídos del PDF)
-                    cmd.Parameters.Add("@Asegurado", SqlDbType.NVarChar, 200).Value = If(String.IsNullOrWhiteSpace(txtNombreCliente.Text), DBNull.Value, CType(txtNombreCliente.Text.Trim(), Object))
-                    cmd.Parameters.Add("@Telefono", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtTelefono.Text), DBNull.Value, CType(txtTelefono.Text.Trim(), Object))
-                    cmd.Parameters.Add("@Correo", SqlDbType.NVarChar, 100).Value = If(String.IsNullOrWhiteSpace(txtEmail.Text), DBNull.Value, CType(txtEmail.Text.Trim().ToLowerInvariant(), Object))
-                    cmd.Parameters.Add("@Reporte", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtNumeroReporte.Text), DBNull.Value, CType(txtNumeroReporte.Text.Trim(), Object))
+                    cmd.Parameters.Add("@Asegurado", SqlDbType.NVarChar, 150).Value = txtNombreCliente.Text.Trim()
+                    cmd.Parameters.Add("@Telefono", SqlDbType.NVarChar, 50).Value = txtTelefono.Text.Trim()
+                    cmd.Parameters.Add("@Correo", SqlDbType.NVarChar, 150).Value = txtEmail.Text.Trim()
+                    cmd.Parameters.Add("@Reporte", SqlDbType.NVarChar, 50).Value = txtNumeroReporte.Text.Trim()
 
                     ' Datos del Vehículo (extraídos del PDF)
-                    cmd.Parameters.Add("@Marca", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtMarca.Text), DBNull.Value, CType(txtMarca.Text.Trim(), Object))
-                    cmd.Parameters.Add("@Tipo", SqlDbType.NVarChar, 100).Value = If(String.IsNullOrWhiteSpace(txtTipo.Text), DBNull.Value, CType(txtTipo.Text.Trim(), Object))
-                    cmd.Parameters.Add("@Modelo", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtModelo.Text), DBNull.Value, CType(txtModelo.Text.Trim(), Object))
-                    cmd.Parameters.Add("@Color", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtColor.Text), DBNull.Value, CType(txtColor.Text.Trim(), Object))
-                    cmd.Parameters.Add("@Serie", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtVin.Text), DBNull.Value, CType(txtVin.Text.Trim(), Object))
-                    cmd.Parameters.Add("@Placas", SqlDbType.NVarChar, 20).Value = If(String.IsNullOrWhiteSpace(txtPlacas.Text), DBNull.Value, CType(txtPlacas.Text.Trim(), Object))
+                    cmd.Parameters.Add("@Marca", SqlDbType.NVarChar, 50).Value = marcaClean
+                    cmd.Parameters.Add("@Tipo", SqlDbType.NVarChar, 50).Value = txtTipo.Text.Trim()
+                    cmd.Parameters.Add("@Modelo", SqlDbType.NVarChar, 20).Value = txtModelo.Text.Trim()
+                    cmd.Parameters.Add("@Color", SqlDbType.NVarChar, 30).Value = txtColor.Text.Trim()
+                    cmd.Parameters.Add("@Serie", SqlDbType.NVarChar, 50).Value = txtVin.Text.Trim()
+                    cmd.Parameters.Add("@Placas", SqlDbType.NVarChar, 20).Value = txtPlacas.Text.Trim()
 
                     ' Carpeta relativa
-                    cmd.Parameters.Add("@CarpetaRel", SqlDbType.NVarChar, 500).Value = carpetaRel
+                    cmd.Parameters.Add("@CarpetaRel", SqlDbType.NVarChar, 300).Value = carpetaRel
 
                     cn.Open()
                     cmd.ExecuteNonQuery()
