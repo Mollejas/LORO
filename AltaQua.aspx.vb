@@ -149,6 +149,7 @@ Public Class AltaQua
             ' Obtener la cadena de conexión del web.config
             Dim csSetting = ConfigurationManager.ConnectionStrings("DaytonaDB")
             If csSetting Is Nothing OrElse String.IsNullOrWhiteSpace(csSetting.ConnectionString) Then
+                Alert("Falta la cadena de conexión DaytonaDB en Web.config")
                 Exit Sub
             End If
 
@@ -160,7 +161,13 @@ Public Class AltaQua
             Dim paridad As String = ObtenerParidadUsuarioActual()
 
             ' Generar expediente seguro con sp_getapplock
-            Dim expedienteId As Integer = ObtenerSiguienteExpedienteSeguro(paridad, csSetting.ConnectionString)
+            Dim expedienteId As Integer
+            Try
+                expedienteId = ObtenerSiguienteExpedienteSeguro(paridad, csSetting.ConnectionString)
+            Catch ex As Exception
+                Alert("No se pudo asignar el número de expediente: " & ex.Message.Replace("'", "\'"))
+                Exit Sub
+            End Try
 
             ' Formatear expediente y actualizar el textbox
             txtExpediente.Text = expedienteId.ToString("0")
@@ -268,13 +275,20 @@ Public Class AltaQua
             End Using
 
             ' Redirigir o mostrar mensaje de éxito
+            Alert("Expediente guardado exitosamente.")
             Response.Redirect("AltaQua.aspx?success=1")
 
         Catch ex As Exception
-            ' Manejo de errores - aquí puedes mostrar un mensaje al usuario
-            ' Por ejemplo, agregando un Label en el .aspx y asignando el mensaje:
-            ' lblError.Text = "Error al guardar: " & ex.Message
+            ' Mostrar mensaje de error detallado al usuario
+            Alert("Error al guardar: " & ex.Message.Replace("'", "\'"))
         End Try
+    End Sub
+
+    ''' <summary>
+    ''' Muestra un mensaje de alerta en el navegador usando JavaScript.
+    ''' </summary>
+    Private Sub Alert(msg As String)
+        ClientScript.RegisterStartupScript(Me.GetType(), "msg", "alert('" & msg.Replace("'", "\'") & "');", True)
     End Sub
 
     ' ==================== FUNCIONES DE PARIDAD PAR/NON ====================
