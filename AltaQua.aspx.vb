@@ -1,6 +1,7 @@
 Imports System
 Imports System.Data
 Imports System.Data.SqlClient
+Imports System.Configuration
 Imports System.IO
 Imports iTextSharp.text
 Imports iTextSharp.text.pdf
@@ -12,8 +13,25 @@ Public Class AltaQua
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         If Not IsPostBack Then
-            ' Inicializar fecha de creación
-            txtFechaCreacion.Text = DateTime.Now.ToString("yyyy-MM-ddTHH:mm")
+            ' Sugerido en UI (no definitivo) por paridad
+            SetExpedienteSugeridoPorParidad()
+
+            ' "Creado por" desde el Master
+            Dim nombreCreador As String = If(Master IsNot Nothing, Master.CurrentUserName, String.Empty)
+            txtCreadoPor.Text = nombreCreador
+            txtCreadoPor.ReadOnly = True
+            txtCreadoPor.Attributes("readonly") = "readonly"
+            txtCreadoPor.CssClass = (txtCreadoPor.CssClass & " bg-light").Trim()
+
+            ' Fecha de creación actual
+            Dim ahora = DateTime.Now
+            txtFechaCreacion.TextMode = TextBoxMode.DateTimeLocal
+            txtFechaCreacion.Text = ahora.ToString("yyyy-MM-ddTHH:mm")
+            txtFechaCreacion.ReadOnly = True
+            txtFechaCreacion.CssClass = (txtFechaCreacion.CssClass & " bg-light").Trim()
+
+            ' Estatus en blanco visualmente
+            If ddlEstatus IsNot Nothing Then ddlEstatus.ClearSelection()
         End If
     End Sub
 
@@ -66,10 +84,16 @@ Public Class AltaQua
                 txtColor.Text = Limpiar(ExtraerTextoRegion(reader, pagina, rColor))
                 txtVin.Text = Limpiar(ExtraerTextoRegion(reader, pagina, rVin))
                 txtPlacas.Text = Limpiar(ExtraerTextoRegion(reader, pagina, rPlacas))
+
+                ' Copiar número de reporte a siniestro
+                txtSiniestroGen.Text = txtNumeroReporte.Text
             End Using
         Catch ex As Exception
             ' Manejo de error silencioso o puedes agregar un Label para mostrar el mensaje
         End Try
+
+        ' Recalcular expediente sugerido después de cargar PDF
+        SetExpedienteSugeridoPorParidad()
     End Sub
 
     ''' <summary>
@@ -169,5 +193,152 @@ Public Class AltaQua
             ' lblError.Text = "Error al guardar: " & ex.Message
         End Try
     End Sub
+
+    ' ==================== FUNCIONES DE PARIDAD PAR/NON ====================
+
+    Private Sub SetExpedienteSugeridoPorParidad()
+        Dim paridad As String = ObtenerParidadUsuarioActual()
+        Dim ultimos = ObtenerUltimosParYNonExpediente()
+        Dim lastPar As Integer? = If(ultimos IsNot Nothing, ultimos.Item1, CType(Nothing, Integer?))
+        Dim lastNon As Integer? = If(ultimos IsNot Nothing, ultimos.Item2, CType(Nothing, Integer?))
+        Dim nextPar As Integer = If(lastPar.HasValue, lastPar.Value + 2, 2)
+        Dim nextNon As Integer = If(lastNon.HasValue, lastNon.Value + 2, 1)
+
+        ViewState("NextParPreview") = nextPar
+        ViewState("NextNonPreview") = nextNon
+
+        Dim nextExp As Integer = If(paridad = "NON", nextNon, nextPar)
+        txtExpediente.Text = nextExp.ToString("0")
+        ViewState("NextIdPreview") = nextExp
+    End Sub
+
+    Private Function ObtenerParidadUsuarioActual() As String
+        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+        Dim fallback As String = If(String.IsNullOrWhiteSpace(ConfigurationManager.AppSettings("DefaultParidad")), "PAR", ConfigurationManager.AppSettings("DefaultParidad"))
+
+        If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs.ConnectionString) Then
+            Return fallback.ToUpperInvariant().Trim()
+        End If
+
+        Dim par As String = Nothing
+
+        ' Session("UsuarioId")
+        Dim objId = Session("UsuarioId")
+        Dim usuarioId As Integer
+        If objId IsNot Nothing AndAlso Integer.TryParse(objId.ToString(), usuarioId) Then
+            par = ObtenerParidadPorUsuarioId(usuarioId, cs.ConnectionString)
+        End If
+
+        ' Session("UsuarioCorreo")
+        If String.IsNullOrWhiteSpace(par) Then
+            Dim correo As String = TryCast(Session("UsuarioCorreo"), String)
+            If Not String.IsNullOrWhiteSpace(correo) Then
+                par = ObtenerParidadPorCorreo(correo, cs.ConnectionString)
+            End If
+        End If
+
+        ' Session("UsuarioNombre")
+        If String.IsNullOrWhiteSpace(par) Then
+            Dim nombre As String = TryCast(Session("UsuarioNombre"), String)
+            If Not String.IsNullOrWhiteSpace(nombre) Then
+                par = ObtenerParidadPorNombre(nombre, cs.ConnectionString)
+            End If
+        End If
+
+        par = If(par, fallback)
+        par = par.ToUpperInvariant().Trim()
+        If par <> "PAR" AndAlso par <> "NON" Then par = fallback.ToUpperInvariant().Trim()
+        Return par
+    End Function
+
+    Private Function ObtenerParidadPorUsuarioId(usuarioId As Integer, cs As String) As String
+        Const sql As String = "SELECT TOP 1 Paridad FROM dbo.Usuarios WHERE UsuarioId = @Id"
+        Try
+            Using cn As New SqlConnection(cs)
+                Using cmd As New SqlCommand(sql, cn)
+                    cmd.Parameters.Add("@Id", SqlDbType.Int).Value = usuarioId
+                    cn.Open()
+                    Dim obj = cmd.ExecuteScalar()
+                    If obj IsNot Nothing AndAlso obj IsNot DBNull.Value Then
+                        Return obj.ToString()
+                    End If
+                End Using
+            End Using
+        Catch
+        End Try
+        Return Nothing
+    End Function
+
+    Private Function ObtenerParidadPorCorreo(correo As String, cs As String) As String
+        Const sql As String = "SELECT TOP 1 Paridad FROM dbo.Usuarios WHERE Correo = @Correo"
+        Try
+            Using cn As New SqlConnection(cs)
+                Using cmd As New SqlCommand(sql, cn)
+                    cmd.Parameters.Add("@Correo", SqlDbType.NVarChar, 256).Value = correo.Trim()
+                    cn.Open()
+                    Dim obj = cmd.ExecuteScalar()
+                    If obj IsNot Nothing AndAlso obj IsNot DBNull.Value Then
+                        Return obj.ToString()
+                    End If
+                End Using
+            End Using
+        Catch
+        End Try
+        Return Nothing
+    End Function
+
+    Private Function ObtenerParidadPorNombre(nombre As String, cs As String) As String
+        Const sql As String = "SELECT TOP 1 Paridad FROM dbo.Usuarios WHERE Nombre = @Nombre"
+        Try
+            Using cn As New SqlConnection(cs)
+                Using cmd As New SqlCommand(sql, cn)
+                    cmd.Parameters.Add("@Nombre", SqlDbType.NVarChar, 256).Value = nombre.Trim()
+                    cn.Open()
+                    Dim obj = cmd.ExecuteScalar()
+                    If obj IsNot Nothing AndAlso obj IsNot DBNull.Value Then
+                        Return obj.ToString()
+                    End If
+                End Using
+            End Using
+        Catch
+        End Try
+        Return Nothing
+    End Function
+
+    Private Function ObtenerUltimosParYNonExpediente() As Tuple(Of Integer?, Integer?)
+        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+        If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs.ConnectionString) Then
+            Return Tuple.Create(CType(Nothing, Integer?), CType(Nothing, Integer?))
+        End If
+
+        Const sql As String = "
+            WITH V AS (
+                SELECT TRY_CONVERT(INT, Expediente) AS v
+                FROM dbo.Admisiones
+                WHERE TRY_CONVERT(INT, Expediente) IS NOT NULL
+            )
+            SELECT
+                MAX(CASE WHEN v % 2 = 0 THEN v END) AS LastPar,
+                MAX(CASE WHEN v % 2 = 1 THEN v END) AS LastNon
+            FROM V;"
+
+        Try
+            Using cn As New SqlConnection(cs.ConnectionString)
+                Using cmd As New SqlCommand(sql, cn)
+                    cn.Open()
+                    Using rd = cmd.ExecuteReader()
+                        If rd.Read() Then
+                            Dim lastPar As Integer? = If(rd.IsDBNull(0), CType(Nothing, Integer?), rd.GetInt32(0))
+                            Dim lastNon As Integer? = If(rd.IsDBNull(1), CType(Nothing, Integer?), rd.GetInt32(1))
+                            Return Tuple.Create(lastPar, lastNon)
+                        End If
+                    End Using
+                End Using
+            End Using
+        Catch
+        End Try
+
+        Return Tuple.Create(CType(Nothing, Integer?), CType(Nothing, Integer?))
+    End Function
 
 End Class
