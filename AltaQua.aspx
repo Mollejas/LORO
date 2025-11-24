@@ -449,9 +449,6 @@
       var dz = document.getElementById('dropPDF');
       var btn = document.getElementById('<%= btnTrigger.ClientID %>');
 
-      var ddlTipo = document.getElementById('<%= ddlTipoIngreso.ClientID %>');
-      var ddlStatus = document.getElementById('<%= ddlEstatus.ClientID %>');
-
       function schedulePostBack() {
         if (dz) dz.classList.add('has-file');
         if (btn) btn.click(); // postback completo SOLO al cargar PDF
@@ -484,59 +481,6 @@
           }
         });
       }
-
-      // --- Estatus dinámico sin postback ni agregar/quitar options ---
-      function selectValue(ddl, val) {
-        var found = false;
-        for (var i = 0; i < ddl.options.length; i++) {
-          if (ddl.options[i].value === val) { ddl.selectedIndex = i; found = true; break; }
-        }
-        if (!found) ddl.selectedIndex = 0; // cae a vacío
-      }
-      function disableExcept(ddl, allowedValues) {
-        for (var i = 0; i < ddl.options.length; i++) {
-          var opt = ddl.options[i];
-          var allowed = allowedValues.indexOf(opt.value) !== -1;
-          opt.disabled = !allowed;
-          opt.hidden = !allowed;
-        }
-        if (ddl.options[ddl.selectedIndex] && ddl.options[ddl.selectedIndex].disabled) {
-          selectValue(ddl, allowedValues[0] || '');
-        }
-      }
-      function setStatusForTipo() {
-        if (!ddlTipo || !ddlStatus) return;
-
-        // reset visual
-        for (var i = 0; i < ddlStatus.options.length; i++) {
-          ddlStatus.options[i].disabled = false;
-          ddlStatus.options[i].hidden = false;
-        }
-        var t = (ddlTipo.value || '').toUpperCase();
-
-        if (t === '') {
-          selectValue(ddlStatus, '');
-          ddlStatus.disabled = true;
-        } else if (t === 'TRANSITO') {
-          ddlStatus.disabled = false;
-          disableExcept(ddlStatus, ['', 'TRANSITO']);
-          selectValue(ddlStatus, 'TRANSITO');
-        } else if (t === 'GRUA' || t === 'PROPIO IMPULSO') {
-          ddlStatus.disabled = false;
-          disableExcept(ddlStatus, ['', 'PISO']);
-          selectValue(ddlStatus, 'PISO');
-        } else {
-          selectValue(ddlStatus, '');
-          ddlStatus.disabled = true;
-        }
-      }
-
-      if (ddlStatus) {
-        selectValue(ddlStatus, '');
-        ddlStatus.disabled = true;
-      }
-      if (ddlTipo) ddlTipo.addEventListener('change', setStatusForTipo);
-      setStatusForTipo();
     });
   </script>
 </asp:Content>
@@ -580,136 +524,34 @@
 
       <div class="card-body">
         <div class="row g-3">
-          <!-- Col 1: Generación de expediente + datos básicos de cliente -->
-          <div class="col-12 col-lg-4">
+          <!-- Col 1: Datos del cliente -->
+          <div class="col-12 col-lg-6">
             <div class="form-section h-100">
-              <div class="form-section-header">Generación de expediente</div>
+              <div class="form-section-header">Datos del cliente</div>
               <div class="row g-3">
                 <div class="col-12">
-                  <label class="form-label">N° de expediente (interno)</label>
-                  <asp:TextBox ID="txtExpediente" runat="server" CssClass="form-control" />
-                  <small class="text-muted">Consecutivo interno sugerido.</small>
+                  <label class="form-label">N°. de reporte</label>
+                  <asp:TextBox ID="txtNumeroReporte" runat="server" CssClass="form-control" />
+                  <small class="text-muted">Extraído automáticamente del PDF.</small>
                 </div>
                 <div class="col-12">
-                  <label class="form-label">Creado por</label>
-                  <asp:TextBox ID="txtCreadoPor" runat="server" CssClass="form-control" />
+                  <label class="form-label">Nombre del cliente</label>
+                  <asp:TextBox ID="txtNombreCliente" runat="server" CssClass="form-control" />
                 </div>
                 <div class="col-12">
-                  <label class="form-label">Fecha de creación</label>
-                  <asp:TextBox ID="txtFechaCreacion" runat="server" CssClass="form-control" TextMode="DateTimeLocal" />
-                </div>
-                <div class="col-12">
-                  <label class="form-label">N°. de siniestro (general)</label>
-                  <asp:TextBox ID="txtSiniestroGen" runat="server" CssClass="form-control" />
-                </div>
-
-                <div class="col-12">
-                  <label class="form-label">Tipo de ingreso del vehículo</label>
-                  <asp:DropDownList ID="ddlTipoIngreso" runat="server" CssClass="form-select">
-                    <asp:ListItem Text="" Value="" />
-                    <asp:ListItem Text="TRANSITO" Value="TRANSITO" />
-                    <asp:ListItem Text="GRUA" Value="GRUA" />
-                    <asp:ListItem Text="PROPIO IMPULSO" Value="PROPIO IMPULSO" />
-                  </asp:DropDownList>
-                  <small class="text-muted">Equivalente a GRÚA / TRÁNSITO / PROPIO IMPULSO del volante.</small>
-                </div>
-                <div class="col-12">
-                  <label class="form-label">Aplica deducible</label>
-                  <asp:DropDownList ID="ddlDeducible" runat="server" CssClass="form-select">
-                    <asp:ListItem Text="SI" Value="SI" />
-                    <asp:ListItem Text="NO" Value="NO" />
-                  </asp:DropDownList>
-                </div>
-                <div class="col-12">
-                  <label class="form-label">Situación del vehículo</label>
-                  <asp:DropDownList ID="ddlEstatus" runat="server" CssClass="form-select">
-                    <asp:ListItem Text="" Value="" />
-                    <asp:ListItem Text="PISO" Value="PISO" />
-                    <asp:ListItem Text="TRANSITO" Value="TRANSITO" />
-                  </asp:DropDownList>
-                  <small class="text-muted">Se habilita según el tipo de ingreso (PISO / TRÁNSITO).</small>
-                </div>
-
-                <!-- Cliente (alineado con volante) -->
-                <div class="col-12">
-                  <label class="form-label">Nombre o razón social del cliente</label>
-                  <asp:TextBox ID="txtAsegurado" runat="server" CssClass="form-control" />
-                </div>
-                <div class="col-12">
-                  <label class="form-label">Teléfono del asegurado</label>
+                  <label class="form-label">Teléfono</label>
                   <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control" />
                 </div>
                 <div class="col-12">
-                  <label class="form-label">E-mail del asegurado</label>
-                  <asp:TextBox ID="txtCorreo" runat="server" CssClass="form-control text-lowercase" />
+                  <label class="form-label">E-mail</label>
+                  <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control text-lowercase" />
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Col 2: Identificación del siniestro (volante) -->
-          <div class="col-12 col-lg-4">
-            <div class="form-section h-100">
-              <div class="form-section-header">Identificación del siniestro</div>
-              <div class="row g-3">
-                <div class="col-12">
-                  <label class="form-label">Aseguradora / emisor</label>
-                  <asp:TextBox ID="txtEmisor" runat="server" CssClass="form-control" />
-                  <small class="text-muted">Ejemplo: QUÁLITAS COMPAÑÍA DE SEGUROS, S.A. DE C.V.</small>
-                </div>
-                <div class="col-12">
-                  <label class="form-label">Folio electrónico</label>
-                  <asp:TextBox ID="txtCarpeta" runat="server" CssClass="form-control" />
-                </div>
-                <div class="col-12">
-                  <label class="form-label">N°. de póliza</label>
-                  <asp:TextBox ID="txtPoliza" runat="server" CssClass="form-control" />
-                </div>
-                <div class="col-12">
-                  <label class="form-label">N°. CIS</label>
-                  <asp:TextBox ID="txtCIS" runat="server" CssClass="form-control" />
-                </div>
-
-                <div class="col-12">
-                  <label class="form-label">N°. de siniestro</label>
-                  <asp:TextBox ID="txtSiniestro" runat="server" CssClass="form-control" />
-                </div>
-                <div class="col-12">
-                  <label class="form-label">N°. de reporte</label>
-                  <asp:TextBox ID="txtReporte" runat="server" CssClass="form-control" />
-                </div>
-                <div class="col-12">
-                  <label class="form-label">Estado de cobranza</label>
-                  <asp:TextBox ID="txtEstCobranza" runat="server" CssClass="form-control" />
-                </div>
-
-                <div class="col-12">
-                  <label class="form-label">Fecha del siniestro</label>
-                  <asp:TextBox ID="FchSiniestro" runat="server" CssClass="form-control" />
-                </div>
-                <div class="col-12">
-                  <label class="form-label">Vigencia desde</label>
-                  <asp:TextBox ID="txtVigenciaDesde" runat="server" CssClass="form-control" />
-                </div>
-                <div class="col-12">
-                  <label class="form-label">Vigencia hasta</label>
-                  <asp:TextBox ID="txtVigenciaHasta" runat="server" CssClass="form-control" />
-                </div>
-
-                <div class="col-12">
-                  <label class="form-label">Nombre del ajustador</label>
-                  <asp:TextBox ID="txtAjustador" runat="server" CssClass="form-control" />
-                </div>
-                <div class="col-12">
-                  <label class="form-label">Clave del ajustador</label>
-                  <asp:TextBox ID="txtClaveAjustador" runat="server" CssClass="form-control" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Col 3: Datos del vehículo (como en el volante) -->
-          <div class="col-12 col-lg-4">
+          <!-- Col 2: Datos del vehículo -->
+          <div class="col-12 col-lg-6">
             <div class="form-section h-100">
               <div class="form-section-header">Datos del vehículo</div>
               <div class="row g-3">
@@ -718,7 +560,7 @@
                   <asp:TextBox ID="txtMarca" runat="server" CssClass="form-control" />
                 </div>
                 <div class="col-12">
-                  <label class="form-label">Tipo / submarca</label>
+                  <label class="form-label">Tipo / Submarca</label>
                   <asp:TextBox ID="txtTipo" runat="server" CssClass="form-control" />
                 </div>
                 <div class="col-12">
@@ -726,46 +568,16 @@
                   <asp:TextBox ID="txtModelo" runat="server" CssClass="form-control" />
                 </div>
                 <div class="col-12">
-                  <label class="form-label">Motor</label>
-                  <asp:TextBox ID="txtMotor" runat="server" CssClass="form-control" />
-                </div>
-
-                <div class="col-12">
-                  <label class="form-label">N°. de serie / VIN</label>
-                  <asp:TextBox ID="txtSerie" runat="server" CssClass="form-control" />
-                </div>
-                <div class="col-12">
-                  <label class="form-label">Placas</label>
-                  <asp:TextBox ID="txtPlacas" runat="server" CssClass="form-control" />
-                </div>
-                <div class="col-12">
                   <label class="form-label">Color</label>
                   <asp:TextBox ID="txtColor" runat="server" CssClass="form-control" />
                 </div>
                 <div class="col-12">
-                  <label class="form-label">Transmisión</label>
-                  <asp:TextBox ID="txtTransmision" runat="server" CssClass="form-control" />
-                  <small class="text-muted">Ejemplo: AUTOMÁTICA / MANUAL.</small>
-                </div>
-
-                <div class="col-12">
-                  <label class="form-label">Kilometraje</label>
-                  <asp:TextBox ID="txtKilometros" runat="server" CssClass="form-control" />
+                  <label class="form-label">VIN / Serie</label>
+                  <asp:TextBox ID="txtVin" runat="server" CssClass="form-control" />
                 </div>
                 <div class="col-12">
-                  <label class="form-label">Uso del vehículo</label>
-                  <asp:TextBox ID="txtUso" runat="server" CssClass="form-control" />
-                </div>
-
-                <div id="rowPuertas2" runat="server" class="col-12 d-flex align-items-center">
-                  <asp:CheckBox ID="chk2Puertas" runat="server"
-                                Text="2 puertas"
-                                CssClass="form-check-input me-2" />
-                </div>
-                <div id="rowPuertas4" runat="server" class="col-12 d-flex align-items-center">
-                  <asp:CheckBox ID="chk4Puertas" runat="server"
-                                Text="4 puertas"
-                                CssClass="form-check-input me-2" />
+                  <label class="form-label">Placas</label>
+                  <asp:TextBox ID="txtPlacas" runat="server" CssClass="form-control" />
                 </div>
               </div>
             </div>
