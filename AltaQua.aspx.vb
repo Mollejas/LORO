@@ -435,76 +435,50 @@ Public Class AltaQua
     ''' Obtiene el siguiente expediente de forma segura usando sp_getapplock para evitar duplicados.
     ''' </summary>
     Private Function ObtenerSiguienteExpedienteSeguro(paridad As String, connectionString As String) As Integer
-        Dim lockName As String = "ExpedienteSecuence_" & paridad.ToUpperInvariant()
-        Dim expedienteId As Integer = 0
+        paridad = If(paridad, "PAR").ToUpperInvariant().Trim()
+        If paridad <> "PAR" AndAlso paridad <> "NON" Then paridad = "PAR"
+
+        Dim recursoLock As String = If(paridad = "PAR", "EXPEDIENTE_PAR", "EXPEDIENTE_NON")
+        Dim paridadMod As Integer = If(paridad = "PAR", 0, 1)
 
         Using cn As New SqlConnection(connectionString)
             cn.Open()
-
-            Using txn = cn.BeginTransaction()
-                Try
-                    ' 1) Adquirir lock
-                    Using cmdLock As New SqlCommand("sp_getapplock", cn, txn)
-                        cmdLock.CommandType = CommandType.StoredProcedure
-                        cmdLock.Parameters.Add("@Resource", SqlDbType.NVarChar, 255).Value = lockName
-                        cmdLock.Parameters.Add("@LockMode", SqlDbType.NVarChar, 32).Value = "Exclusive"
-                        cmdLock.Parameters.Add("@LockOwner", SqlDbType.NVarChar, 32).Value = "Transaction"
-                        cmdLock.Parameters.Add("@LockTimeout", SqlDbType.Int).Value = 5000
-
-                        Dim retLock As Object = cmdLock.ExecuteScalar()
-                        Dim lockResult As Integer = If(retLock IsNot Nothing AndAlso retLock IsNot DBNull.Value,
-                                                       Convert.ToInt32(retLock), -999)
-                        If lockResult < 0 Then
-                            Throw New InvalidOperationException("No se pudo adquirir el lock para generar expediente PAR/NON.")
-                        End If
-                    End Using
-
-                    ' 2) Leer el último expediente de esa paridad
-                    Dim sqlQuery As String
-                    If paridad.ToUpperInvariant() = "PAR" Then
-                        sqlQuery = "
-                            SELECT MAX(TRY_CONVERT(INT, Expediente))
-                            FROM dbo.Admisiones
-                            WHERE TRY_CONVERT(INT, Expediente) IS NOT NULL
-                              AND TRY_CONVERT(INT, Expediente) % 2 = 0"
-                    Else
-                        sqlQuery = "
-                            SELECT MAX(TRY_CONVERT(INT, Expediente))
-                            FROM dbo.Admisiones
-                            WHERE TRY_CONVERT(INT, Expediente) IS NOT NULL
-                              AND TRY_CONVERT(INT, Expediente) % 2 = 1"
+            Using tx = cn.BeginTransaction(IsolationLevel.Serializable)
+                Using lockCmd As New SqlCommand("EXEC @rc = sp_getapplock @Resource,@LockMode,@LockOwner,@LockTimeout;", cn, tx)
+                    lockCmd.Parameters.Add("@rc", SqlDbType.Int).Direction = ParameterDirection.Output
+                    lockCmd.Parameters.Add("@Resource", SqlDbType.NVarChar, 255).Value = recursoLock
+                    lockCmd.Parameters.Add("@LockMode", SqlDbType.NVarChar, 32).Value = "Exclusive"
+                    lockCmd.Parameters.Add("@LockOwner", SqlDbType.NVarChar, 32).Value = "Transaction"
+                    lockCmd.Parameters.Add("@LockTimeout", SqlDbType.Int).Value = 10000
+                    lockCmd.ExecuteNonQuery()
+                    Dim rc As Integer = CInt(lockCmd.Parameters("@rc").Value)
+                    If rc < 0 Then
+                        Throw New ApplicationException("No se pudo obtener bloqueo de asignación de expediente (timeout).")
                     End If
+                End Using
 
-                    Using cmdMax As New SqlCommand(sqlQuery, cn, txn)
-                        Dim maxVal = cmdMax.ExecuteScalar()
-                        If maxVal IsNot Nothing AndAlso maxVal IsNot DBNull.Value Then
-                            expedienteId = Convert.ToInt32(maxVal) + 2
-                        Else
-                            ' Primer expediente de esta paridad
-                            expedienteId = If(paridad.ToUpperInvariant() = "PAR", 2, 1)
-                        End If
-                    End Using
+                Const sqlLast As String = "
+                    WITH V AS (
+                      SELECT TRY_CONVERT(INT, Expediente) AS v
+                      FROM dbo.Admisiones WITH (UPDLOCK, HOLDLOCK)
+                      WHERE TRY_CONVERT(INT, Expediente) IS NOT NULL
+                    )
+                    SELECT MAX(v) FROM V WHERE v % 2 = @paridad;"
 
-                    ' 3) Liberar lock
-                    Using cmdRelease As New SqlCommand("sp_releaseapplock", cn, txn)
-                        cmdRelease.CommandType = CommandType.StoredProcedure
-                        cmdRelease.Parameters.Add("@Resource", SqlDbType.NVarChar, 255).Value = lockName
-                        cmdRelease.Parameters.Add("@LockOwner", SqlDbType.NVarChar, 32).Value = "Transaction"
-                        cmdRelease.ExecuteNonQuery()
-                    End Using
+                Dim lastVal As Integer? = Nothing
+                Using cmd As New SqlCommand(sqlLast, cn, tx)
+                    cmd.Parameters.Add("@paridad", SqlDbType.Int).Value = paridadMod
+                    Dim obj = cmd.ExecuteScalar()
+                    If obj IsNot DBNull.Value AndAlso obj IsNot Nothing Then
+                        lastVal = Convert.ToInt32(obj)
+                    End If
+                End Using
 
-                    txn.Commit()
-                Catch ex As Exception
-                    Try
-                        txn.Rollback()
-                    Catch
-                    End Try
-                    Throw
-                End Try
+                Dim siguiente As Integer = If(lastVal.HasValue, lastVal.Value + 2, If(paridad = "PAR", 2, 1))
+                tx.Commit()
+                Return siguiente
             End Using
         End Using
-
-        Return expedienteId
     End Function
 
     ''' <summary>
