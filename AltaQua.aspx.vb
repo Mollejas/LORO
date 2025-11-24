@@ -11,8 +11,10 @@ Imports Path = System.IO.Path
 Public Class AltaQua
     Inherits System.Web.UI.Page
 
-    ' Subcarpetas estándar para cada expediente en INBURSA
-    Private Shared ReadOnly SubcarpetasInbursa As String() = {
+    Private Const TEMP_DIR As String = "~/App_Data/tmp"
+
+    ' ===== Subcarpetas estándar =====
+    Private ReadOnly SubcarpetasInbursa As String() = {
         "1. DOCUMENTOS DE INGRESO",
         "2. FOTOS DIAGNOSTICO MECANICA",
         "3. FOTOS DIAGNOSTICO HOJALATERIA",
@@ -22,7 +24,7 @@ Public Class AltaQua
         "7. FOTOS DE SALIDA",
         "8. FACTURACION",
         "9. FOTOS DE RECLAMACION",
-        "10. FOTOS REINGRESO DE TRANSITO"
+        "10. FOTOS REINGRESO DE TRANSITO "
     }
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
@@ -51,30 +53,20 @@ Public Class AltaQua
 
     ' Se dispara cuando el JS hace click en btnTrigger al cargar el PDF
     Protected Sub BtnTrigger_Click(ByVal sender As Object, ByVal e As EventArgs)
-        If Not fupPDF.HasFile Then
-            Exit Sub
-        End If
+        If Not fupPDF.HasFile Then Exit Sub
 
-        Dim ext As String = Path.GetExtension(fupPDF.FileName).ToLowerInvariant()
-        If ext <> ".pdf" Then
-            Exit Sub
-        End If
-
-        ' Carpeta temporal para guardar el volante
-        Dim tempFolder As String = Server.MapPath("~/App_Data/Uploads")
-        If Not Directory.Exists(tempFolder) Then
-            Directory.CreateDirectory(tempFolder)
-        End If
-
-        Dim fileName As String = Path.GetFileName(fupPDF.FileName)
-        Dim fullPath As String = Path.Combine(tempFolder, fileName)
-        fupPDF.SaveAs(fullPath)
-
-        ' Guardar la ruta del PDF temporal en ViewState para usarla al guardar
-        ViewState("TempPdfPath") = fullPath
+        ' === Guardar temporal ODA.pdf para moverlo al Guardar ===
+        Dim ext = Path.GetExtension(fupPDF.FileName).ToLowerInvariant()
+        If ext <> ".pdf" Then Exit Sub
+        Dim dirTmp = Server.MapPath(TEMP_DIR)
+        If Not Directory.Exists(dirTmp) Then Directory.CreateDirectory(dirTmp)
+        Dim tempName = Guid.NewGuid().ToString("N") & ".pdf"
+        Dim tempPhysical = Path.Combine(dirTmp, tempName)
+        fupPDF.SaveAs(tempPhysical)
+        ViewState("TempPdfRel") = TEMP_DIR.TrimEnd("/"c) & "/" & tempName
 
         Try
-            Using reader As New PdfReader(fullPath)
+            Using reader As New PdfReader(tempPhysical)
                 Dim pagina As Integer = 1
 
                 ' ------- RECTÁNGULOS (coordenadas con origen abajo-izquierda) -------
@@ -149,6 +141,7 @@ Public Class AltaQua
             ' Obtener la cadena de conexión del web.config
             Dim csSetting = ConfigurationManager.ConnectionStrings("DaytonaDB")
             If csSetting Is Nothing OrElse String.IsNullOrWhiteSpace(csSetting.ConnectionString) Then
+                Alert("Falta la cadena de conexión DaytonaDB en Web.config")
                 Exit Sub
             End If
 
@@ -160,54 +153,62 @@ Public Class AltaQua
             Dim paridad As String = ObtenerParidadUsuarioActual()
 
             ' Generar expediente seguro con sp_getapplock
-            Dim expedienteId As Integer = ObtenerSiguienteExpedienteSeguro(paridad, csSetting.ConnectionString)
+            Dim expedienteId As Integer
+            Try
+                expedienteId = ObtenerSiguienteExpedienteSeguro(paridad, csSetting.ConnectionString)
+            Catch ex As Exception
+                Alert("No se pudo asignar el número de expediente: " & ex.Message.Replace("'", "\'"))
+                Exit Sub
+            End Try
+
+            ' Formatear expediente y actualizar el textbox
+            txtExpediente.Text = expedienteId.ToString("0")
 
             ' Formatear expediente a 5 dígitos: "00001", "00002", etc.
             Dim idFormateado As String = expedienteId.ToString("D5")
 
-            ' Construir nombre de carpeta: "EXP 00001 MARCA TIPO MODELO COLOR PLACAS"
+            ' Construir nombre de carpeta: "EXP 00001 MARCA TIPO MODELO COLOR PLACAS" (igual que Alta.aspx)
             Dim marcaClean As String = CleanMarca(RemoveParentheses(txtMarca.Text))
-            Dim partes As New List(Of String)()
-            If Not String.IsNullOrWhiteSpace(marcaClean) Then partes.Add(marcaClean)
-            If Not String.IsNullOrWhiteSpace(txtTipo.Text) Then partes.Add(txtTipo.Text.Trim().ToUpperInvariant())
-            If Not String.IsNullOrWhiteSpace(txtModelo.Text) Then partes.Add(txtModelo.Text.Trim().ToUpperInvariant())
-            If Not String.IsNullOrWhiteSpace(txtColor.Text) Then partes.Add(txtColor.Text.Trim().ToUpperInvariant())
-            If Not String.IsNullOrWhiteSpace(txtPlacas.Text) Then partes.Add(txtPlacas.Text.Trim().ToUpperInvariant())
 
-            Dim carpetaNombre As String = "EXP " & idFormateado & " " & String.Join(" ", partes)
+            Dim partes As New List(Of String)
+            If Not String.IsNullOrWhiteSpace(marcaClean) Then partes.Add(marcaClean.Trim())
+            If Not String.IsNullOrWhiteSpace(txtTipo.Text) Then partes.Add(txtTipo.Text.Trim())
+            If Not String.IsNullOrWhiteSpace(txtModelo.Text) Then partes.Add(txtModelo.Text.Trim())
+            If Not String.IsNullOrWhiteSpace(txtColor.Text) Then partes.Add(txtColor.Text.Trim())
+            If Not String.IsNullOrWhiteSpace(txtPlacas.Text) Then partes.Add(txtPlacas.Text.Trim())
+
+            Dim carpetaNombre As String = "EXP " & idFormateado
+            If partes.Count > 0 Then carpetaNombre &= " " & String.Join(" ", partes)
             carpetaNombre = SanitizeFileName(carpetaNombre)
 
             ' Ruta virtual y física de la carpeta
-            Dim baseVirtual As String = GetInbursaBaseVirtual().TrimEnd("/"c)
+            Dim baseVirtual = GetInbursaBaseVirtual().TrimEnd("/"c)   ' p.ej. ~/INBURSA
             Dim carpetaRel As String = (baseVirtual & "/" & carpetaNombre).Replace("//", "/")
             Dim carpetaFisica As String = Server.MapPath(carpetaRel)
 
             ' Crear carpeta principal
-            If Not Directory.Exists(carpetaFisica) Then
-                Directory.CreateDirectory(carpetaFisica)
-            End If
+            If Not Directory.Exists(carpetaFisica) Then Directory.CreateDirectory(carpetaFisica)
 
-            ' Crear las 10 subcarpetas estándar
-            For Each subcarpeta In SubcarpetasInbursa
-                Dim rutaSub As String = Path.Combine(carpetaFisica, subcarpeta)
-                If Not Directory.Exists(rutaSub) Then
-                    Directory.CreateDirectory(rutaSub)
-                End If
+            ' Crear las 10 subcarpetas estándar (igual que en Alta.aspx)
+            For Each subc In SubcarpetasInbursa
+                Dim rel = carpetaRel & "/" & SanitizeFileName(subc)
+                Dim phy = Server.MapPath(rel)
+                If Not Directory.Exists(phy) Then Directory.CreateDirectory(phy)
             Next
 
-            ' Mover el PDF temporal a "1. DOCUMENTOS DE INGRESO/ODA.pdf"
-            Dim tempPdfPath As String = TryCast(ViewState("TempPdfPath"), String)
-            If Not String.IsNullOrWhiteSpace(tempPdfPath) AndAlso File.Exists(tempPdfPath) Then
-                Dim destinoFolder As String = Path.Combine(carpetaFisica, "1. DOCUMENTOS DE INGRESO")
-                Dim destinoPdf As String = Path.Combine(destinoFolder, "ODA.pdf")
-
-                ' Si ya existe ODA.pdf, eliminar
-                If File.Exists(destinoPdf) Then
-                    File.Delete(destinoPdf)
+            ' === Mover ODA.pdf desde TEMP si existe ===
+            Dim tempRel = TryCast(ViewState("TempPdfRel"), String)
+            If Not String.IsNullOrWhiteSpace(tempRel) Then
+                Dim tempPhysical = Server.MapPath(tempRel)
+                If File.Exists(tempPhysical) Then
+                    Dim relDocs = carpetaRel & "/1. DOCUMENTOS DE INGRESO"
+                    Dim phyDocs = Server.MapPath(relDocs)
+                    If Not Directory.Exists(phyDocs) Then Directory.CreateDirectory(phyDocs)
+                    Dim destino = Path.Combine(phyDocs, "ODA.pdf")
+                    If File.Exists(destino) Then File.Delete(destino)
+                    File.Move(tempPhysical, destino)
+                    ViewState("TempPdfRel") = Nothing
                 End If
-
-                File.Move(tempPdfPath, destinoPdf)
-                ViewState("TempPdfPath") = Nothing
             End If
 
             ' Guardar en la base de datos con CarpetaRel
@@ -234,30 +235,30 @@ Public Class AltaQua
                     cmd.CommandType = CommandType.Text
 
                     ' Generación de Expediente
-                    cmd.Parameters.Add("@Expediente", SqlDbType.NVarChar, 50).Value = idFormateado
-                    cmd.Parameters.Add("@CreadoPor", SqlDbType.NVarChar, 100).Value = If(String.IsNullOrWhiteSpace(creadoPorNombre), DBNull.Value, CType(creadoPorNombre.Trim(), Object))
+                    cmd.Parameters.Add("@Expediente", SqlDbType.NVarChar, 50).Value = txtExpediente.Text.Trim()
+                    cmd.Parameters.Add("@CreadoPor", SqlDbType.NVarChar, 100).Value = creadoPorNombre.Trim()
                     cmd.Parameters.Add("@FechaCreacion", SqlDbType.DateTime2).Value = DateTime.Now
-                    cmd.Parameters.Add("@SiniestroGen", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtSiniestroGen.Text), DBNull.Value, CType(txtSiniestroGen.Text.Trim(), Object))
-                    cmd.Parameters.Add("@TipoIngreso", SqlDbType.NVarChar, 20).Value = If(String.IsNullOrWhiteSpace(ddlTipoIngreso.SelectedValue), DBNull.Value, CType(ddlTipoIngreso.SelectedValue, Object))
-                    cmd.Parameters.Add("@DeducibleSI_NO", SqlDbType.NVarChar, 10).Value = If(String.IsNullOrWhiteSpace(ddlDeducible.SelectedValue), DBNull.Value, CType(ddlDeducible.SelectedValue, Object))
-                    cmd.Parameters.Add("@Estatus", SqlDbType.NVarChar, 20).Value = If(String.IsNullOrWhiteSpace(ddlEstatus.SelectedValue), DBNull.Value, CType(ddlEstatus.SelectedValue, Object))
+                    cmd.Parameters.Add("@SiniestroGen", SqlDbType.NVarChar, 50).Value = txtSiniestroGen.Text.Trim()
+                    cmd.Parameters.Add("@TipoIngreso", SqlDbType.NVarChar, 20).Value = If(ddlTipoIngreso.SelectedValue, String.Empty)
+                    cmd.Parameters.Add("@DeducibleSI_NO", SqlDbType.NVarChar, 2).Value = If(ddlDeducible.SelectedValue, String.Empty)
+                    cmd.Parameters.Add("@Estatus", SqlDbType.NVarChar, 20).Value = If(ddlEstatus.SelectedValue, String.Empty)
 
                     ' Datos del Cliente (extraídos del PDF)
-                    cmd.Parameters.Add("@Asegurado", SqlDbType.NVarChar, 200).Value = If(String.IsNullOrWhiteSpace(txtNombreCliente.Text), DBNull.Value, CType(txtNombreCliente.Text.Trim(), Object))
-                    cmd.Parameters.Add("@Telefono", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtTelefono.Text), DBNull.Value, CType(txtTelefono.Text.Trim(), Object))
-                    cmd.Parameters.Add("@Correo", SqlDbType.NVarChar, 100).Value = If(String.IsNullOrWhiteSpace(txtEmail.Text), DBNull.Value, CType(txtEmail.Text.Trim().ToLowerInvariant(), Object))
-                    cmd.Parameters.Add("@Reporte", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtNumeroReporte.Text), DBNull.Value, CType(txtNumeroReporte.Text.Trim(), Object))
+                    cmd.Parameters.Add("@Asegurado", SqlDbType.NVarChar, 150).Value = txtNombreCliente.Text.Trim()
+                    cmd.Parameters.Add("@Telefono", SqlDbType.NVarChar, 50).Value = txtTelefono.Text.Trim()
+                    cmd.Parameters.Add("@Correo", SqlDbType.NVarChar, 150).Value = txtEmail.Text.Trim()
+                    cmd.Parameters.Add("@Reporte", SqlDbType.NVarChar, 50).Value = txtNumeroReporte.Text.Trim()
 
                     ' Datos del Vehículo (extraídos del PDF)
-                    cmd.Parameters.Add("@Marca", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtMarca.Text), DBNull.Value, CType(txtMarca.Text.Trim(), Object))
-                    cmd.Parameters.Add("@Tipo", SqlDbType.NVarChar, 100).Value = If(String.IsNullOrWhiteSpace(txtTipo.Text), DBNull.Value, CType(txtTipo.Text.Trim(), Object))
-                    cmd.Parameters.Add("@Modelo", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtModelo.Text), DBNull.Value, CType(txtModelo.Text.Trim(), Object))
-                    cmd.Parameters.Add("@Color", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtColor.Text), DBNull.Value, CType(txtColor.Text.Trim(), Object))
-                    cmd.Parameters.Add("@Serie", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtVin.Text), DBNull.Value, CType(txtVin.Text.Trim(), Object))
-                    cmd.Parameters.Add("@Placas", SqlDbType.NVarChar, 20).Value = If(String.IsNullOrWhiteSpace(txtPlacas.Text), DBNull.Value, CType(txtPlacas.Text.Trim(), Object))
+                    cmd.Parameters.Add("@Marca", SqlDbType.NVarChar, 50).Value = marcaClean
+                    cmd.Parameters.Add("@Tipo", SqlDbType.NVarChar, 50).Value = txtTipo.Text.Trim()
+                    cmd.Parameters.Add("@Modelo", SqlDbType.NVarChar, 20).Value = txtModelo.Text.Trim()
+                    cmd.Parameters.Add("@Color", SqlDbType.NVarChar, 30).Value = txtColor.Text.Trim()
+                    cmd.Parameters.Add("@Serie", SqlDbType.NVarChar, 50).Value = txtVin.Text.Trim()
+                    cmd.Parameters.Add("@Placas", SqlDbType.NVarChar, 20).Value = txtPlacas.Text.Trim()
 
                     ' Carpeta relativa
-                    cmd.Parameters.Add("@CarpetaRel", SqlDbType.NVarChar, 500).Value = carpetaRel
+                    cmd.Parameters.Add("@CarpetaRel", SqlDbType.NVarChar, 300).Value = carpetaRel
 
                     cn.Open()
                     cmd.ExecuteNonQuery()
@@ -265,13 +266,20 @@ Public Class AltaQua
             End Using
 
             ' Redirigir o mostrar mensaje de éxito
+            Alert("Expediente guardado exitosamente.")
             Response.Redirect("AltaQua.aspx?success=1")
 
         Catch ex As Exception
-            ' Manejo de errores - aquí puedes mostrar un mensaje al usuario
-            ' Por ejemplo, agregando un Label en el .aspx y asignando el mensaje:
-            ' lblError.Text = "Error al guardar: " & ex.Message
+            ' Mostrar mensaje de error detallado al usuario
+            Alert("Error al guardar: " & ex.Message.Replace("'", "\'"))
         End Try
+    End Sub
+
+    ''' <summary>
+    ''' Muestra un mensaje de alerta en el navegador usando JavaScript.
+    ''' </summary>
+    Private Sub Alert(msg As String)
+        ClientScript.RegisterStartupScript(Me.GetType(), "msg", "alert('" & msg.Replace("'", "\'") & "');", True)
     End Sub
 
     ' ==================== FUNCIONES DE PARIDAD PAR/NON ====================
@@ -534,11 +542,9 @@ Public Class AltaQua
     ''' Obtiene la ruta virtual base de INBURSA desde Web.config o usa predeterminada.
     ''' </summary>
     Private Function GetInbursaBaseVirtual() As String
-        Dim baseVirtual As String = ConfigurationManager.AppSettings("InbursaBaseVirtual")
-        If String.IsNullOrWhiteSpace(baseVirtual) Then
-            baseVirtual = "~/INBURSA"
-        End If
-        Return baseVirtual
+        Dim v = ConfigurationManager.AppSettings("InbursaBaseVirtual")
+        If String.IsNullOrWhiteSpace(v) Then v = "~/INBURSA"
+        Return v.TrimEnd("/"c)
     End Function
 
 End Class
