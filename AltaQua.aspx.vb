@@ -14,15 +14,15 @@ Public Class AltaQua
     ' Subcarpetas estándar para cada expediente en INBURSA
     Private Shared ReadOnly SubcarpetasInbursa As String() = {
         "1. DOCUMENTOS DE INGRESO",
-        "2. FACTURA",
-        "3. FOTOS Y VIDEOS",
-        "4. PRESUPUESTO(S)",
-        "5. AUTORIZACION ASEGURADORA",
-        "6. FACTURA PAGADA",
-        "7. EGRESOS",
-        "8. CALIDAD",
-        "9. FIRMA SATISFACCION",
-        "10. VARIOS"
+        "2. FOTOS DIAGNOSTICO MECANICA",
+        "3. FOTOS DIAGNOSTICO HOJALATERIA",
+        "4. VALUACION",
+        "5. REFACCIONES",
+        "6. FOTOS PROCESO DE REPARACION",
+        "7. FOTOS DE SALIDA",
+        "8. FACTURACION",
+        "9. FOTOS DE RECLAMACION",
+        "10. FOTOS REINGRESO DE TRANSITO"
     }
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
