@@ -449,6 +449,9 @@
       var dz = document.getElementById('dropPDF');
       var btn = document.getElementById('<%= btnTrigger.ClientID %>');
 
+      var ddlTipo = document.getElementById('<%= ddlTipoIngreso.ClientID %>');
+      var ddlStatus = document.getElementById('<%= ddlEstatus.ClientID %>');
+
       function schedulePostBack() {
         if (dz) dz.classList.add('has-file');
         if (btn) btn.click(); // postback completo SOLO al cargar PDF
@@ -481,6 +484,59 @@
           }
         });
       }
+
+      // --- Estatus dinámico sin postback ni agregar/quitar options ---
+      function selectValue(ddl, val) {
+        var found = false;
+        for (var i = 0; i < ddl.options.length; i++) {
+          if (ddl.options[i].value === val) { ddl.selectedIndex = i; found = true; break; }
+        }
+        if (!found) ddl.selectedIndex = 0; // cae a vacío
+      }
+      function disableExcept(ddl, allowedValues) {
+        for (var i = 0; i < ddl.options.length; i++) {
+          var opt = ddl.options[i];
+          var allowed = allowedValues.indexOf(opt.value) !== -1;
+          opt.disabled = !allowed;
+          opt.hidden = !allowed; // oculta visual
+        }
+        if (ddl.options[ddl.selectedIndex] && ddl.options[ddl.selectedIndex].disabled) {
+          selectValue(ddl, allowedValues[0] || '');
+        }
+      }
+      function setStatusForTipo() {
+        if (!ddlTipo || !ddlStatus) return;
+
+        // reset visual
+        for (var i = 0; i < ddlStatus.options.length; i++) {
+          ddlStatus.options[i].disabled = false;
+          ddlStatus.options[i].hidden = false;
+        }
+        var t = (ddlTipo.value || '').toUpperCase();
+
+        if (t === '') {
+          selectValue(ddlStatus, '');
+          ddlStatus.disabled = true;
+        } else if (t === 'TRANSITO') {
+          ddlStatus.disabled = false;
+          disableExcept(ddlStatus, ['', 'TRANSITO']);
+          selectValue(ddlStatus, 'TRANSITO');
+        } else if (t === 'GRUA' || t === 'PROPIO IMPULSO') {
+          ddlStatus.disabled = false;
+          disableExcept(ddlStatus, ['', 'PISO']);
+          selectValue(ddlStatus, 'PISO');
+        } else {
+          selectValue(ddlStatus, '');
+          ddlStatus.disabled = true;
+        }
+      }
+
+      if (ddlStatus) {
+        selectValue(ddlStatus, '');
+        ddlStatus.disabled = true;
+      }
+      if (ddlTipo) ddlTipo.addEventListener('change', setStatusForTipo);
+      setStatusForTipo();
     });
   </script>
 </asp:Content>
@@ -524,8 +580,60 @@
 
       <div class="card-body">
         <div class="row g-3">
-          <!-- Col 1: Datos del cliente -->
-          <div class="col-12 col-lg-6">
+          <!-- Col 1: Generación de Expediente -->
+          <div class="col-12 col-lg-4">
+            <div class="form-section h-100">
+              <div class="form-section-header">Generación de Expediente</div>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label">Expediente</label>
+                  <asp:TextBox ID="txtExpediente" runat="server" CssClass="form-control" />
+                  <small class="text-muted">Consecutivo sugerido si aplica.</small>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Creado Por</label>
+                  <asp:TextBox ID="txtCreadoPor" runat="server" CssClass="form-control" />
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Fecha Creación</label>
+                  <asp:TextBox ID="txtFechaCreacion" runat="server" CssClass="form-control" TextMode="DateTimeLocal" />
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Siniestro (Gen.)</label>
+                  <asp:TextBox ID="txtSiniestroGen" runat="server" CssClass="form-control" />
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label">Tipo Ingreso</label>
+                  <asp:DropDownList ID="ddlTipoIngreso" runat="server" CssClass="form-select">
+                    <asp:ListItem Text="" Value="" />
+                    <asp:ListItem Text="TRANSITO" Value="TRANSITO" />
+                    <asp:ListItem Text="GRUA" Value="GRUA" />
+                    <asp:ListItem Text="PROPIO IMPULSO" Value="PROPIO IMPULSO" />
+                  </asp:DropDownList>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Deducible</label>
+                  <asp:DropDownList ID="ddlDeducible" runat="server" CssClass="form-select">
+                    <asp:ListItem Text="SI" Value="SI" />
+                    <asp:ListItem Text="NO" Value="NO" />
+                  </asp:DropDownList>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Estatus</label>
+                  <asp:DropDownList ID="ddlEstatus" runat="server" CssClass="form-select">
+                    <asp:ListItem Text="" Value="" />
+                    <asp:ListItem Text="PISO" Value="PISO" />
+                    <asp:ListItem Text="TRANSITO" Value="TRANSITO" />
+                  </asp:DropDownList>
+                  <small class="text-muted">Seleccione primero el Tipo de Ingreso.</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Col 2: Datos del cliente -->
+          <div class="col-12 col-lg-4">
             <div class="form-section h-100">
               <div class="form-section-header">Datos del cliente</div>
               <div class="row g-3">
@@ -550,8 +658,8 @@
             </div>
           </div>
 
-          <!-- Col 2: Datos del vehículo -->
-          <div class="col-12 col-lg-6">
+          <!-- Col 3: Datos del vehículo -->
+          <div class="col-12 col-lg-4">
             <div class="form-section h-100">
               <div class="form-section-header">Datos del vehículo</div>
               <div class="row g-3">

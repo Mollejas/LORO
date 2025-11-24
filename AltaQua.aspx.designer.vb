@@ -50,6 +50,69 @@ Partial Public Class AltaQua
     Protected WithEvents btnTrigger As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
+    '''Control txtExpediente.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtExpediente As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtCreadoPor.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtCreadoPor As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtFechaCreacion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtFechaCreacion As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtSiniestroGen.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtSiniestroGen As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control ddlTipoIngreso.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents ddlTipoIngreso As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''Control ddlDeducible.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents ddlDeducible As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''Control ddlEstatus.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents ddlEstatus As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
     '''Control txtNumeroReporte.
     '''</summary>
     '''<remarks>
