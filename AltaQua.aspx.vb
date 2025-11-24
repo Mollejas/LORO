@@ -12,7 +12,8 @@ Public Class AltaQua
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         If Not IsPostBack Then
-            ' No hay inicialización especial necesaria
+            ' Inicializar fecha de creación
+            txtFechaCreacion.Text = DateTime.Now.ToString("yyyy-MM-ddTHH:mm")
         End If
     End Sub
 
@@ -111,24 +112,42 @@ Public Class AltaQua
                 Const sqlInsert As String = "
             INSERT INTO dbo.Admisiones
             (
-                Reporte, Asegurado, Telefono, Correo,
+                Expediente, CreadoPor, FechaCreacion, SiniestroGen, TipoIngreso, DeducibleSI_NO, Estatus,
+                Asegurado, Telefono, Correo,
+                Reporte,
                 Marca, Tipo, Modelo, Color, Serie, Placas
             )
             VALUES
             (
-                @Reporte, @Asegurado, @Telefono, @Correo,
+                @Expediente, @CreadoPor, @FechaCreacion, @SiniestroGen, @TipoIngreso, @DeducibleSI_NO, @Estatus,
+                @Asegurado, @Telefono, @Correo,
+                @Reporte,
                 @Marca, @Tipo, @Modelo, @Color, @Serie, @Placas
             );"
 
                 Using cmd As New SqlCommand(sqlInsert, cn)
                     cmd.CommandType = CommandType.Text
 
-                    ' Asignar parámetros desde los controles del formulario
-                    cmd.Parameters.Add("@Reporte", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtNumeroReporte.Text), DBNull.Value, CType(txtNumeroReporte.Text.Trim(), Object))
+                    ' CreadoPor desde el textbox o Master
+                    Dim creadoPorNombre As String = If(Not String.IsNullOrWhiteSpace(txtCreadoPor.Text), txtCreadoPor.Text.Trim(),
+                                                    If(Master IsNot Nothing, Master.CurrentUserName, String.Empty))
+
+                    ' Generación de Expediente
+                    cmd.Parameters.Add("@Expediente", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtExpediente.Text), DBNull.Value, CType(txtExpediente.Text.Trim(), Object))
+                    cmd.Parameters.Add("@CreadoPor", SqlDbType.NVarChar, 100).Value = If(String.IsNullOrWhiteSpace(creadoPorNombre), DBNull.Value, CType(creadoPorNombre.Trim(), Object))
+                    cmd.Parameters.Add("@FechaCreacion", SqlDbType.DateTime2).Value = DateTime.Now
+                    cmd.Parameters.Add("@SiniestroGen", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtSiniestroGen.Text), DBNull.Value, CType(txtSiniestroGen.Text.Trim(), Object))
+                    cmd.Parameters.Add("@TipoIngreso", SqlDbType.NVarChar, 20).Value = If(String.IsNullOrWhiteSpace(ddlTipoIngreso.SelectedValue), DBNull.Value, CType(ddlTipoIngreso.SelectedValue, Object))
+                    cmd.Parameters.Add("@DeducibleSI_NO", SqlDbType.NVarChar, 10).Value = If(String.IsNullOrWhiteSpace(ddlDeducible.SelectedValue), DBNull.Value, CType(ddlDeducible.SelectedValue, Object))
+                    cmd.Parameters.Add("@Estatus", SqlDbType.NVarChar, 20).Value = If(String.IsNullOrWhiteSpace(ddlEstatus.SelectedValue), DBNull.Value, CType(ddlEstatus.SelectedValue, Object))
+
+                    ' Datos del Cliente (extraídos del PDF)
                     cmd.Parameters.Add("@Asegurado", SqlDbType.NVarChar, 200).Value = If(String.IsNullOrWhiteSpace(txtNombreCliente.Text), DBNull.Value, CType(txtNombreCliente.Text.Trim(), Object))
                     cmd.Parameters.Add("@Telefono", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtTelefono.Text), DBNull.Value, CType(txtTelefono.Text.Trim(), Object))
                     cmd.Parameters.Add("@Correo", SqlDbType.NVarChar, 100).Value = If(String.IsNullOrWhiteSpace(txtEmail.Text), DBNull.Value, CType(txtEmail.Text.Trim().ToLowerInvariant(), Object))
+                    cmd.Parameters.Add("@Reporte", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtNumeroReporte.Text), DBNull.Value, CType(txtNumeroReporte.Text.Trim(), Object))
 
+                    ' Datos del Vehículo (extraídos del PDF)
                     cmd.Parameters.Add("@Marca", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtMarca.Text), DBNull.Value, CType(txtMarca.Text.Trim(), Object))
                     cmd.Parameters.Add("@Tipo", SqlDbType.NVarChar, 100).Value = If(String.IsNullOrWhiteSpace(txtTipo.Text), DBNull.Value, CType(txtTipo.Text.Trim(), Object))
                     cmd.Parameters.Add("@Modelo", SqlDbType.NVarChar, 50).Value = If(String.IsNullOrWhiteSpace(txtModelo.Text), DBNull.Value, CType(txtModelo.Text.Trim(), Object))
