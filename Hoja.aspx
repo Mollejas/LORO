@@ -1522,7 +1522,7 @@
                   </asp:TemplateField>
                   <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
                     <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">C</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style="color: #0d6efd; font-weight: bold;"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style='<%# "color: #0d6efd; font-weight: bold; opacity: " & IIf(Convert.ToInt32(Eval("complemento")) = 1, "1", "0.3") & ";" %>'>✓</span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -1542,7 +1542,7 @@
                   </asp:TemplateField>
                   <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
                     <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">C</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style="color: #0d6efd; font-weight: bold;"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style='<%# "color: #0d6efd; font-weight: bold; opacity: " & IIf(Convert.ToInt32(Eval("complemento")) = 1, "1", "0.3") & ";" %>'>✓</span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -1567,7 +1567,7 @@
                   </asp:TemplateField>
                   <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
                     <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">C</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style="color: #0d6efd; font-weight: bold;"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style='<%# "color: #0d6efd; font-weight: bold; opacity: " & IIf(Convert.ToInt32(Eval("complemento")) = 1, "1", "0.3") & ";" %>'>✓</span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -1587,7 +1587,7 @@
                   </asp:TemplateField>
                   <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
                     <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">C</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style="color: #0d6efd; font-weight: bold;"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style='<%# "color: #0d6efd; font-weight: bold; opacity: " & IIf(Convert.ToInt32(Eval("complemento")) = 1, "1", "0.3") & ";" %>'>✓</span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
