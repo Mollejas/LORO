@@ -614,6 +614,52 @@
       </div>
     </div>
 
+    <!-- ====== RESUMEN DE REFACCIONES ====== -->
+    <div class="card-pane p-3 mt-4">
+      <div class="card-title h5 mb-3">
+        <i class="bi bi-tools"></i>
+        Resumen de Refacciones
+      </div>
+      <div class="row g-3">
+        <div class="col-12 col-sm-6 col-md-3">
+          <div class="field-label" data-field="refacciones-totales">
+            <i class="bi bi-box-seam"></i>
+            Refacciones Totales
+          </div>
+          <div class="value fs-4 fw-bold text-primary">
+            <asp:Label ID="lblRefaccionesTotales" runat="server" Text="0" ClientIDMode="Static" />
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-3">
+          <div class="field-label" data-field="refacciones-recibidas">
+            <i class="bi bi-check-circle"></i>
+            Refacciones Recibidas
+          </div>
+          <div class="value fs-4 fw-bold text-success">
+            <asp:Label ID="lblRefaccionesRecibidas" runat="server" Text="0" ClientIDMode="Static" />
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-3">
+          <div class="field-label" data-field="piezas-complemento">
+            <i class="bi bi-puzzle"></i>
+            Piezas en Complemento
+          </div>
+          <div class="value fs-4 fw-bold text-warning">
+            <asp:Label ID="lblPiezasComplemento" runat="server" Text="0" ClientIDMode="Static" />
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-3">
+          <div class="field-label" data-field="complemento-aumento-mo">
+            <i class="bi bi-graph-up-arrow"></i>
+            Complemento Aumento MO
+          </div>
+          <div class="value fs-4 fw-bold text-info">
+            <asp:Label ID="lblComplementoAumentoMO" runat="server" Text="$0.00" ClientIDMode="Static" />
+          </div>
+        </div>
+      </div>
+    </div>
+
 <!-- ====== TOGGLE: Tira inferior ====== -->
 <div class="d-flex justify-content-center mt-3">
   <button type="button" id="btnToggleStrip" class="btn-toggle-strip" title="Mostrar/Ocultar documentos">
