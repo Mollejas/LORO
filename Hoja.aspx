@@ -3358,11 +3358,11 @@
 
            // Guardar en la base de datos
            fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val)
-               .then(function(r) { return r.json(); })
-               .then(function(data) {
+               .then(function (r) { return r.json(); })
+               .then(function (data) {
                    if (!data.ok) console.error('Error guardando:', data.error);
                })
-               .catch(function(err) { console.error('Error:', err); });
+               .catch(function (err) { console.error('Error:', err); });
        });
    </script>
 
