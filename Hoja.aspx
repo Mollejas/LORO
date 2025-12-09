@@ -594,22 +594,38 @@
     </div>
 
     <!-- ====== META ====== -->
-    <div class="card-pane doc-strip p-2 mb-2">
-      <div class="meta-bar">
-        <div class="meta-chip">
-          <i class="bi bi-calendar3"></i>
-          <span class="meta-caption">Creado:</span>
-          <span class="meta-value"><asp:Label ID="lblFechaCreacion" runat="server" Text="—" ClientIDMode="Static" /></span>
+    <div class="card-pane p-3 mt-4">
+      <div class="card-title h5 mb-3">
+        <i class="bi bi-clock-history"></i>
+        Información del Expediente
+      </div>
+      <div class="row g-3">
+        <div class="col-12 col-sm-6 col-md-4">
+          <div class="field-label" data-field="fecha-creacion">
+            <i class="bi bi-calendar3"></i>
+            Creado
+          </div>
+          <div class="value fs-5 fw-bold text-primary">
+            <asp:Label ID="lblFechaCreacion" runat="server" Text="—" ClientIDMode="Static" />
+          </div>
         </div>
-        <div class="meta-chip">
-          <i class="bi bi-hourglass-split"></i>
-          <span class="meta-caption">Días:</span>
-          <span class="meta-value"><asp:Label ID="lblDiasTranscurridos" runat="server" Text="—" ClientIDMode="Static" /></span>
+        <div class="col-12 col-sm-6 col-md-4">
+          <div class="field-label" data-field="dias-transcurridos">
+            <i class="bi bi-hourglass-split"></i>
+            Días Transcurridos
+          </div>
+          <div class="value fs-5 fw-bold text-success">
+            <asp:Label ID="lblDiasTranscurridos" runat="server" Text="—" ClientIDMode="Static" />
+          </div>
         </div>
-        <div class="meta-chip d-none d-sm-inline-flex">
-          <i class="bi bi-info-circle"></i>
-          <span class="meta-caption">Extra:</span>
-          <span class="meta-value"><asp:Label ID="lblMeta3" runat="server" Text="—" ClientIDMode="Static" /></span>
+        <div class="col-12 col-sm-6 col-md-4">
+          <div class="field-label" data-field="meta-extra">
+            <i class="bi bi-info-circle"></i>
+            Extra
+          </div>
+          <div class="value fs-5 fw-bold text-info">
+            <asp:Label ID="lblMeta3" runat="server" Text="—" ClientIDMode="Static" />
+          </div>
         </div>
       </div>
     </div>
