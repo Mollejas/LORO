@@ -380,6 +380,7 @@ END"
             lblId.Text = sid
 
             CargarAdmision(Convert.ToInt32(sid))
+            CargarResumenRefacciones(Convert.ToInt32(sid))
             UpdateBottomWidgets()
             PrefillCtModal()
             UpdateInvGruaButtons()
@@ -558,6 +559,52 @@ END"
         Next
         Return False
     End Function
+
+    '====================== Resumen de Refacciones ======================
+    Private Sub CargarResumenRefacciones(id As Integer)
+        ' TODO: Conectar con la base de datos cuando se proporcione la información
+        ' Por ahora se inicializan con valores por defecto
+
+        Try
+            ' Inicializar valores por defecto
+            Dim refaccionesTotales As Integer = 0
+            Dim refaccionesRecibidas As Integer = 0
+            Dim piezasComplemento As Integer = 0
+            Dim complementoAumentoMO As Decimal = 0.0
+
+            ' TODO: Aquí irá la consulta a la base de datos
+            ' Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+            ' If cs Is Nothing Then Exit Sub
+            '
+            ' Using cn As New SqlConnection(cs.ConnectionString)
+            '     cn.Open()
+            '     Using cmd As New SqlCommand("SELECT ... FROM [tabla] WHERE expediente_id=@Id", cn)
+            '         cmd.Parameters.AddWithValue("@Id", id)
+            '         Using rd = cmd.ExecuteReader()
+            '             If rd.Read() Then
+            '                 refaccionesTotales = GetInt(rd, "RefaccionesTotales")
+            '                 refaccionesRecibidas = GetInt(rd, "RefaccionesRecibidas")
+            '                 piezasComplemento = GetInt(rd, "PiezasComplemento")
+            '                 complementoAumentoMO = GetDecimal(rd, "ComplementoAumentoMO")
+            '             End If
+            '         End Using
+            '     End Using
+            ' End Using
+
+            ' Asignar valores a los labels
+            lblRefaccionesTotales.Text = refaccionesTotales.ToString()
+            lblRefaccionesRecibidas.Text = refaccionesRecibidas.ToString()
+            lblPiezasComplemento.Text = piezasComplemento.ToString()
+            lblComplementoAumentoMO.Text = String.Format("${0:N2}", complementoAumentoMO)
+
+        Catch ex As Exception
+            ' En caso de error, mantener valores por defecto
+            lblRefaccionesTotales.Text = "0"
+            lblRefaccionesRecibidas.Text = "0"
+            lblPiezasComplemento.Text = "0"
+            lblComplementoAumentoMO.Text = "$0.00"
+        End Try
+    End Sub
 
     Private Sub UpdateMetaLabels()
         Dim lblFC As Label = TryCast(FindControlRecursive(Me, "lblFechaCreacion"), Label)

@@ -140,6 +140,42 @@ Partial Public Class Hoja
     Protected WithEvents lblMeta3 As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
+    '''Control lblRefaccionesTotales.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblRefaccionesTotales As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblRefaccionesRecibidas.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblRefaccionesRecibidas As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblPiezasComplemento.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblPiezasComplemento As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblComplementoAumentoMO.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblComplementoAumentoMO As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
     '''Control tileODA.
     '''</summary>
     '''<remarks>
