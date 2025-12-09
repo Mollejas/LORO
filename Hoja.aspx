@@ -594,18 +594,18 @@
     </div>
 
     <!-- ====== META ====== -->
-    <div class="card-pane p-3 mt-4">
-      <div class="card-title h5 mb-3">
+    <div class="card-pane p-2 mt-3">
+      <div class="card-title h6 mb-2">
         <i class="bi bi-clock-history"></i>
         Información del Expediente
       </div>
-      <div class="row g-3">
+      <div class="row g-2">
         <div class="col-12 col-sm-6 col-md-4">
           <div class="field-label" data-field="fecha-creacion">
             <i class="bi bi-calendar3"></i>
             Creado
           </div>
-          <div class="value fs-5 fw-bold text-primary">
+          <div class="value fs-6 fw-bold text-primary">
             <asp:Label ID="lblFechaCreacion" runat="server" Text="—" ClientIDMode="Static" />
           </div>
         </div>
@@ -614,7 +614,7 @@
             <i class="bi bi-hourglass-split"></i>
             Días Transcurridos
           </div>
-          <div class="value fs-5 fw-bold text-success">
+          <div class="value fs-6 fw-bold text-success">
             <asp:Label ID="lblDiasTranscurridos" runat="server" Text="—" ClientIDMode="Static" />
           </div>
         </div>
@@ -623,7 +623,7 @@
             <i class="bi bi-info-circle"></i>
             Extra
           </div>
-          <div class="value fs-5 fw-bold text-info">
+          <div class="value fs-6 fw-bold text-info">
             <asp:Label ID="lblMeta3" runat="server" Text="—" ClientIDMode="Static" />
           </div>
         </div>
@@ -631,18 +631,18 @@
     </div>
 
     <!-- ====== RESUMEN DE REFACCIONES ====== -->
-    <div class="card-pane p-3 mt-4">
-      <div class="card-title h5 mb-3">
+    <div class="card-pane p-2 mt-3">
+      <div class="card-title h6 mb-2">
         <i class="bi bi-tools"></i>
         Resumen de Refacciones
       </div>
-      <div class="row g-3">
+      <div class="row g-2">
         <div class="col-12 col-sm-6 col-md-3">
           <div class="field-label" data-field="refacciones-totales">
             <i class="bi bi-box-seam"></i>
             Refacciones Totales
           </div>
-          <div class="value fs-4 fw-bold text-primary">
+          <div class="value fs-5 fw-bold text-primary">
             <asp:Label ID="lblRefaccionesTotales" runat="server" Text="0" ClientIDMode="Static" />
           </div>
         </div>
@@ -651,7 +651,7 @@
             <i class="bi bi-check-circle"></i>
             Refacciones Recibidas
           </div>
-          <div class="value fs-4 fw-bold text-success">
+          <div class="value fs-5 fw-bold text-success">
             <asp:Label ID="lblRefaccionesRecibidas" runat="server" Text="0" ClientIDMode="Static" />
           </div>
         </div>
@@ -660,7 +660,7 @@
             <i class="bi bi-puzzle"></i>
             Piezas en Complemento
           </div>
-          <div class="value fs-4 fw-bold text-warning">
+          <div class="value fs-5 fw-bold text-warning">
             <asp:Label ID="lblPiezasComplemento" runat="server" Text="0" ClientIDMode="Static" />
           </div>
         </div>
@@ -669,7 +669,7 @@
             <i class="bi bi-graph-up-arrow"></i>
             Complemento Aumento MO
           </div>
-          <div class="value fs-4 fw-bold text-info">
+          <div class="value fs-5 fw-bold text-info">
             <asp:Label ID="lblComplementoAumentoMO" runat="server" Text="$0.00" ClientIDMode="Static" />
           </div>
         </div>
