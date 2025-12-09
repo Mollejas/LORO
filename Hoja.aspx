@@ -1520,18 +1520,9 @@
                   <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
                     <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField ItemStyle-Width="80px" ItemStyle-CssClass="text-center">
-                    <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">COMPLEMENTO</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="estatus" data-val="C" style="color: #0d6efd;"><%# IIf(Convert.ToString(Eval("estatus")) = "C", "●", "") %></span></ItemTemplate>
+                  <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">C</span></HeaderTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style="color: #0d6efd; font-weight: bold;"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -1549,18 +1540,9 @@
                   <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
                     <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField ItemStyle-Width="80px" ItemStyle-CssClass="text-center">
-                    <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">COMPLEMENTO</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="estatus" data-val="C" style="color: #0d6efd;"><%# IIf(Convert.ToString(Eval("estatus")) = "C", "●", "") %></span></ItemTemplate>
+                  <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">C</span></HeaderTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style="color: #0d6efd; font-weight: bold;"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -1583,18 +1565,9 @@
                   <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
                     <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField ItemStyle-Width="80px" ItemStyle-CssClass="text-center">
-                    <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">COMPLEMENTO</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="estatus" data-val="C" style="color: #0d6efd;"><%# IIf(Convert.ToString(Eval("estatus")) = "C", "●", "") %></span></ItemTemplate>
+                  <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">C</span></HeaderTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style="color: #0d6efd; font-weight: bold;"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -1612,18 +1585,9 @@
                   <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
                     <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField ItemStyle-Width="80px" ItemStyle-CssClass="text-center">
-                    <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">COMPLEMENTO</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="estatus" data-val="C" style="color: #0d6efd;"><%# IIf(Convert.ToString(Eval("estatus")) = "C", "●", "") %></span></ItemTemplate>
+                  <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">C</span></HeaderTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style="color: #0d6efd; font-weight: bold;"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
