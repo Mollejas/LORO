@@ -25,8 +25,8 @@ Public Class UpdateRefaccion
             Return
         End If
 
-        ' Solo permitir actualizar autorizado y estatus
-        If field <> "autorizado" AndAlso field <> "estatus" Then
+        ' Solo permitir actualizar autorizado, estatus y complemento
+        If field <> "autorizado" AndAlso field <> "estatus" AndAlso field <> "complemento" Then
             context.Response.Write("{""ok"":false,""error"":""Campo no permitido""}")
             Return
         End If
@@ -39,6 +39,8 @@ Public Class UpdateRefaccion
                 Dim sql As String
                 If field = "autorizado" Then
                     sql = "UPDATE refacciones SET autorizado = @val WHERE id = @id"
+                ElseIf field = "complemento" Then
+                    sql = "UPDATE refacciones SET complemento = @val WHERE id = @id"
                 Else
                     sql = "UPDATE refacciones SET estatus = @val WHERE id = @id"
                 End If
@@ -46,7 +48,7 @@ Public Class UpdateRefaccion
                 Using cmd As New SqlCommand(sql, cn)
                     cmd.Parameters.AddWithValue("@id", Convert.ToInt32(idStr))
 
-                    If field = "autorizado" Then
+                    If field = "autorizado" OrElse field = "complemento" Then
                         cmd.Parameters.AddWithValue("@val", Convert.ToInt32(val))
                     Else
                         cmd.Parameters.AddWithValue("@val", val)
