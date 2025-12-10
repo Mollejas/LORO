@@ -520,6 +520,7 @@
 .ht-si { color: #16a34a; } /* verde */
 .ht-no { color: #dc2626; } /* rojo */
 .ht-status { color: #2563eb; } /* azul */
+.ht-complemento { color: #0066ff; font-weight: bold; } /* azul fuerte */
 
 </style>
 
@@ -1521,8 +1522,8 @@
                     <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">C</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style='<%# "color: #0d6efd; font-weight: bold; opacity: " & IIf(Convert.ToInt32(Eval("complemento")) = 1, "1", "0.3") & ";" %>'>✓</span></ItemTemplate>
+                    <HeaderTemplate><span style="color: #0066ff; font-weight: bold;">C</span></HeaderTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -1541,8 +1542,8 @@
                     <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">C</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style='<%# "color: #0d6efd; font-weight: bold; opacity: " & IIf(Convert.ToInt32(Eval("complemento")) = 1, "1", "0.3") & ";" %>'>✓</span></ItemTemplate>
+                    <HeaderTemplate><span style="color: #0066ff; font-weight: bold;">C</span></HeaderTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -1566,8 +1567,8 @@
                     <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">C</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style='<%# "color: #0d6efd; font-weight: bold; opacity: " & IIf(Convert.ToInt32(Eval("complemento")) = 1, "1", "0.3") & ";" %>'>✓</span></ItemTemplate>
+                    <HeaderTemplate><span style="color: #0066ff; font-weight: bold;">C</span></HeaderTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -1586,8 +1587,8 @@
                     <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <HeaderTemplate><span style="color: #0d6efd; font-weight: bold;">C</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1" style='<%# "color: #0d6efd; font-weight: bold; opacity: " & IIf(Convert.ToInt32(Eval("complemento")) = 1, "1", "0.3") & ";" %>'>✓</span></ItemTemplate>
+                    <HeaderTemplate><span style="color: #0066ff; font-weight: bold;">C</span></HeaderTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -3395,6 +3396,18 @@
                var statusSpans = row.querySelectorAll('.ht-status');
                for (var i = 0; i < statusSpans.length; i++) {
                    statusSpans[i].textContent = statusSpans[i].getAttribute('data-val') === val ? '●' : '';
+               }
+           } else if (field === 'complemento') {
+               var complementoSpan = row.querySelector('.ht-complemento');
+               if (complementoSpan) {
+                   // Toggle: si ya tiene palomita, la quitamos (val=0), si no la ponemos (val=1)
+                   if (complementoSpan.textContent === '✓') {
+                       complementoSpan.textContent = '';
+                       val = '0'; // cambiar valor a 0 para guardar
+                   } else {
+                       complementoSpan.textContent = '✓';
+                       val = '1'; // cambiar valor a 1 para guardar
+                   }
                }
            }
 
