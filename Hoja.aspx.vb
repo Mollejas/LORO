@@ -2840,12 +2840,12 @@ Paint:
         cellAut.CssClass = "text-center bg-light"
         headerRow.Cells.Add(cellAut)
 
-        ' Estatus (3 columnas: P, E, D)
-        Dim cellEst As New TableHeaderCell()
-        cellEst.ColumnSpan = 3
-        cellEst.Text = "Estatus"
-        cellEst.CssClass = "text-center bg-light"
-        headerRow.Cells.Add(cellEst)
+        ' Compl. (1 columna: C)
+        Dim cellCompl As New TableHeaderCell()
+        cellCompl.ColumnSpan = 1
+        cellCompl.Text = "Compl."
+        cellCompl.CssClass = "text-center bg-light"
+        headerRow.Cells.Add(cellCompl)
 
         gv.Controls(0).Controls.AddAt(0, headerRow)
     End Sub
