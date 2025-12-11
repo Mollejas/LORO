@@ -532,8 +532,7 @@
 <asp:Content ID="MainContent" ContentPlaceHolderID="MainContent" runat="server">
   <div class="container py-4">
     <div class="page-header mb-4">
-      <h3>Hoja de trabajo</h3>
-      <div class="page-sub">Gestión de expediente e imágenes</div>
+      <h3>CONTROL DE PROCESO DE EXPEDIENTE</h3>
     </div>
 
     <div class="row g-4">
@@ -587,7 +586,7 @@
           </div>
         </div>
 
-        <div class="mt-3 info-strip">
+        <div class="mt-3 info-strip" style="display:none;">
           <span class="field-label" data-field="id">ID:</span><asp:Label ID="lblId" runat="server" ClientIDMode="Static" />
           <span class="field-label ms-4" data-field="carpeta">Carpeta destino:</span><asp:Label ID="lblCarpeta" runat="server" ClientIDMode="Static" />
         </div>
