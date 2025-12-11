@@ -27,7 +27,7 @@ Public Class UpdateRefaccion
 
         ' Solo permitir actualizar autorizado, estatus y complemento
         If field <> "autorizado" AndAlso field <> "estatus" AndAlso field <> "complemento" Then
-            context.Response.Write("{""ok"":false,""error"":""Campo no permitido""}")
+            context.Response.Write("{""ok"":false,""error"":""Campo no permitido: " & field & """}")
             Return
         End If
 
@@ -55,11 +55,11 @@ Public Class UpdateRefaccion
                     End If
 
                     Dim rows As Integer = cmd.ExecuteNonQuery()
-                    context.Response.Write("{""ok"":" & (rows > 0).ToString().ToLower() & "}")
+                    context.Response.Write("{""ok"":" & (rows > 0).ToString().ToLower() & ",""field"":""" & field & """,""val"":""" & val & """,""rows"":" & rows.ToString() & "}")
                 End Using
             End Using
         Catch ex As Exception
-            context.Response.Write("{""ok"":false,""error"":""" & ex.Message.Replace("""", "'") & """}")
+            context.Response.Write("{""ok"":false,""error"":""" & ex.Message.Replace("""", "'") & """,""field"":""" & field & """}")
         End Try
     End Sub
 

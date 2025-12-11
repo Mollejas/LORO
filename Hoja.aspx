@@ -3413,12 +3413,23 @@
            if (!val && val !== '0') return;
 
            // Guardar en la base de datos
+           console.log('🔄 Guardando: id=' + id + ', field=' + field + ', val=' + val);
            fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val)
-               .then(function (r) { return r.json(); })
-               .then(function (data) {
-                   if (!data.ok) console.error('Error guardando:', data.error);
+               .then(function (r) {
+                   console.log('📡 Response status:', r.status);
+                   return r.json();
                })
-               .catch(function (err) { console.error('Error:', err); });
+               .then(function (data) {
+                   console.log('📦 Response data:', data);
+                   if (!data.ok) {
+                       console.error('❌ Error guardando:', data.error);
+                   } else {
+                       console.log('✅ Guardado exitoso en BD');
+                   }
+               })
+               .catch(function (err) {
+                   console.error('❌ Error fetch:', err);
+               });
        });
    </script>
 
