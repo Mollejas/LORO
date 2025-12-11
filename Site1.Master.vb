@@ -39,6 +39,10 @@ Partial Public Class Site1
 
             ' Calcula y cachea en ViewState si el usuario es admin
             ViewState("IsAdminFlag") = LookupIsAdmin(If(nombre, ""))
+
+            ' Mostrar icono de configuración solo si es admin (desktop y móvil)
+            pnlAdminConfig.Visible = IsAdmin
+            pnlAdminConfigMobile.Visible = IsAdmin
         End If
     End Sub
 

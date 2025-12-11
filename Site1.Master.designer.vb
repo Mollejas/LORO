@@ -41,6 +41,24 @@ Partial Public Class Site1
     Protected WithEvents litUser As Global.System.Web.UI.WebControls.Literal
 
     '''<summary>
+    '''Control pnlAdminConfig.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents pnlAdminConfig As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''Control pnlAdminConfigMobile.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents pnlAdminConfigMobile As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
     '''Control MainContent.
     '''</summary>
     '''<remarks>
