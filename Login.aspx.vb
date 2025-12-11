@@ -164,7 +164,7 @@ Public Class Login
             If Not String.IsNullOrWhiteSpace(ret) Then
                 Response.Redirect(ret, False)
             Else
-                Response.Redirect("princi.aspx", False)
+                Response.Redirect("ElegirEmpresa.aspx", False)
             End If
 
         Catch ex As Exception
