@@ -3375,7 +3375,7 @@
            var field = toggle.getAttribute('data-field');
            var val = toggle.getAttribute('data-val');
 
-           if (!id || !field || !val) return;
+           if (!id || !field) return;
 
            // Encontrar la fila
            var row = toggle.closest('tr');
@@ -3398,18 +3398,19 @@
                    statusSpans[i].textContent = statusSpans[i].getAttribute('data-val') === val ? '●' : '';
                }
            } else if (field === 'complemento') {
-               var complementoSpan = row.querySelector('.ht-complemento');
-               if (complementoSpan) {
-                   // Toggle: si ya tiene palomita, la quitamos (val=0), si no la ponemos (val=1)
-                   if (complementoSpan.textContent === '✓') {
-                       complementoSpan.textContent = '';
-                       val = '0'; // cambiar valor a 0 para guardar
-                   } else {
-                       complementoSpan.textContent = '✓';
-                       val = '1'; // cambiar valor a 1 para guardar
-                   }
+               // Toggle: si ya tiene palomita, la quitamos (val=0), si no la ponemos (val=1)
+               var currentText = toggle.textContent.trim();
+               if (currentText === '✓') {
+                   toggle.textContent = '';
+                   val = '0';
+               } else {
+                   toggle.textContent = '✓';
+                   val = '1';
                }
            }
+
+           // Validar que val no esté vacío para guardar
+           if (!val && val !== '0') return;
 
            // Guardar en la base de datos
            fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val)
