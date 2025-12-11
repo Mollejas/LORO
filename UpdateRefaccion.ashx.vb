@@ -16,7 +16,7 @@ Public Class UpdateRefaccion
         context.Response.ContentType = "application/json"
 
         Dim idStr As String = context.Request("id")
-        Dim field As String = context.Request("field")
+        Dim field As String = If(context.Request("field"), "").Trim().ToLower()
         Dim val As String = context.Request("val")
 
         ' Validar parámetros
@@ -25,9 +25,15 @@ Public Class UpdateRefaccion
             Return
         End If
 
-        ' Solo permitir actualizar autorizado, estatus y complemento
+        ' Validar que field no esté vacío
+        If String.IsNullOrWhiteSpace(field) Then
+            context.Response.Write("{""ok"":false,""error"":""Campo vacío o no especificado""}")
+            Return
+        End If
+
+        ' Solo permitir actualizar autorizado, estatus y complemento (case insensitive)
         If field <> "autorizado" AndAlso field <> "estatus" AndAlso field <> "complemento" Then
-            context.Response.Write("{""ok"":false,""error"":""Campo no permitido: " & field & """}")
+            context.Response.Write("{""ok"":false,""error"":""Campo no permitido: [" & field & "]""}")
             Return
         End If
 
