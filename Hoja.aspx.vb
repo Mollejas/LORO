@@ -1308,53 +1308,89 @@ $"(function(){{
 
         Using gfx As XGraphics = XGraphics.FromPdfPage(page)
 
-            ' ====== Encabezado con logo ======
+            ' ====== Encabezado con logos a ambos lados ======
             Dim xMargin As Double = 40.0
-            Dim y As Double = 35.0
+            Dim y As Double = 30.0
             Dim usableW As Double = page.Width.Point - (xMargin * 2)
+            Dim logoH As Double = 50.0
+            Dim yLogoTop As Double = y
 
-            ' Logo (si existe)
+            ' Logo izquierdo (logoqua.png)
             Try
-                Dim logoPath As String = Server.MapPath("~/images/logoinbur.png")
-                If System.IO.File.Exists(logoPath) Then
-                    Using xi As XImage = XImage.FromFile(logoPath)
-                        Dim logoH As Double = 40.0
+                Dim logoQuaPath As String = Server.MapPath("~/images/logoqua.png")
+                If System.IO.File.Exists(logoQuaPath) Then
+                    Using xi As XImage = XImage.FromFile(logoQuaPath)
                         Dim scale As Double = logoH / xi.PointHeight
                         Dim logoW As Double = xi.PointWidth * scale
-                        gfx.DrawImage(xi, xMargin, y, logoW, logoH)
+                        gfx.DrawImage(xi, xMargin, yLogoTop, logoW, logoH)
                     End Using
                 End If
             Catch
                 ' Si falla el logo, continuamos sin interrumpir
             End Try
 
-            ' Título y fecha
-            gfx.DrawString("Carta de Tránsito", fontTitle, brushBrand, New XRect(xMargin, y, usableW, 28), XStringFormats.TopCenter)
-            y += 46
-            gfx.DrawString("Fecha: " & fecha.ToString("dd/MM/yyyy"), fontB, brushText, New XRect(xMargin, y, usableW, 18), XStringFormats.TopRight)
-            y += 8
+            ' Logo derecho (logoinbur.png)
+            Try
+                Dim logoInburPath As String = Server.MapPath("~/images/logoinbur.png")
+                If System.IO.File.Exists(logoInburPath) Then
+                    Using xi As XImage = XImage.FromFile(logoInburPath)
+                        Dim scale As Double = logoH / xi.PointHeight
+                        Dim logoW As Double = xi.PointWidth * scale
+                        Dim xLogoRight As Double = xMargin + usableW - logoW
+                        gfx.DrawImage(xi, xLogoRight, yLogoTop, logoW, logoH)
+                    End Using
+                End If
+            Catch
+                ' Si falla el logo, continuamos sin interrumpir
+            End Try
 
-            ' Separador
-            gfx.DrawLine(penDark, xMargin, y, xMargin + usableW, y)
-            y += 16
+            ' Título centrado (entre los logos)
+            y = yLogoTop + (logoH / 2) - 10
+            gfx.DrawString("Carta de Tránsito", fontTitle, brushBrand, New XRect(xMargin, y, usableW, 28), XStringFormats.TopCenter)
+
+            ' Espacio después de logos y título
+            y = yLogoTop + logoH + 15
+
+            ' Fecha con línea debajo
+            Dim fechaY As Double = y
+            Dim fechaText As String = fecha.ToString("dd/MM/yyyy")
+            gfx.DrawString("Fecha: ", fontB, brushText, New XRect(xMargin + usableW - 150, fechaY, 50, 18), XStringFormats.TopLeft)
+
+            ' Línea debajo de la fecha
+            Dim lineY As Double = fechaY + 18
+            Dim lineX As Double = xMargin + usableW - 95
+            Dim lineW As Double = 90
+            gfx.DrawLine(penDark, lineX, lineY, lineX + lineW, lineY)
+            gfx.DrawString(fechaText, fontB, brushText, New XRect(lineX, fechaY, lineW, 18), XStringFormats.TopCenter)
+            y = lineY + 8
+
+            ' Separador principal
+            gfx.DrawLine(New XPen(brushBrand, 1.5), xMargin, y, xMargin + usableW, y)
+            y += 18
 
             ' ====== Cuerpo del texto ======
             Dim pText1 As String =
 "Por medio de la presente, hago constar el retiro voluntario del vehículo que, como parte del proceso de atención a la reclamación de mi seguro, se encontrara en espera del dictamen correspondiente. En mi calidad de Asegurado o Apoderado Legal, asumo la responsabilidad por los daños adicionales que pudiera sufrir el vehículo en mi posesión y me comprometo a reingresarlo al Centro de Reparación asignado en un plazo no mayor a 2 días hábiles, a partir de la notificación que reciba por parte de la aseguradora o del Centro de Reparación."
-            y = DrawParagraph(gfx, pText1, fontB, brushText, xMargin, y, usableW, 16)
+            y = DrawParagraph(gfx, pText1, fontB, brushText, xMargin, y, usableW, 17)
 
-            y += 6
+            y += 8
             Dim pText2 As String =
 "Asimismo, me comprometo a no realizar reparaciones fuera del Centro de Reparación asignado. Estoy enterado de que el incumplimiento de lo anterior puede derivar en la cancelación del surtido de refacciones asignadas."
-            y = DrawParagraph(gfx, pText2, fontB, brushText, xMargin, y, usableW, 16)
+            y = DrawParagraph(gfx, pText2, fontB, brushText, xMargin, y, usableW, 17)
 
-            y += 18
+            y += 20
 
             ' ====== Tabla de datos del auto ======
             gfx.DrawString("Datos del vehículo", fontH, brushBrand, New XRect(xMargin, y, usableW, 16), XStringFormats.TopLeft)
-            y += 10
+            y += 16
 
-            Dim rowH As Double = 22.0
+            ' Colores y pinceles mejorados para la tabla
+            Dim brushHeaderBg As XBrush = New XSolidBrush(XColor.FromArgb(0, 59, 120))
+            Dim brushHeaderText As XBrush = XBrushes.White
+            Dim brushAltRow As XBrush = New XSolidBrush(XColor.FromArgb(245, 248, 250))
+            Dim penTable As New XPen(XColor.FromArgb(200, 200, 200), 1.0)
+
+            Dim rowH As Double = 26.0
             Dim colW() As Double = {usableW * 0.25, usableW * 0.25, usableW * 0.25, usableW * 0.25}
             Dim colX(3) As Double
             colX(0) = xMargin
@@ -1362,50 +1398,52 @@ $"(function(){{
                 colX(i) = colX(i - 1) + colW(i - 1)
             Next
 
-            ' Cabeceras
+            ' Datos de la tabla
             Dim headers() As String = {"Siniestro", "Marca", "Versión", "Año"}
             Dim values1() As String = {siniestro, marca, version, anio}
             Dim headers2() As String = {"Placas", "Teléfono", "Celular", "Correo"}
             Dim values2() As String = {placas, tel, cel, correo}
 
-            ' Dibuja una fila (header + valores)
+            ' Dibuja una fila con header y valores
             Dim functionRow = Sub(hdr() As String, vals() As String)
-                                  ' Rectángulos
+                                  ' Fila de cabecera con fondo azul
                                   For c = 0 To 3
-                                      gfx.DrawRectangle(penLight, New XRect(colX(c), y, colW(c), rowH))
-                                  Next
-                                  ' Encabezados
-                                  For c = 0 To 3
-                                      gfx.DrawString(hdr(c), fontS, brushBrand, New XRect(colX(c) + 4, y + 3, colW(c) - 8, rowH - 6), XStringFormats.TopLeft)
+                                      Dim headerRect As New XRect(colX(c), y, colW(c), rowH)
+                                      gfx.DrawRectangle(brushHeaderBg, penTable, headerRect)
+                                      gfx.DrawString(hdr(c), New XFont("Arial", 10, XFontStyle.Bold), brushHeaderText,
+                                                   New XRect(colX(c) + 6, y + 6, colW(c) - 12, rowH - 12),
+                                                   XStringFormats.CenterLeft)
                                   Next
                                   y += rowH
 
+                                  ' Fila de valores con fondo alternado
                                   For c = 0 To 3
-                                      gfx.DrawRectangle(penLight, New XRect(colX(c), y, colW(c), rowH))
+                                      Dim valueRect As New XRect(colX(c), y, colW(c), rowH)
+                                      gfx.DrawRectangle(brushAltRow, penTable, valueRect)
+                                      gfx.DrawString(vals(c), fontB, brushText,
+                                                   New XRect(colX(c) + 6, y + 6, colW(c) - 12, rowH - 12),
+                                                   XStringFormats.CenterLeft)
                                   Next
-                                  For c = 0 To 3
-                                      gfx.DrawString(vals(c), fontB, brushText, New XRect(colX(c) + 4, y + 3, colW(c) - 8, rowH - 6), XStringFormats.TopLeft)
-                                  Next
-                                  y += rowH + 6
+                                  y += rowH + 4
                               End Sub
 
             functionRow(headers, values1)
             functionRow(headers2, values2)
 
-            y += 10
+            y += 12
 
             ' ====== Firmas ======
-            Dim boxH As Double = 90
+            Dim boxH As Double = 100
             Dim gap As Double = 40
             Dim fw As Double = (usableW - gap) / 2.0
+            Dim penSignature As New XPen(XColor.FromArgb(100, 100, 100), 1.2)
 
             ' Cliente
-            gfx.DrawRectangle(penLight, New XRect(xMargin, y, fw, boxH))
-            gfx.DrawString("Firma del Cliente", fontS, brushText, New XRect(xMargin, y + boxH + 4, fw, 12), XStringFormats.TopCenter)
+            gfx.DrawRectangle(penSignature, New XRect(xMargin, y, fw, boxH))
             If firmaCliente IsNot Nothing AndAlso firmaCliente.Length > 0 Then
                 Using ms As New MemoryStream(firmaCliente)
                     Using xi As XImage = XImage.FromStream(ms)
-                        Dim scale As Double = Math.Min((fw - 10) / xi.PointWidth, (boxH - 10) / xi.PointHeight)
+                        Dim scale As Double = Math.Min((fw - 12) / xi.PointWidth, (boxH - 12) / xi.PointHeight)
                         If scale > 1 Then scale = 1
                         Dim dw As Double = xi.PointWidth * scale, dh As Double = xi.PointHeight * scale
                         Dim dx As Double = xMargin + (fw - dw) / 2, dy As Double = y + (boxH - dh) / 2
@@ -1413,15 +1451,19 @@ $"(function(){{
                     End Using
                 End Using
             End If
+            ' Línea para firma y texto
+            Dim lineYCliente As Double = y + boxH + 10
+            gfx.DrawLine(penDark, xMargin + 20, lineYCliente, xMargin + fw - 20, lineYCliente)
+            gfx.DrawString("Firma del Cliente", New XFont("Arial", 10, XFontStyle.Bold), brushText,
+                         New XRect(xMargin, lineYCliente + 4, fw, 14), XStringFormats.TopCenter)
 
             ' Supervisor
             Dim x2 As Double = xMargin + fw + gap
-            gfx.DrawRectangle(penLight, New XRect(x2, y, fw, boxH))
-            gfx.DrawString("Firma del Asesor", fontS, brushText, New XRect(x2, y + boxH + 4, fw, 12), XStringFormats.TopCenter)
+            gfx.DrawRectangle(penSignature, New XRect(x2, y, fw, boxH))
             If firmaSupervisor IsNot Nothing AndAlso firmaSupervisor.Length > 0 Then
                 Using ms As New MemoryStream(firmaSupervisor)
                     Using xi As XImage = XImage.FromStream(ms)
-                        Dim scale As Double = Math.Min((fw - 10) / xi.PointWidth, (boxH - 10) / xi.PointHeight)
+                        Dim scale As Double = Math.Min((fw - 12) / xi.PointWidth, (boxH - 12) / xi.PointHeight)
                         If scale > 1 Then scale = 1
                         Dim dw As Double = xi.PointWidth * scale, dh As Double = xi.PointHeight * scale
                         Dim dx As Double = x2 + (fw - dw) / 2, dy As Double = y + (boxH - dh) / 2
@@ -1429,6 +1471,11 @@ $"(function(){{
                     End Using
                 End Using
             End If
+            ' Línea para firma y texto
+            Dim lineYAsesor As Double = y + boxH + 10
+            gfx.DrawLine(penDark, x2 + 20, lineYAsesor, x2 + fw - 20, lineYAsesor)
+            gfx.DrawString("Firma del Asesor", New XFont("Arial", 10, XFontStyle.Bold), brushText,
+                         New XRect(x2, lineYAsesor + 4, fw, 14), XStringFormats.TopCenter)
         End Using
 
         doc.Save(rutaPdf)
