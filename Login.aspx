@@ -119,6 +119,28 @@
         /* Checkbox */
         input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; margin-right: 8px; accent-color: var(--brand); }
         label[for*="chkRecordar"] { color: var(--text-secondary); font-weight: 400; display: flex; align-items: center; cursor: pointer; }
+
+        /* ====== Selección de Empresa ====== */
+        .empresa-selector { margin-bottom: 24px; }
+        .empresa-selector label { margin-bottom: 12px; }
+        .empresa-opciones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .empresa-opcion {
+            position: relative; background: rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px 8px;
+            text-align: center; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent;
+        }
+        .empresa-opcion:hover { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); }
+        .empresa-opcion input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+        .empresa-opcion input[type="radio"]:checked + .empresa-contenido { border-color: var(--brand); background: rgba(16, 185, 129, 0.2); }
+        .empresa-contenido {
+            border: 2px solid transparent; border-radius: 6px; padding: 8px 4px; transition: all 0.3s ease;
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+        }
+        .empresa-icono { font-size: 1.5rem; }
+        .empresa-nombre { font-size: 0.75rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.5px; }
+        @media (max-width: 400px) {
+            .empresa-opciones { grid-template-columns: 1fr; }
+            .empresa-opcion { padding: 10px; }
+        }
     </style>
 </head>
 <body>
@@ -141,6 +163,39 @@
 
                 <div class="card-body">
                     <asp:Label ID="lblError" runat="server" CssClass="alert" />
+
+                    <!-- Selección de Empresa -->
+                    <div class="form-group empresa-selector">
+                        <label>Selecciona la empresa</label>
+                        <div class="empresa-opciones">
+                            <!-- QUALITAS -->
+                            <label class="empresa-opcion">
+                                <asp:RadioButton ID="rbQualitas" runat="server" GroupName="Empresa" />
+                                <div class="empresa-contenido">
+                                    <div class="empresa-icono">🛡️</div>
+                                    <div class="empresa-nombre">Qualitas</div>
+                                </div>
+                            </label>
+
+                            <!-- INBURSA -->
+                            <label class="empresa-opcion">
+                                <asp:RadioButton ID="rbInbursa" runat="server" GroupName="Empresa" Checked="true" />
+                                <div class="empresa-contenido">
+                                    <div class="empresa-icono">🏦</div>
+                                    <div class="empresa-nombre">Inbursa</div>
+                                </div>
+                            </label>
+
+                            <!-- EXTERNOS -->
+                            <label class="empresa-opcion">
+                                <asp:RadioButton ID="rbExternos" runat="server" GroupName="Empresa" />
+                                <div class="empresa-contenido">
+                                    <div class="empresa-icono">🏢</div>
+                                    <div class="empresa-nombre">Externos</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
 
                     <div class="form-group">
                         <label for="txtCorreo">Correo electrónico</label>

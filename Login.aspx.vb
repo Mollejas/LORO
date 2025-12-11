@@ -76,6 +76,21 @@ Public Class Login
     End Function
 
     Private Sub btnEntrar_Click(ByVal sender As Object, ByVal e As EventArgs)
+        ' === 1. Determinar empresa seleccionada y guardar en sesión ANTES de autenticar ===
+        Dim empresaSeleccionada As String = "INBURSA" ' Default
+
+        If rbQualitas.Checked Then
+            empresaSeleccionada = "QUALITAS"
+        ElseIf rbInbursa.Checked Then
+            empresaSeleccionada = "INBURSA"
+        ElseIf rbExternos.Checked Then
+            empresaSeleccionada = "EXTERNOS"
+        End If
+
+        ' Guardar empresa en sesión (DatabaseHelper la usará para determinar la BD)
+        Session("EmpresaSeleccionada") = empresaSeleccionada
+
+        ' === 2. Validar campos de login ===
         ' Normaliza el correo (CreateUser guarda en minúsculas)
         Dim correo As String = If(txtCorreo.Text, String.Empty).Trim().ToLowerInvariant()
         Dim pass As String = If(txtPassword.Text, String.Empty)
@@ -86,6 +101,7 @@ Public Class Login
         End If
 
         Try
+            ' === 3. Conectar a la BD correcta usando DatabaseHelper (que lee Session("EmpresaSeleccionada")) ===
             Dim cs As String = DatabaseHelper.GetConnectionString()
 
             Using cn As New SqlConnection(cs)
@@ -164,7 +180,7 @@ Public Class Login
             If Not String.IsNullOrWhiteSpace(ret) Then
                 Response.Redirect(ret, False)
             Else
-                Response.Redirect("ElegirEmpresa.aspx", False)
+                Response.Redirect("princi.aspx", False)
             End If
 
         Catch ex As Exception
