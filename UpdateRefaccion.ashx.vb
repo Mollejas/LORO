@@ -61,11 +61,11 @@ Public Class UpdateRefaccion
                     End If
 
                     Dim rows As Integer = cmd.ExecuteNonQuery()
-                    context.Response.Write("{""ok"":" & (rows > 0).ToString().ToLower() & ",""field"":""" & field & """,""val"":""" & val & """,""rows"":" & rows.ToString() & "}")
+                    context.Response.Write("{""ok"":" & (rows > 0).ToString().ToLower() & "}")
                 End Using
             End Using
         Catch ex As Exception
-            context.Response.Write("{""ok"":false,""error"":""" & ex.Message.Replace("""", "'") & """,""field"":""" & field & """}")
+            context.Response.Write("{""ok"":false,""error"":""" & ex.Message.Replace("""", "'") & """}")
         End Try
     End Sub
 
