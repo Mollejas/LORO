@@ -2440,10 +2440,21 @@
 
         function pos(e) {
           const r = c.getBoundingClientRect();
+          let clientX, clientY;
           if (e.touches && e.touches.length) {
-            return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top };
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+          } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
           }
-          return { x: e.clientX - r.left, y: e.clientY - r.top };
+          // Ajustar coordenadas considerando la escala del canvas
+          const scaleX = c.width / r.width;
+          const scaleY = c.height / r.height;
+          return {
+            x: (clientX - r.left) * scaleX,
+            y: (clientY - r.top) * scaleY
+          };
         }
 
         function start(e) { e.preventDefault(); drawing = true; const p = pos(e); lastX = p.x; lastY = p.y; }
