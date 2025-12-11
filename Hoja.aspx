@@ -3415,9 +3415,17 @@
            fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val)
                .then(function (r) { return r.json(); })
                .then(function (data) {
-                   if (!data.ok) console.error('Error guardando:', data.error);
+                   if (!data.ok) {
+                       console.error('Error guardando:', data.error);
+                       alert('Error al guardar: ' + (data.error || 'desconocido'));
+                   } else {
+                       console.log('Guardado exitoso: ' + field + '=' + val);
+                   }
                })
-               .catch(function (err) { console.error('Error:', err); });
+               .catch(function (err) {
+                   console.error('Error:', err);
+                   alert('Error de conexión al guardar');
+               });
        });
    </script>
 
