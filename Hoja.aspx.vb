@@ -1302,9 +1302,11 @@ $"(function(){{
 
         ' Pinceles/colores (NO usar Using; XSolidBrush NO es IDisposable)
         Dim brushText As XBrush = XBrushes.Black
-        Dim brushBrand As XBrush = New XSolidBrush(XColor.FromArgb(0, 59, 120))
+        Dim colorBrand As XColor = XColor.FromArgb(0, 59, 120)
+        Dim brushBrand As XBrush = New XSolidBrush(colorBrand)
         Dim penLight As New XPen(XColors.LightGray, 0.8)
         Dim penDark As New XPen(XColors.Gray, 0.8)
+        Dim penBrand As New XPen(colorBrand, 1.5)
 
         Using gfx As XGraphics = XGraphics.FromPdfPage(page)
 
@@ -1329,11 +1331,11 @@ $"(function(){{
                 ' Si falla el logo, continuamos sin interrumpir
             End Try
 
-            ' Logo derecho (logoinbur.png)
+            ' Logo derecho (logo.png)
             Try
-                Dim logoInburPath As String = Server.MapPath("~/images/logoinbur.png")
-                If System.IO.File.Exists(logoInburPath) Then
-                    Using xi As XImage = XImage.FromFile(logoInburPath)
+                Dim logoPath As String = Server.MapPath("~/images/logo.png")
+                If System.IO.File.Exists(logoPath) Then
+                    Using xi As XImage = XImage.FromFile(logoPath)
                         Dim scale As Double = logoH / xi.PointHeight
                         Dim logoW As Double = xi.PointWidth * scale
                         Dim xLogoRight As Double = xMargin + usableW - logoW
@@ -1365,7 +1367,7 @@ $"(function(){{
             y = lineY + 8
 
             ' Separador principal
-            gfx.DrawLine(New XPen(brushBrand, 1.5), xMargin, y, xMargin + usableW, y)
+            gfx.DrawLine(penBrand, xMargin, y, xMargin + usableW, y)
             y += 18
 
             ' ====== Cuerpo del texto ======
@@ -1408,8 +1410,7 @@ $"(function(){{
             Dim functionRow = Sub(hdr() As String, vals() As String)
                                   ' Fila de cabecera con fondo azul
                                   For c = 0 To 3
-                                      Dim headerRect As New XRect(colX(c), y, colW(c), rowH)
-                                      gfx.DrawRectangle(brushHeaderBg, penTable, headerRect)
+                                      gfx.DrawRectangle(brushHeaderBg, penTable, colX(c), y, colW(c), rowH)
                                       gfx.DrawString(hdr(c), New XFont("Arial", 10, XFontStyle.Bold), brushHeaderText,
                                                    New XRect(colX(c) + 6, y + 6, colW(c) - 12, rowH - 12),
                                                    XStringFormats.CenterLeft)
@@ -1418,8 +1419,7 @@ $"(function(){{
 
                                   ' Fila de valores con fondo alternado
                                   For c = 0 To 3
-                                      Dim valueRect As New XRect(colX(c), y, colW(c), rowH)
-                                      gfx.DrawRectangle(brushAltRow, penTable, valueRect)
+                                      gfx.DrawRectangle(brushAltRow, penTable, colX(c), y, colW(c), rowH)
                                       gfx.DrawString(vals(c), fontB, brushText,
                                                    New XRect(colX(c) + 6, y + 6, colW(c) - 12, rowH - 12),
                                                    XStringFormats.CenterLeft)
