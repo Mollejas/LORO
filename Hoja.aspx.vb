@@ -1410,7 +1410,10 @@ $"(function(){{
             Dim functionRow = Sub(hdr() As String, vals() As String)
                                   ' Fila de cabecera con fondo azul
                                   For c = 0 To 3
-                                      gfx.DrawRectangle(brushHeaderBg, penTable, colX(c), y, colW(c), rowH)
+                                      ' Dibujar relleno
+                                      gfx.DrawRectangle(brushHeaderBg, colX(c), y, colW(c), rowH)
+                                      ' Dibujar borde
+                                      gfx.DrawRectangle(penTable, colX(c), y, colW(c), rowH)
                                       gfx.DrawString(hdr(c), New XFont("Arial", 10, XFontStyle.Bold), brushHeaderText,
                                                    New XRect(colX(c) + 6, y + 6, colW(c) - 12, rowH - 12),
                                                    XStringFormats.CenterLeft)
@@ -1419,7 +1422,10 @@ $"(function(){{
 
                                   ' Fila de valores con fondo alternado
                                   For c = 0 To 3
-                                      gfx.DrawRectangle(brushAltRow, penTable, colX(c), y, colW(c), rowH)
+                                      ' Dibujar relleno
+                                      gfx.DrawRectangle(brushAltRow, colX(c), y, colW(c), rowH)
+                                      ' Dibujar borde
+                                      gfx.DrawRectangle(penTable, colX(c), y, colW(c), rowH)
                                       gfx.DrawString(vals(c), fontB, brushText,
                                                    New XRect(colX(c) + 6, y + 6, colW(c) - 12, rowH - 12),
                                                    XStringFormats.CenterLeft)
