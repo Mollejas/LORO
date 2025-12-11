@@ -2728,7 +2728,7 @@ Paint:
 
             ' Cargar refacciones - Mecánica Reparación
             Dim dtMecRep As New DataTable()
-            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento, ISNULL(nivel_rep_l, 0) as nivel_rep_l, ISNULL(nivel_rep_m, 0) as nivel_rep_m, ISNULL(nivel_rep_f, 0) as nivel_rep_f, ISNULL(nivel_rep_pint_l, 0) as nivel_rep_pint_l, ISNULL(nivel_rep_pint_m, 0) as nivel_rep_pint_m, ISNULL(nivel_rep_pint_f, 0) as nivel_rep_pint_f FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
                 cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtMecRep)
@@ -2752,7 +2752,7 @@ Paint:
 
             ' Cargar refacciones - Hojalatería Reparación
             Dim dtHojRep As New DataTable()
-            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento, ISNULL(nivel_rep_l, 0) as nivel_rep_l, ISNULL(nivel_rep_m, 0) as nivel_rep_m, ISNULL(nivel_rep_f, 0) as nivel_rep_f, ISNULL(nivel_rep_pint_l, 0) as nivel_rep_pint_l, ISNULL(nivel_rep_pint_m, 0) as nivel_rep_pint_m, ISNULL(nivel_rep_pint_f, 0) as nivel_rep_pint_f FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
                 cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtHojRep)
@@ -2900,6 +2900,24 @@ Paint:
         cellCompl.CssClass = "text-center bg-light"
         headerRow.Cells.Add(cellCompl)
 
+        ' Solo para grids de REPARACIÓN: agregar Nivel Reparación y Nivel Reparación Pintura
+        Dim isReparacion As Boolean = (gv.ID = "gvMecReparacion" OrElse gv.ID = "gvHojReparacion")
+        If isReparacion Then
+            ' Nivel Reparación (3 columnas: L, M, F)
+            Dim cellNivelRep As New TableHeaderCell()
+            cellNivelRep.ColumnSpan = 3
+            cellNivelRep.Text = "Nivel Reparación"
+            cellNivelRep.CssClass = "text-center bg-light"
+            headerRow.Cells.Add(cellNivelRep)
+
+            ' Nivel Reparación Pintura (3 columnas: L, M, F)
+            Dim cellNivelPint As New TableHeaderCell()
+            cellNivelPint.ColumnSpan = 3
+            cellNivelPint.Text = "Nivel Reparación Pintura"
+            cellNivelPint.CssClass = "text-center bg-light"
+            headerRow.Cells.Add(cellNivelPint)
+        End If
+
         gv.Controls(0).Controls.AddAt(0, headerRow)
     End Sub
 
@@ -3045,7 +3063,7 @@ Paint:
     Private Sub ReloadHTGrids(cn As SqlConnection, expediente As String)
         ' Cargar refacciones - Mecánica Reparación
         Dim dtMecRep As New DataTable()
-        Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
+        Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento, ISNULL(nivel_rep_l, 0) as nivel_rep_l, ISNULL(nivel_rep_m, 0) as nivel_rep_m, ISNULL(nivel_rep_f, 0) as nivel_rep_f, ISNULL(nivel_rep_pint_l, 0) as nivel_rep_pint_l, ISNULL(nivel_rep_pint_m, 0) as nivel_rep_pint_m, ISNULL(nivel_rep_pint_f, 0) as nivel_rep_pint_f FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
             cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
             Using da As New SqlDataAdapter(cmd)
                 da.Fill(dtMecRep)
@@ -3069,7 +3087,7 @@ Paint:
 
         ' Cargar refacciones - Hojalatería Reparación
         Dim dtHojRep As New DataTable()
-        Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
+        Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento, ISNULL(nivel_rep_l, 0) as nivel_rep_l, ISNULL(nivel_rep_m, 0) as nivel_rep_m, ISNULL(nivel_rep_f, 0) as nivel_rep_f, ISNULL(nivel_rep_pint_l, 0) as nivel_rep_pint_l, ISNULL(nivel_rep_pint_m, 0) as nivel_rep_pint_m, ISNULL(nivel_rep_pint_f, 0) as nivel_rep_pint_f FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
             cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
             Using da As New SqlDataAdapter(cmd)
                 da.Fill(dtHojRep)
