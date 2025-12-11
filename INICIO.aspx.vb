@@ -25,7 +25,7 @@ Partial Public Class Inicio
             Exit Sub
         End If
 
-        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+        Dim cs As String = DatabaseHelper.GetConnectionString()
         If cs Is Nothing Then
             Alert("No se encontró la cadena de conexión DaytonaDB en Web.config.")
             Exit Sub
@@ -52,7 +52,7 @@ Partial Public Class Inicio
         End If
 
         Try
-            Using cn As New SqlConnection(cs.ConnectionString)
+            Using cn As New SqlConnection(cs)
                 Using cmd As New SqlCommand(sql, cn)
                     cmd.Parameters.AddWithValue(paramName, If(vCarpeta <> "", vCarpeta, If(vPlaca <> "", vPlaca, vSiniestro)))
                     cn.Open()

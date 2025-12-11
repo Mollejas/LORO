@@ -86,7 +86,7 @@ Public Class Login
         End If
 
         Try
-            Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+            Dim cs As String = DatabaseHelper.GetConnectionString()
 
             Using cn As New SqlConnection(cs)
                 Using cmd As New SqlCommand("dbo.usp_Usuarios_Login", cn)

@@ -1,6 +1,7 @@
 Imports System
 Imports System.Web
 Imports System.Configuration
+Imports System.Data.SqlClient
 
 ''' <summary>
 ''' Helper para obtener la cadena de conexión correcta según la empresa seleccionada en sesión
@@ -9,30 +10,38 @@ Public Class DatabaseHelper
 
     ''' <summary>
     ''' Obtiene la cadena de conexión basada en la empresa seleccionada en la sesión
-    ''' Si no hay empresa seleccionada, usa la conexión por defecto (DaytonaDB)
+    ''' Modifica dinámicamente el Initial Catalog según la empresa:
+    ''' - QUALITAS → LORONUEVOQUA
+    ''' - INBURSA → LORONUEVO (default)
+    ''' - EXTERNOS → EXTERNO
     ''' </summary>
     Public Shared Function GetConnectionString() As String
-        ' Intentar obtener el nombre de la connection string desde la sesión
-        Dim connStringName As String = TryCast(HttpContext.Current.Session("ConnectionStringName"), String)
-
-        ' Si no hay empresa seleccionada, usar la conexión por defecto
-        If String.IsNullOrWhiteSpace(connStringName) Then
-            connStringName = "DaytonaDB"
-        End If
-
-        ' Obtener la connection string del Web.config
-        Dim cs = ConfigurationManager.ConnectionStrings(connStringName)
+        ' Obtener la connection string base del Web.config
+        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
 
         If cs Is Nothing Then
-            ' Fallback a la conexión por defecto si no se encuentra la configurada
-            cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+            Throw New Exception("No se encontró la cadena de conexión 'DaytonaDB' en Web.config")
         End If
 
-        If cs Is Nothing Then
-            Throw New Exception("No se encontró ninguna cadena de conexión configurada en Web.config")
-        End If
+        ' Obtener la empresa seleccionada de la sesión
+        Dim empresa As String = GetEmpresaSeleccionada()
 
-        Return cs.ConnectionString
+        ' Construir el connection string con el catálogo correcto
+        Dim builder As New SqlConnectionStringBuilder(cs.ConnectionString)
+
+        Select Case empresa.ToUpperInvariant()
+            Case "QUALITAS"
+                builder.InitialCatalog = "LORONUEVOQUA"
+            Case "INBURSA"
+                builder.InitialCatalog = "LORONUEVO"
+            Case "EXTERNOS"
+                builder.InitialCatalog = "EXTERNO"
+            Case Else
+                ' Default: INBURSA
+                builder.InitialCatalog = "LORONUEVO"
+        End Select
+
+        Return builder.ConnectionString
     End Function
 
     ''' <summary>
@@ -52,7 +61,7 @@ Public Class DatabaseHelper
     ''' Verifica si el usuario ha seleccionado una empresa
     ''' </summary>
     Public Shared Function TieneEmpresaSeleccionada() As Boolean
-        Return Not String.IsNullOrWhiteSpace(TryCast(HttpContext.Current.Session("ConnectionStringName"), String))
+        Return Not String.IsNullOrWhiteSpace(TryCast(HttpContext.Current.Session("EmpresaSeleccionada"), String))
     End Function
 
 End Class

@@ -23,9 +23,8 @@ Partial Public Class ElegirEmpresa
     End Sub
 
     Protected Sub btnQualitas_Click(sender As Object, e As EventArgs)
-        ' Guardar selección en sesión
+        ' Guardar selección en sesión (DatabaseHelper usará esto para determinar la base de datos)
         Session("EmpresaSeleccionada") = "QUALITAS"
-        Session("ConnectionStringName") = "DaytonaDB_Qualitas"
 
         ' Redirigir a página principal
         Response.Redirect("~/princi.aspx", False)
@@ -33,9 +32,8 @@ Partial Public Class ElegirEmpresa
     End Sub
 
     Protected Sub btnInbursa_Click(sender As Object, e As EventArgs)
-        ' Guardar selección en sesión
+        ' Guardar selección en sesión (DatabaseHelper usará esto para determinar la base de datos)
         Session("EmpresaSeleccionada") = "INBURSA"
-        Session("ConnectionStringName") = "DaytonaDB_Inbursa"
 
         ' Redirigir a página principal
         Response.Redirect("~/princi.aspx", False)
@@ -43,9 +41,8 @@ Partial Public Class ElegirEmpresa
     End Sub
 
     Protected Sub btnExternos_Click(sender As Object, e As EventArgs)
-        ' Guardar selección en sesión
+        ' Guardar selección en sesión (DatabaseHelper usará esto para determinar la base de datos)
         Session("EmpresaSeleccionada") = "EXTERNOS"
-        Session("ConnectionStringName") = "DaytonaDB_Externos"
 
         ' Redirigir a página principal
         Response.Redirect("~/princi.aspx", False)

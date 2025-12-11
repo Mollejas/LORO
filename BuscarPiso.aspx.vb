@@ -13,11 +13,11 @@ Partial Public Class BuscarPiso
 
     Private ReadOnly Property ConnStr As String
         Get
-            Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
-            If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs.ConnectionString) Then
+            Dim cs As String = DatabaseHelper.GetConnectionString()
+            If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs) Then
                 Throw New ApplicationException("No se encontró la cadena de conexión 'DaytonaDB' en Web.config.")
             End If
-            Return cs.ConnectionString
+            Return cs
         End Get
     End Property
 

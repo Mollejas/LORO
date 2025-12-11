@@ -39,7 +39,7 @@ Public Class UpdateRefaccion
         End If
 
         Try
-            Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+            Dim cs As String = DatabaseHelper.GetConnectionString()
             Using cn As New SqlConnection(cs)
                 cn.Open()
 

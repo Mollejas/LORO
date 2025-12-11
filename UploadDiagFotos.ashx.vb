@@ -27,7 +27,7 @@ Public Class UploadDiagFotos : Implements IHttpHandler
 
     Private ReadOnly Property CS As String
         Get
-            Return ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+            Return DatabaseHelper.GetConnectionString()
         End Get
     End Property
 

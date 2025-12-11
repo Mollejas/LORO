@@ -16,11 +16,11 @@ Public Class CreateUser
 
     Private ReadOnly Property Cs As String
         Get
-            Dim csSetting = ConfigurationManager.ConnectionStrings("DaytonaDB")
-            If csSetting Is Nothing OrElse String.IsNullOrWhiteSpace(csSetting.ConnectionString) Then
+            Dim csSetting As String = DatabaseHelper.GetConnectionString()
+            If csSetting Is Nothing OrElse String.IsNullOrWhiteSpace(csSetting) Then
                 Throw New Exception("No se encontró la cadena de conexión 'DaytonaDB' en web.config.")
             End If
-            Return csSetting.ConnectionString
+            Return csSetting
         End Get
     End Property
 

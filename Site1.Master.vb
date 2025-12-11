@@ -62,10 +62,10 @@ Partial Public Class Site1
     Private Function LookupIsAdmin(nombre As String) As Boolean
         If String.IsNullOrWhiteSpace(nombre) Then Return False
 
-        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+        Dim cs As String = DatabaseHelper.GetConnectionString()
         If cs Is Nothing Then Return False
 
-        Using cn As New SqlConnection(cs.ConnectionString)
+        Using cn As New SqlConnection(cs)
             cn.Open()
             ' Búsqueda case-insensitive usando UPPER
             Using cmd As New SqlCommand("SELECT esadmin FROM usuarios WHERE UPPER(nombre) = UPPER(@n)", cn)

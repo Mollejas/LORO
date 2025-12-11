@@ -211,11 +211,11 @@ Partial Public Class Hoja
 
     ' ----------------- Helpers y modelos (Shared) -----------------
     Private Shared Function GetCs() As String
-        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
-        If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs.ConnectionString) Then
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+        If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs) Then
             Throw New Exception("No se encontró la cadena de conexión 'DaytonaDB'.")
         End If
-        Return cs.ConnectionString
+        Return cs
     End Function
 
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json), WebMethod()>
@@ -470,10 +470,10 @@ END"
     Private lblInvGruaInfo As Object
 
     Private Sub CargarAdmision(id As Integer)
-        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+        Dim cs As String = DatabaseHelper.GetConnectionString()
         If cs Is Nothing Then Exit Sub
 
-        Using cn As New SqlConnection(cs.ConnectionString)
+        Using cn As New SqlConnection(cs)
             cn.Open()
             Using cmd As New SqlCommand("SELECT * FROM admisiones WHERE Id=@Id", cn)
                 cmd.Parameters.AddWithValue("@Id", id)
@@ -573,10 +573,10 @@ END"
             Dim complementoAumentoMO As Decimal = 0.0
 
             ' TODO: Aquí irá la consulta a la base de datos
-            ' Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+            ' Dim cs As String = DatabaseHelper.GetConnectionString()
             ' If cs Is Nothing Then Exit Sub
             '
-            ' Using cn As New SqlConnection(cs.ConnectionString)
+            ' Using cn As New SqlConnection(cs)
             '     cn.Open()
             '     Using cmd As New SqlCommand("SELECT ... FROM [tabla] WHERE expediente_id=@Id", cn)
             '         cmd.Parameters.AddWithValue("@Id", id)
@@ -1911,10 +1911,10 @@ $"(function(){{
         Dim ini As DateTime? = Nothing
         Dim fin As DateTime? = Nothing
 
-        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+        Dim cs As String = DatabaseHelper.GetConnectionString()
         If cs Is Nothing Then GoTo Paint
 
-        Using cn As New SqlConnection(cs.ConnectionString)
+        Using cn As New SqlConnection(cs)
             cn.Open()
             Using cmd As New SqlCommand("SELECT IniDiag, FinDiag FROM dbo.admisiones WHERE Id=@Id", cn)
                 cmd.Parameters.AddWithValue("@Id", admisionId)
@@ -1935,10 +1935,10 @@ Paint:
     End Sub
 
     Private Sub EnsureIniDiagRecordedIfNeeded(admisionId As Integer)
-        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+        Dim cs As String = DatabaseHelper.GetConnectionString()
         If cs Is Nothing Then Exit Sub
 
-        Using cn As New SqlConnection(cs.ConnectionString)
+        Using cn As New SqlConnection(cs)
             cn.Open()
 
             ' ¿Ya tiene IniDiag?
@@ -2358,7 +2358,7 @@ Paint:
     Private Sub PintarTileMecanica(admId As Integer)
         Dim a1 As Boolean = False, a2 As Boolean = False, a3 As Boolean = False
 
-        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim cs As String = DatabaseHelper.GetConnectionString()
         Using cn As New SqlConnection(cs)
             Using cmd As New SqlCommand("SELECT autmec1, autmec2, autmec3 FROM admisiones WHERE id = @id", cn)
                 cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
@@ -2395,7 +2395,7 @@ Paint:
     Private Sub PintarTileColision(admId As Integer)
         Dim a1 As Boolean = False, a2 As Boolean = False, a3 As Boolean = False
 
-        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim cs As String = DatabaseHelper.GetConnectionString()
         Using cn As New SqlConnection(cs)
             Using cmd As New SqlCommand("SELECT authoj1, authoj2, authoj3 FROM admisiones WHERE id = @id", cn)
                 cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
@@ -2451,7 +2451,7 @@ Paint:
     End Sub
 
     Private Sub CargarFinesDiagnostico(admId As Integer)
-        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim cs As String = DatabaseHelper.GetConnectionString()
         Dim finMecObj As Object = Nothing
         Dim finColObj As Object = Nothing
 
@@ -2486,7 +2486,7 @@ Paint:
 
     ' Procesar y establecer inival/limival si condiciones se cumplen
     Private Sub ProcesarValuacion(admId As Integer)
-        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim cs As String = DatabaseHelper.GetConnectionString()
 
         Using cn As New SqlConnection(cs)
             cn.Open()
@@ -2583,7 +2583,7 @@ Paint:
 
     ' Cargar y mostrar fechas de valuación
     Private Sub CargarFechasValuacion(admId As Integer)
-        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim cs As String = DatabaseHelper.GetConnectionString()
 
         Dim inivalObj As Object = Nothing
         Dim limivalObj As Object = Nothing
@@ -2618,7 +2618,7 @@ Paint:
     ' Helper para leer Estatus (TRANSITO / PISO)
     Private Function GetAdmEstatusById(admId As Integer) As String
         If admId <= 0 Then Return String.Empty
-        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim cs As String = DatabaseHelper.GetConnectionString()
         Using cn As New SqlConnection(cs)
             Using cmd As New SqlCommand("SELECT TOP 1 Estatus FROM dbo.Admisiones WHERE Id=@Id;", cn)
                 cmd.Parameters.AddWithValue("@Id", admId)
@@ -2654,7 +2654,7 @@ Paint:
         ' Actualizar envval en la base de datos
         Dim admId As Integer
         If Integer.TryParse(hidId.Value, admId) Then
-            Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+            Dim cs As String = DatabaseHelper.GetConnectionString()
             Using cn As New SqlConnection(cs)
                 Using cmd As New SqlCommand("UPDATE admisiones SET envval = @envval WHERE id = @id", cn)
                     cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
@@ -2688,7 +2688,7 @@ Paint:
         Dim admId As Integer
         If Not Integer.TryParse(hidId.Value, admId) Then Exit Sub
 
-        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim cs As String = DatabaseHelper.GetConnectionString()
 
         ' Cargar datos del vehículo
         Dim expediente As String = ""
@@ -2954,7 +2954,7 @@ Paint:
         ' Actualizar autval en la base de datos
         Dim admId As Integer
         If Integer.TryParse(hidId.Value, admId) Then
-            Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+            Dim cs As String = DatabaseHelper.GetConnectionString()
             Using cn As New SqlConnection(cs)
                 Using cmd As New SqlCommand("UPDATE admisiones SET autval = @autval WHERE id = @id", cn)
                     cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
@@ -3021,7 +3021,7 @@ Paint:
     End Sub
 
     Private Sub HandleHTValidation(ddl As DropDownList, txtPass As TextBox, fieldName As String, lbl As Label)
-        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim cs As String = DatabaseHelper.GetConnectionString()
         Dim expediente As String = lblHTExpediente.Text
         If String.IsNullOrWhiteSpace(expediente) Then Exit Sub
         If String.IsNullOrWhiteSpace(ddl.SelectedValue) Then Exit Sub
