@@ -3364,11 +3364,16 @@
 
        // Check if validated (disabled)
        const modalBody = toggle.closest('.modal-body');
-       if (modalBody && modalBody.classList.contains('ht-validated')) return;
+       if (modalBody && modalBody.classList.contains('ht-validated')) {
+           console.log('Toggle bloqueado - validaciones completas');
+           return;
+       }
 
        const id = toggle.dataset.id;
        const field = toggle.dataset.field;
        const val = toggle.dataset.val;
+
+       console.log('Toggle click - ID:', id, 'Field:', field, 'Val:', val);
 
        const row = toggle.closest('tr');
        if (!row) return;
@@ -3394,14 +3399,27 @@
        }
 
        // Guardar en la base de datos
-       fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val)
-           .then(r => r.json())
+       const url = 'UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val;
+       console.log('Guardando...', url);
+
+       fetch(url)
+           .then(r => {
+               console.log('Respuesta recibida, status:', r.status);
+               return r.json();
+           })
            .then(data => {
+               console.log('Datos recibidos:', data);
                if (!data.ok) {
                    console.error('Error al guardar:', data.error);
+                   alert('Error al guardar: ' + (data.error || 'desconocido'));
+               } else {
+                   console.log('Guardado exitoso');
                }
            })
-           .catch(err => console.error('Error:', err));
+           .catch(err => {
+               console.error('Error en fetch:', err);
+               alert('Error en la comunicación: ' + err.message);
+           });
    });
    </script>
 
