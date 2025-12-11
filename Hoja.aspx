@@ -521,6 +521,8 @@
 .ht-no { color: #dc2626; } /* rojo */
 .ht-status { color: #2563eb; } /* azul */
 .ht-complemento { color: #0066ff; font-weight: bold; } /* azul fuerte */
+.ht-nivel-rep { color: #10b981; font-weight: bold; } /* verde primario - Nivel Reparación */
+.ht-nivel-pint { color: #10b981; font-weight: bold; } /* verde primario - Nivel Reparación Pintura */
 
 </style>
 
@@ -1544,6 +1546,24 @@
                     <HeaderTemplate><span style="color: #0066ff; font-weight: bold;">C</span></HeaderTemplate>
                     <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
+                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_l" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_l")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_m" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_m")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_f" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_f")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_l" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_l")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_m" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_m")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_f" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_f")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
                 </Columns>
               </asp:GridView>
             </div>
@@ -1588,6 +1608,24 @@
                   <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
                     <HeaderTemplate><span style="color: #0066ff; font-weight: bold;">C</span></HeaderTemplate>
                     <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_l" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_l")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_m" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_m")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_f" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_f")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_l" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_l")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_m" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_m")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_f" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_f")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -3407,7 +3445,7 @@
                for (var i = 0; i < statusSpans.length; i++) {
                    statusSpans[i].textContent = statusSpans[i].getAttribute('data-val') === val ? '●' : '';
                }
-           } else if (field === 'complemento') {
+           } else if (field === 'complemento' || field === 'nivel_rep_l' || field === 'nivel_rep_m' || field === 'nivel_rep_f' || field === 'nivel_rep_pint_l' || field === 'nivel_rep_pint_m' || field === 'nivel_rep_pint_f') {
                // Toggle: si ya tiene palomita, la quitamos (val=0), si no la ponemos (val=1)
                var currentText = toggle.textContent.trim();
                if (currentText === '✓') {

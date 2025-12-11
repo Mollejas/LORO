@@ -31,8 +31,9 @@ Public Class UpdateRefaccion
             Return
         End If
 
-        ' Solo permitir actualizar autorizado, estatus y complemento (case insensitive)
-        If field <> "autorizado" AndAlso field <> "estatus" AndAlso field <> "complemento" Then
+        ' Campos permitidos (case insensitive)
+        Dim allowedFields As String() = {"autorizado", "estatus", "complemento", "nivel_rep_l", "nivel_rep_m", "nivel_rep_f", "nivel_rep_pint_l", "nivel_rep_pint_m", "nivel_rep_pint_f"}
+        If Not allowedFields.Contains(field) Then
             context.Response.Write("{""ok"":false,""error"":""Campo no permitido: [" & field & "]""}")
             Return
         End If
@@ -43,21 +44,22 @@ Public Class UpdateRefaccion
                 cn.Open()
 
                 Dim sql As String
-                If field = "autorizado" Then
-                    sql = "UPDATE refacciones SET autorizado = @val WHERE id = @id"
-                ElseIf field = "complemento" Then
-                    sql = "UPDATE refacciones SET complemento = @val WHERE id = @id"
-                Else
+                ' Todos los campos excepto estatus son BIT/INT
+                If field = "estatus" Then
                     sql = "UPDATE refacciones SET estatus = @val WHERE id = @id"
+                Else
+                    ' Para autorizado, complemento, y todos los nivel_rep_* usar el nombre del campo dinámicamente
+                    sql = "UPDATE refacciones SET " & field & " = @val WHERE id = @id"
                 End If
 
                 Using cmd As New SqlCommand(sql, cn)
                     cmd.Parameters.AddWithValue("@id", Convert.ToInt32(idStr))
 
-                    If field = "autorizado" OrElse field = "complemento" Then
-                        cmd.Parameters.AddWithValue("@val", Convert.ToInt32(val))
-                    Else
+                    If field = "estatus" Then
                         cmd.Parameters.AddWithValue("@val", val)
+                    Else
+                        ' Todos los demás campos son BIT/INT
+                        cmd.Parameters.AddWithValue("@val", Convert.ToInt32(val))
                     End If
 
                     Dim rows As Integer = cmd.ExecuteNonQuery()
