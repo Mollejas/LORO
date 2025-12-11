@@ -210,7 +210,7 @@
         <!-- IZQUIERDA: Logos -->
         <div class="logo-strip">
           <img src="images/logo.png" class="logo-img" alt="Logo 1" />
-          <img src="images/logoqua.png" class="logo-img" alt="Logo 2" />
+          <img src="images/logo.png" class="logo-img" alt="Logo 2" />
           <!-- Agrega más logos si los necesitas -->
         </div>
 
