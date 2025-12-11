@@ -3445,7 +3445,7 @@
                for (var i = 0; i < statusSpans.length; i++) {
                    statusSpans[i].textContent = statusSpans[i].getAttribute('data-val') === val ? '●' : '';
                }
-           } else if (field === 'complemento' || field === 'nivel_rep_l' || field === 'nivel_rep_m' || field === 'nivel_rep_f' || field === 'nivel_rep_pint_l' || field === 'nivel_rep_pint_m' || field === 'nivel_rep_pint_f') {
+           } else if (field === 'complemento') {
                // Toggle: si ya tiene palomita, la quitamos (val=0), si no la ponemos (val=1)
                var currentText = toggle.textContent.trim();
                if (currentText === '✓') {
@@ -3455,6 +3455,58 @@
                    toggle.textContent = '✓';
                    val = '1';
                }
+           } else if (field === 'nivel_rep_l' || field === 'nivel_rep_m' || field === 'nivel_rep_f') {
+               // Nivel Reparación: solo uno puede estar marcado (L, M o F)
+               var nivelRepSpans = row.querySelectorAll('.ht-nivel-rep');
+               // Desmarcar todos
+               for (var i = 0; i < nivelRepSpans.length; i++) {
+                   nivelRepSpans[i].textContent = '';
+               }
+               // Marcar el clickeado
+               toggle.textContent = '✓';
+               val = '1';
+
+               // Guardar los 3 campos en BD
+               var fieldsToSave = [
+                   {field: 'nivel_rep_l', val: field === 'nivel_rep_l' ? '1' : '0'},
+                   {field: 'nivel_rep_m', val: field === 'nivel_rep_m' ? '1' : '0'},
+                   {field: 'nivel_rep_f', val: field === 'nivel_rep_f' ? '1' : '0'}
+               ];
+               for (var i = 0; i < fieldsToSave.length; i++) {
+                   fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + fieldsToSave[i].field + '&val=' + fieldsToSave[i].val)
+                       .then(function (r) { return r.json(); })
+                       .then(function (data) {
+                           if (!data.ok) console.error('Error guardando:', data.error);
+                       })
+                       .catch(function (err) { console.error('Error:', err); });
+               }
+               return; // Salir aquí porque ya guardamos
+           } else if (field === 'nivel_rep_pint_l' || field === 'nivel_rep_pint_m' || field === 'nivel_rep_pint_f') {
+               // Nivel Reparación Pintura: solo uno puede estar marcado (L, M o F)
+               var nivelPintSpans = row.querySelectorAll('.ht-nivel-pint');
+               // Desmarcar todos
+               for (var i = 0; i < nivelPintSpans.length; i++) {
+                   nivelPintSpans[i].textContent = '';
+               }
+               // Marcar el clickeado
+               toggle.textContent = '✓';
+               val = '1';
+
+               // Guardar los 3 campos en BD
+               var fieldsToSave = [
+                   {field: 'nivel_rep_pint_l', val: field === 'nivel_rep_pint_l' ? '1' : '0'},
+                   {field: 'nivel_rep_pint_m', val: field === 'nivel_rep_pint_m' ? '1' : '0'},
+                   {field: 'nivel_rep_pint_f', val: field === 'nivel_rep_pint_f' ? '1' : '0'}
+               ];
+               for (var i = 0; i < fieldsToSave.length; i++) {
+                   fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + fieldsToSave[i].field + '&val=' + fieldsToSave[i].val)
+                       .then(function (r) { return r.json(); })
+                       .then(function (data) {
+                           if (!data.ok) console.error('Error guardando:', data.error);
+                       })
+                       .catch(function (err) { console.error('Error:', err); });
+               }
+               return; // Salir aquí porque ya guardamos
            }
 
            // Validar que val no esté vacío para guardar
