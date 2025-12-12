@@ -6,7 +6,7 @@ Imports System.Configuration
 
 
 Public Class ViewPdf
-        Implements IHttpHandler
+        Implements IHttpHandler, IReadOnlySessionState
 
         Private Const SUBFOLDER_DOCUMENTOS As String = "1. DOCUMENTOS DE INGRESO"
         Private Const SUBFOLDER_VALUACION As String = "4. VALUACION"
