@@ -59,6 +59,33 @@ Partial Public Class Site1
     Protected WithEvents pnlAdminConfigMobile As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
+    '''Control imgLogo2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents imgLogo2 As Global.System.Web.UI.WebControls.Image
+
+    '''<summary>
+    '''Control lnkCarpeta.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lnkCarpeta As Global.System.Web.UI.WebControls.HyperLink
+
+    '''<summary>
+    '''Control lnkCarpetaMobile.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lnkCarpetaMobile As Global.System.Web.UI.WebControls.HyperLink
+
+    '''<summary>
     '''Control MainContent.
     '''</summary>
     '''<remarks>

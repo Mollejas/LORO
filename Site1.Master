@@ -210,7 +210,7 @@
         <!-- IZQUIERDA: Logos -->
         <div class="logo-strip">
           <img src="images/logo.png" class="logo-img" alt="Logo 1" />
-          <img src="images/logo.png" class="logo-img" alt="Logo 2" />
+          <asp:Image ID="imgLogo2" runat="server" CssClass="logo-img" AlternateText="Logo Empresa" />
           <!-- Agrega más logos si los necesitas -->
         </div>
 
@@ -240,7 +240,7 @@
     <nav class="chipbar" aria-label="Navegación principal">
       <div class="chip-scroll">
         <a href="princi.aspx"         class="chip" data-match="princi.aspx"><i class="bi bi-house-door"></i> Inicio</a>
-        <a href="alta.aspx"           class="chip" data-match="alta.aspx"><i class="bi bi-folder-plus"></i> Carpeta</a>
+        <asp:HyperLink ID="lnkCarpeta" runat="server" CssClass="chip" data-match="alta.aspx,altaqua.aspx"><i class="bi bi-folder-plus"></i> Carpeta</asp:HyperLink>
         <a href="buscartransito.aspx" class="chip" data-match="buscartransito.aspx"><i class="bi bi-car-front"></i> Tránsito</a>
         <a href="buscarpiso.aspx"     class="chip" data-match="buscarpiso.aspx"><i class="bi bi-buildings"></i> Piso</a>
         <a href="tabla.aspx"          class="chip" data-match="tabla.aspx"><i class="bi bi-check-circle"></i> Entregado</a>
@@ -257,7 +257,7 @@
       <div class="offcanvas-body offcanvas-nav">
         <ul class="nav flex-column gap-2">
           <li class="nav-item"><a class="nav-link" href="princi.aspx"><i class="bi bi-house-door"></i> Inicio</a></li>
-          <li class="nav-item"><a class="nav-link" href="alta.aspx"><i class="bi bi-folder-plus"></i> Carpeta</a></li>
+          <li class="nav-item"><asp:HyperLink ID="lnkCarpetaMobile" runat="server" CssClass="nav-link"><i class="bi bi-folder-plus"></i> Carpeta</asp:HyperLink></li>
           <li class="nav-item"><a class="nav-link" href="buscartransito.aspx"><i class="bi bi-car-front"></i> Tránsito</a></li>
           <li class="nav-item"><a class="nav-link" href="buscarpiso.aspx"><i class="bi bi-buildings"></i> Piso</a></li>
           <li class="nav-item"><a class="nav-link" href="tabla.aspx"><i class="bi bi-check-circle"></i> Entregado</a></li>
