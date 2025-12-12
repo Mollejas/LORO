@@ -4,6 +4,7 @@ Imports System.Data.SqlClient
 Imports System.Configuration
 Imports System.Security.Cryptography
 Imports System.Text
+Imports System.Web.Security
 
 Public Class Login
     Inherits System.Web.UI.Page
@@ -154,6 +155,9 @@ Public Class Login
                         Session("Nombre") = nombre
                         Session("Correo") = correo
                         Session("EsAdmin") = esAdmin
+
+                        ' Establecer cookie de autenticación
+                        FormsAuthentication.SetAuthCookie(correo, chkRecordar.Checked)
                     End Using
                 End Using
             End Using

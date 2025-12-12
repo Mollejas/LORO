@@ -1,5 +1,5 @@
 ﻿Imports System
-
+Imports System.Web.Security
 
 Public Class Logout
         Inherits System.Web.UI.Page
@@ -9,8 +9,8 @@ Public Class Logout
             Session.Clear()
             Session.Abandon()
 
-            ' Si usaras FormsAuth, aquí también expirarías la cookie de auth.
-            ' Response.Cookies(FormsAuthentication.FormsCookieName).Expires = DateTime.UtcNow.AddDays(-1)
+            ' Cerrar sesión de autenticación por formularios
+            FormsAuthentication.SignOut()
 
             Response.Redirect("~/Login.aspx", False)
             Context.ApplicationInstance.CompleteRequest()
