@@ -5,8 +5,9 @@ Imports System.Configuration
 Imports System.Web.UI
 Imports System.Web.UI.WebControls
 
-Partial Public Class PRINCI
-    Inherits System.Web.UI.Page
+Namespace DAYTONAMIO
+    Partial Public Class Princi
+        Inherits System.Web.UI.Page
 
     ' ===== Helpers para encontrar controles dentro del ContentPlaceHolder "MainContent" =====
     Private ReadOnly Property MC As ContentPlaceHolder
@@ -228,4 +229,5 @@ ORDER BY A.FechaCreacion DESC;"
         CargarMetricas()     ' opcional: métricas con filtros
         BuscarYRedirigir()   ' abre Hoja.aspx si hay 1 match; lista si hay varios
     End Sub
-End Class
+    End Class
+End Namespace

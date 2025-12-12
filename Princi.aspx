@@ -2,8 +2,8 @@
     Language="VB"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
-    CodeFile="Princi.aspx.vb"
-    Inherits="PRINCI" %>
+    CodeBehind="Princi.aspx.vb"
+    Inherits="DAYTONAMIO.Princi" %>
 
 <asp:Content ID="HeadBlock" ContentPlaceHolderID="HeadContent" runat="server">
     <!-- Bootstrap Icons (para el título) -->
