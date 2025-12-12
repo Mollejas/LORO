@@ -104,6 +104,15 @@ Partial Public Class Hojalateria
     Protected WithEvents txtDescSust As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control txtNumParteSust.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtNumParteSust As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''Control btnAddSust.
     '''</summary>
     '''<remarks>
@@ -140,6 +149,15 @@ Partial Public Class Hojalateria
     Protected WithEvents txtDescRep As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control txtObsRep.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtObsRep As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''Control btnAddRep.
     '''</summary>
     '''<remarks>
@@ -158,112 +176,121 @@ Partial Public Class Hojalateria
     Protected WithEvents gvRep As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
-    '''Control ddlAutMec1.
+    '''Control btnDescargarPDF.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents ddlAutMec1 As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents btnDescargarPDF As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''Control txtPassMec1.
+    '''Control ddlAutHoj1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtPassMec1 As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlAutHoj1 As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''Control btnAutorizarMec1.
+    '''Control txtPassHoj1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents btnAutorizarMec1 As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents txtPassHoj1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control litAutMec1.
+    '''Control btnAutorizarHoj1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents litAutMec1 As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents btnAutorizarHoj1 As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''Control ddlAutMec2.
+    '''Control litAutHoj1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents ddlAutMec2 As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents litAutHoj1 As Global.System.Web.UI.WebControls.Literal
 
     '''<summary>
-    '''Control txtPassMec2.
+    '''Control ddlAutHoj2.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtPassMec2 As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlAutHoj2 As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''Control btnAutorizarMec2.
+    '''Control txtPassHoj2.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents btnAutorizarMec2 As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents txtPassHoj2 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control litAutMec2.
+    '''Control btnAutorizarHoj2.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents litAutMec2 As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents btnAutorizarHoj2 As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''Control ddlAutMec3.
+    '''Control litAutHoj2.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents ddlAutMec3 As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents litAutHoj2 As Global.System.Web.UI.WebControls.Literal
 
     '''<summary>
-    '''Control txtPassMec3.
+    '''Control ddlAutHoj3.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtPassMec3 As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlAutHoj3 As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''Control btnAutorizarMec3.
+    '''Control txtPassHoj3.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents btnAutorizarMec3 As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents txtPassHoj3 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control litAutMec3.
+    '''Control btnAutorizarHoj3.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents litAutMec3 As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents btnAutorizarHoj3 As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control litAutHoj3.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents litAutHoj3 As Global.System.Web.UI.WebControls.Literal
 
     '''<summary>
     '''Control lblStatus.

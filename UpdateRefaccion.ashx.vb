@@ -1,10 +1,10 @@
-Imports System
+﻿Imports System
 Imports System.Web
 Imports System.Data.SqlClient
 Imports System.Configuration
 
 Public Class UpdateRefaccion
-    Implements IHttpHandler
+    Implements IHttpHandler, IReadOnlySessionState
 
     Public ReadOnly Property IsReusable As Boolean Implements IHttpHandler.IsReusable
         Get

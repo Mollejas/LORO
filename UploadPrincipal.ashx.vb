@@ -11,7 +11,7 @@ Imports System.Drawing.Imaging
 Imports System.Drawing.Drawing2D
 Imports System.Web.Script.Serialization
 
-Public Class UploadPrincipal : Implements IHttpHandler
+Public Class UploadPrincipal : Implements IHttpHandler, IReadOnlySessionState
 
     Private Const MAX_SIDE As Integer = 1600
     Private Const JPEG_QUALITY As Long = 88

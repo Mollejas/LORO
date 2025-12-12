@@ -7,7 +7,7 @@ Imports System.Data
 Imports System.Data.SqlClient
 Imports System.Configuration
 
-Public Class SaveInventario : Implements IHttpHandler
+Public Class SaveInventario : Implements IHttpHandler, IReadOnlySessionState
 
     Private Const SUBFOLDER_NAME As String = "1. DOCUMENTOS DE INGRESO"
     Private Const OUTPUT_FILE As String = "INV.pdf"

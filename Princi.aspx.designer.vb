@@ -10,8 +10,8 @@
 Option Strict On
 Option Explicit On
 
-Namespace DAYTONAMIO
-    Partial Public Class Princi
+
+Partial Public Class Princi
 
     '''<summary>
     '''Control TextBox1.
@@ -59,6 +59,33 @@ Namespace DAYTONAMIO
     Protected WithEvents ButtonSearch As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
+    '''Control pnlResultados.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents pnlResultados As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''Control lblResultados.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblResultados As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control rptResultados.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents rptResultados As Global.System.Web.UI.WebControls.Repeater
+
+    '''<summary>
     '''Control TextBox10.
     '''</summary>
     '''<remarks>
@@ -93,6 +120,15 @@ Namespace DAYTONAMIO
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents TextBox13 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control TextBox19.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents TextBox19 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control TextBox14.
@@ -149,15 +185,6 @@ Namespace DAYTONAMIO
     Protected WithEvents TextBox20 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control TextBox19.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents TextBox19 As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
     '''Control TextBox25.
     '''</summary>
     '''<remarks>
@@ -183,5 +210,4 @@ Namespace DAYTONAMIO
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents TextBox27 As Global.System.Web.UI.WebControls.TextBox
-    End Class
-End Namespace
+End Class

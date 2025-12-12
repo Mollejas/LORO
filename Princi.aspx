@@ -314,10 +314,10 @@
       document.addEventListener('DOMContentLoaded', function () {
           const ids = {
               pisoTotal: '<%= TextBox10.ClientID %>',
-          pisoVencidas: '<%= TextBox11.ClientID %>',
-          pisoMas30: '<%= TextBox12.ClientID %>',
-          piso100: '<%= TextBox13.ClientID %>',
-          transTotal: '<%= TextBox14.ClientID %>',
+              pisoVencidas: '<%= TextBox11.ClientID %>',
+              pisoMas30: '<%= TextBox12.ClientID %>',
+              piso100: '<%= TextBox13.ClientID %>',
+              transTotal: '<%= TextBox14.ClientID %>',
         trans10: '<%= TextBox15.ClientID %>',
         trans15:  '<%= TextBox16.ClientID %>',
         trans20:  '<%= TextBox17.ClientID %>',
@@ -327,75 +327,75 @@
         relTrans: '<%= TextBox25.ClientID %>',
         relPiso:  '<%= TextBox26.ClientID %>',
         relTotal: '<%= TextBox27.ClientID %>'
-        };
+          };
 
-        const v = {
-            pisoTotal: gv(ids.pisoTotal),
-            pisoVencidas: gv(ids.pisoVencidas),
-            pisoMas30: gv(ids.pisoMas30),
-            piso100: gv(ids.piso100),
-            transTotal: gv(ids.transTotal),
-            trans10: gv(ids.trans10),
-            trans15: gv(ids.trans15),
-            trans20: gv(ids.trans20),
-            trans30: gv(ids.trans30),
-            refaTotal: gv(ids.refaccionesTotal),
-            trans100: gv(ids.trans100),
-            relTrans: gv(ids.relTrans),
-            relPiso: gv(ids.relPiso),
-            relTotal: gv(ids.relTotal)
-        };
+          const v = {
+              pisoTotal: gv(ids.pisoTotal),
+              pisoVencidas: gv(ids.pisoVencidas),
+              pisoMas30: gv(ids.pisoMas30),
+              piso100: gv(ids.piso100),
+              transTotal: gv(ids.transTotal),
+              trans10: gv(ids.trans10),
+              trans15: gv(ids.trans15),
+              trans20: gv(ids.trans20),
+              trans30: gv(ids.trans30),
+              refaTotal: gv(ids.refaccionesTotal),
+              trans100: gv(ids.trans100),
+              relTrans: gv(ids.relTrans),
+              relPiso: gv(ids.relPiso),
+              relTotal: gv(ids.relTotal)
+          };
 
-        // KPIs
-        document.getElementById('kpiPiso').textContent = v.pisoTotal;
-        document.getElementById('kpiTransito').textContent = v.transTotal;
-        document.getElementById('kpiRefa').textContent = v.refaTotal;
-        document.getElementById('kpiTotal').textContent = (v.pisoTotal + v.transTotal);
+          // KPIs
+          document.getElementById('kpiPiso').textContent = v.pisoTotal;
+          document.getElementById('kpiTransito').textContent = v.transTotal;
+          document.getElementById('kpiRefa').textContent = v.refaTotal;
+          document.getElementById('kpiTotal').textContent = (v.pisoTotal + v.transTotal);
 
-        // Progresos
-        document.getElementById('lblTrans100').textContent = v.trans100;
-        document.getElementById('lblPiso100').textContent = v.piso100;
-        var pctTrans100 = v.transTotal > 0 ? (v.trans100 / v.transTotal) * 100 : 0;
-        var pctPiso100 = v.pisoTotal > 0 ? (v.piso100 / v.pisoTotal) * 100 : 0;
-        document.getElementById('barTrans100').style.width = pctTrans100.toFixed(0) + '%';
-        document.getElementById('barPiso100').style.width = pctPiso100.toFixed(0) + '%';
+          // Progresos
+          document.getElementById('lblTrans100').textContent = v.trans100;
+          document.getElementById('lblPiso100').textContent = v.piso100;
+          var pctTrans100 = v.transTotal > 0 ? (v.trans100 / v.transTotal) * 100 : 0;
+          var pctPiso100 = v.pisoTotal > 0 ? (v.piso100 / v.pisoTotal) * 100 : 0;
+          document.getElementById('barTrans100').style.width = pctTrans100.toFixed(0) + '%';
+          document.getElementById('barPiso100').style.width = pctPiso100.toFixed(0) + '%';
 
-        // Relación
-        var sumRel = v.relTrans + v.relPiso;
-        var pRelTrans = sumRel > 0 ? (v.relTrans / sumRel) * 100 : 0;
-        var pRelPiso = sumRel > 0 ? (v.relPiso / sumRel) * 100 : 0;
-        var pRelTotal = v.relTotal > 0 ? 100 : 0;
-        document.getElementById('barRelTrans') && (document.getElementById('barRelTrans').style.width = pRelTrans.toFixed(0) + '%');
-        document.getElementById('barRelPiso') && (document.getElementById('barRelPiso').style.width = pRelPiso.toFixed(0) + '%');
-        document.getElementById('barRelTotal') && (document.getElementById('barRelTotal').style.width = pRelTotal.toFixed(0) + '%');
+          // Relación
+          var sumRel = v.relTrans + v.relPiso;
+          var pRelTrans = sumRel > 0 ? (v.relTrans / sumRel) * 100 : 0;
+          var pRelPiso = sumRel > 0 ? (v.relPiso / sumRel) * 100 : 0;
+          var pRelTotal = v.relTotal > 0 ? 100 : 0;
+          document.getElementById('barRelTrans') && (document.getElementById('barRelTrans').style.width = pRelTrans.toFixed(0) + '%');
+          document.getElementById('barRelPiso') && (document.getElementById('barRelPiso').style.width = pRelPiso.toFixed(0) + '%');
+          document.getElementById('barRelTotal') && (document.getElementById('barRelTotal').style.width = pRelTotal.toFixed(0) + '%');
 
-        // Charts
-        const gridColor = '#e5e7eb', tickColor = '#4b5563';
-        const ctxT = document.getElementById('chartTransito');
-        if (ctxT) {
-            new Chart(ctxT, {
-                type: 'bar',
-                data: {
-                    labels: ['+10 días', '+15 días', '+20 días', '+30 días', '100% refacciones'],
-                    datasets: [{ label: 'Unidades', data: [v.trans10, v.trans15, v.trans20, v.trans30, v.trans100], borderWidth: 0 }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: tickColor } },
-                        y: { grid: { color: gridColor }, ticks: { color: tickColor }, beginAtZero: true }
-                    }
-                }
-            });
-        }
-        const ctxP = document.getElementById('chartPiso');
-        if (ctxP) {
-            new Chart(ctxP, {
-                type: 'pie',
-                data: { labels: ['Vencidas', '+30 días', '100% refacciones'], datasets: [{ data: [v.pisoVencidas, v.pisoMas30, v.piso100] }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: tickColor } } } }
-            });
-        }
-    });
+          // Charts
+          const gridColor = '#e5e7eb', tickColor = '#4b5563';
+          const ctxT = document.getElementById('chartTransito');
+          if (ctxT) {
+              new Chart(ctxT, {
+                  type: 'bar',
+                  data: {
+                      labels: ['+10 días', '+15 días', '+20 días', '+30 días', '100% refacciones'],
+                      datasets: [{ label: 'Unidades', data: [v.trans10, v.trans15, v.trans20, v.trans30, v.trans100], borderWidth: 0 }]
+                  },
+                  options: {
+                      responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                      scales: {
+                          x: { grid: { display: false }, ticks: { color: tickColor } },
+                          y: { grid: { color: gridColor }, ticks: { color: tickColor }, beginAtZero: true }
+                      }
+                  }
+              });
+          }
+          const ctxP = document.getElementById('chartPiso');
+          if (ctxP) {
+              new Chart(ctxP, {
+                  type: 'pie',
+                  data: { labels: ['Vencidas', '+30 días', '100% refacciones'], datasets: [{ data: [v.pisoVencidas, v.pisoMas30, v.piso100] }] },
+                  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: tickColor } } } }
+              });
+          }
+      });
   </script>
 </asp:Content>

@@ -1,1 +1,1 @@
-<%@ WebHandler Language="VB" Class="UpdateRefaccion" %>
+﻿<%@ WebHandler Language="VB" CodeBehind="UpdateRefaccion.ashx.vb" Class="DAYTONAMIO.UpdateRefaccion" %>
