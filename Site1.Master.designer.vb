@@ -10,8 +10,8 @@
 Option Strict On
 Option Explicit On
 
-
-Partial Public Class Site1
+Namespace DAYTONAMIO
+    Partial Public Class Site1
 
     '''<summary>
     '''Control HeadContent.
@@ -66,4 +66,5 @@ Partial Public Class Site1
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents MainContent As Global.System.Web.UI.WebControls.ContentPlaceHolder
-End Class
+    End Class
+End Namespace
