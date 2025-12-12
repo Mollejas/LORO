@@ -2,7 +2,7 @@
     Language="VB"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
-    CodeFile="PRINCI.aspx.vb"
+    CodeFile="Princi.aspx.vb"
     Inherits="PRINCI" %>
 
 <asp:Content ID="HeadBlock" ContentPlaceHolderID="HeadContent" runat="server">

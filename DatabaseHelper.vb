@@ -1,7 +1,3 @@
-Option Strict On
-Option Explicit On
-Option Infer On
-
 Imports System
 Imports System.Web
 Imports System.Configuration
