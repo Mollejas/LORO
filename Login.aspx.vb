@@ -179,12 +179,12 @@ Public Class Login
                 End If
             End If
 
-            ' Redirect
+            ' Redirect - Usar True para terminar ejecución y guardar sesión correctamente
             Dim ret As String = Request.QueryString("returnUrl")
             If Not String.IsNullOrWhiteSpace(ret) Then
-                Response.Redirect(ret, False)
+                Response.Redirect(ret, True)
             Else
-                Response.Redirect("princi.aspx", False)
+                Response.Redirect("princi.aspx", True)
             End If
 
         Catch ex As Exception
