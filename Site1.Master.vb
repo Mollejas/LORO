@@ -43,7 +43,32 @@ Partial Public Class Site1
             ' Mostrar icono de configuración solo si es admin (desktop y móvil)
             pnlAdminConfig.Visible = IsAdmin
             pnlAdminConfigMobile.Visible = IsAdmin
+
+            ' Configurar logo y links según empresa
+            ConfigurarEmpresa()
         End If
+    End Sub
+
+    ' Configura logo y links según la empresa seleccionada en sesión
+    Private Sub ConfigurarEmpresa()
+        Dim empresa As String = DatabaseHelper.GetEmpresaSeleccionada()
+
+        ' Configurar logo2 según empresa
+        Select Case empresa.ToUpperInvariant()
+            Case "QUALITAS"
+                imgLogo2.ImageUrl = "~/images/logoqua.png"
+                lnkCarpeta.NavigateUrl = "~/altaqua.aspx"
+                lnkCarpetaMobile.NavigateUrl = "~/altaqua.aspx"
+            Case "INBURSA"
+                imgLogo2.ImageUrl = "~/images/logoinbur.png"
+                lnkCarpeta.NavigateUrl = "~/alta.aspx"
+                lnkCarpetaMobile.NavigateUrl = "~/alta.aspx"
+            Case Else
+                ' Default: INBURSA
+                imgLogo2.ImageUrl = "~/images/logoinbur.png"
+                lnkCarpeta.NavigateUrl = "~/alta.aspx"
+                lnkCarpetaMobile.NavigateUrl = "~/alta.aspx"
+        End Select
     End Sub
 
     Private Sub RequireAuth()
