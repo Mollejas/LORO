@@ -1,4 +1,8 @@
-﻿Imports System
+﻿Option Strict On
+Option Explicit On
+Option Infer On
+
+Imports System
 Imports System.Data
 Imports System.Data.SqlClient
 Imports System.Configuration
