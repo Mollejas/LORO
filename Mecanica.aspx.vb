@@ -21,7 +21,7 @@ Public Class Mecanica
     ' ====== Config / Const ======
     Private ReadOnly Property CS As String
         Get
-            Return ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+            Return DatabaseHelper.GetConnectionString()
         End Get
     End Property
 
@@ -881,7 +881,7 @@ Public Class Mecanica
             Next
 
             ' 3) Actualizar descripción en BD
-            Using cn As New SqlConnection(ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString)
+            Using cn As New SqlConnection(DatabaseHelper.GetConnectionString())
                 Using cmd As New SqlCommand("UPDATE dbo.Refacciones SET Descripcion=@d WHERE Id=@id AND Expediente=@exp;", cn)
                     cmd.Parameters.AddWithValue("@d", newDesc)
                     cmd.Parameters.AddWithValue("@id", id)
@@ -900,7 +900,7 @@ Public Class Mecanica
     ' --------- Helpers estáticos para WebMethods ---------
     Private Shared Function GetCarpetaRelVirtualByExp(expediente As String) As String
         Try
-            Using cn As New SqlConnection(ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString)
+            Using cn As New SqlConnection(DatabaseHelper.GetConnectionString())
                 Using cmd As New SqlCommand("SELECT TOP 1 CarpetaRel FROM dbo.Admisiones WHERE Expediente=@Exp;", cn)
                     cmd.Parameters.AddWithValue("@Exp", expediente)
                     cn.Open()

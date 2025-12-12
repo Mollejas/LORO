@@ -35,7 +35,7 @@ Partial Public Class PRINCI
 
     ' ====== MÉTRICAS (tu lógica existente) ======
     Private Sub CargarMetricas()
-        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim cs As String = DatabaseHelper.GetConnectionString()
 
         Using cn As New SqlConnection(cs)
             Using cmd As New SqlCommand()
@@ -141,7 +141,7 @@ FROM Base;"
         If PnlResultadosCtl IsNot Nothing Then PnlResultadosCtl.Visible = False
         If LblResultadosCtl IsNot Nothing Then LblResultadosCtl.Text = ""
 
-        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim cs As String = DatabaseHelper.GetConnectionString()
 
         Using cn As New SqlConnection(cs)
             Using cmd As New SqlCommand()

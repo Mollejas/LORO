@@ -246,8 +246,8 @@ Public Class Alta
         End Try
         txtExpediente.Text = expedienteId.ToString("0")
 
-        Dim csSetting = ConfigurationManager.ConnectionStrings("DaytonaDB")
-        If csSetting Is Nothing OrElse String.IsNullOrWhiteSpace(csSetting.ConnectionString) Then
+        Dim csSetting As String = DatabaseHelper.GetConnectionString()
+        If csSetting Is Nothing OrElse String.IsNullOrWhiteSpace(csSetting) Then
             Alert("Falta la cadena de conexión DaytonaDB en Web.config")
             Exit Sub
         End If
@@ -296,7 +296,7 @@ Public Class Alta
 
             ' === 4) INSERT en Admisiones y obtener el Id (PK=Id) con OUTPUT INSERTED.Id ===
             Dim newAdmId As Integer = 0
-            Using cn As New SqlConnection(csSetting.ConnectionString)
+            Using cn As New SqlConnection(csSetting)
                 Const sqlInsert As String = "
             INSERT INTO dbo.Admisiones
             (
@@ -424,10 +424,10 @@ Public Class Alta
     End Sub
 
     Private Function ObtenerParidadUsuarioActual() As String
-        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+        Dim cs As String = DatabaseHelper.GetConnectionString()
         Dim fallback As String = If(String.IsNullOrWhiteSpace(ConfigurationManager.AppSettings("DefaultParidad")), "PAR", ConfigurationManager.AppSettings("DefaultParidad"))
 
-        If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs.ConnectionString) Then
+        If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs) Then
             Return fallback.ToUpperInvariant().Trim()
         End If
 
@@ -437,14 +437,14 @@ Public Class Alta
         Dim objId = Session("UsuarioId")
         Dim usuarioId As Integer
         If objId IsNot Nothing AndAlso Integer.TryParse(objId.ToString(), usuarioId) Then
-            par = ObtenerParidadPorUsuarioId(usuarioId, cs.ConnectionString)
+            par = ObtenerParidadPorUsuarioId(usuarioId, cs)
         End If
 
         ' Session("UsuarioCorreo")
         If String.IsNullOrWhiteSpace(par) Then
             Dim correo As String = TryCast(Session("UsuarioCorreo"), String)
             If Not String.IsNullOrWhiteSpace(correo) Then
-                par = ObtenerParidadPorCorreo(correo, cs.ConnectionString)
+                par = ObtenerParidadPorCorreo(correo, cs)
             End If
         End If
 
@@ -452,7 +452,7 @@ Public Class Alta
         If String.IsNullOrWhiteSpace(par) Then
             Dim nombre As String = TryCast(Session("UsuarioNombre"), String)
             If Not String.IsNullOrWhiteSpace(nombre) Then
-                par = ObtenerParidadPorNombre(nombre, cs.ConnectionString)
+                par = ObtenerParidadPorNombre(nombre, cs)
             End If
         End If
 
@@ -517,8 +517,8 @@ Public Class Alta
     End Function
 
     Private Function ObtenerUltimosParYNonExpediente() As Tuple(Of Integer?, Integer?)
-        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
-        If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs.ConnectionString) Then
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+        If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs) Then
             Return Tuple.Create(CType(Nothing, Integer?), CType(Nothing, Integer?))
         End If
 
@@ -534,7 +534,7 @@ Public Class Alta
             FROM V;"
 
         Try
-            Using cn As New SqlConnection(cs.ConnectionString)
+            Using cn As New SqlConnection(cs)
                 Using cmd As New SqlCommand(sql, cn)
                     cn.Open()
                     Using rd = cmd.ExecuteReader()
@@ -556,15 +556,15 @@ Public Class Alta
         paridad = If(paridad, "PAR").ToUpperInvariant().Trim()
         If paridad <> "PAR" AndAlso paridad <> "NON" Then paridad = "PAR"
 
-        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
-        If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs.ConnectionString) Then
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+        If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs) Then
             Throw New ApplicationException("Falta la cadena de conexión DaytonaDB.")
         End If
 
         Dim recursoLock As String = If(paridad = "PAR", "EXPEDIENTE_PAR", "EXPEDIENTE_NON")
         Dim paridadMod As Integer = If(paridad = "PAR", 0, 1)
 
-        Using cn As New SqlConnection(cs.ConnectionString)
+        Using cn As New SqlConnection(cs)
             cn.Open()
             Using tx = cn.BeginTransaction(IsolationLevel.Serializable)
                 Using lockCmd As New SqlCommand("EXEC @rc = sp_getapplock @Resource,@LockMode,@LockOwner,@LockTimeout;", cn, tx)
@@ -715,12 +715,12 @@ Public Class Alta
     ' ================================
     Private Function ObtenerTelefonoAsesor(nombreCreador As String) As String
         If String.IsNullOrWhiteSpace(nombreCreador) Then Return String.Empty
-        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
-        If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs.ConnectionString) Then Return String.Empty
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+        If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs) Then Return String.Empty
 
         Const sql As String = "SELECT TOP 1 Telefono FROM dbo.Usuarios WHERE Nombre = @Nombre"
         Try
-            Using cn As New SqlConnection(cs.ConnectionString)
+            Using cn As New SqlConnection(cs)
                 Using cmd As New SqlCommand(sql, cn)
                     cmd.Parameters.Add("@Nombre", SqlDbType.NVarChar, 256).Value = nombreCreador.Trim()
                     cn.Open()

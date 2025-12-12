@@ -130,9 +130,9 @@ Public Class ViewPdf
         End Sub
 
         Private Function ObtenerCarpetaRelPorId(id As Integer) As String
-            Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+            Dim cs As String = DatabaseHelper.GetConnectionString()
             If cs Is Nothing Then Return Nothing
-            Using cn As New SqlConnection(cs.ConnectionString)
+            Using cn As New SqlConnection(cs)
                 cn.Open()
                 Using cmd As New SqlCommand("SELECT carpetarel FROM admisiones WHERE Id=@Id", cn)
                     cmd.Parameters.AddWithValue("@Id", id)

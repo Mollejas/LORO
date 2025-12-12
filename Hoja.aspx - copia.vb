@@ -33,10 +33,10 @@ Partial Public Class Hoja
 
         '====================== Datos de admisión ======================
         Private Sub CargarAdmision(id As Integer)
-            Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+            Dim cs As String = DatabaseHelper.GetConnectionString()
             If cs Is Nothing Then Exit Sub
 
-            Using cn As New SqlConnection(cs.ConnectionString)
+            Using cn As New SqlConnection(cs)
                 cn.Open()
                 Using cmd As New SqlCommand("SELECT * FROM admisiones WHERE Id=@Id", cn)
                     cmd.Parameters.AddWithValue("@Id", id)
