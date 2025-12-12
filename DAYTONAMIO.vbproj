@@ -311,6 +311,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Controllers\HomeController.vb" />
+    <Compile Include="DatabaseHelper.vb" />
     <Compile Include="PdfHelper.vb" />
     <Compile Include="Princi.aspx.designer.vb">
       <DependentUpon>Princi.aspx</DependentUpon>
