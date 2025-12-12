@@ -95,6 +95,42 @@ Partial Public Class CreateUser
     Protected WithEvents chkAdmin As Global.System.Web.UI.WebControls.CheckBox
 
     '''<summary>
+    '''Control chkJefeServicio.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents chkJefeServicio As Global.System.Web.UI.WebControls.CheckBox
+
+    '''<summary>
+    '''Control chkJefeRefacciones.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents chkJefeRefacciones As Global.System.Web.UI.WebControls.CheckBox
+
+    '''<summary>
+    '''Control chkJefeAdministracion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents chkJefeAdministracion As Global.System.Web.UI.WebControls.CheckBox
+
+    '''<summary>
+    '''Control chkJefeTaller.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents chkJefeTaller As Global.System.Web.UI.WebControls.CheckBox
+
+    '''<summary>
     '''Control chkPar.
     '''</summary>
     '''<remarks>

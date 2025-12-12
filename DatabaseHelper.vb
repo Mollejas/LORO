@@ -8,6 +8,7 @@ Imports System.Data.SqlClient
 ''' </summary>
 Public Class DatabaseHelper
 
+
     ''' <summary>
     ''' Obtiene la cadena de conexión basada en la empresa seleccionada en la sesión
     ''' Modifica dinámicamente el Initial Catalog según la empresa:
@@ -36,9 +37,7 @@ Public Class DatabaseHelper
                 builder.InitialCatalog = "LORONUEVO"
             Case "EXTERNOS"
                 builder.InitialCatalog = "EXTERNO"
-            Case Else
-                ' Default: INBURSA
-                builder.InitialCatalog = "LORONUEVO"
+
         End Select
 
         Return builder.ConnectionString
@@ -51,9 +50,8 @@ Public Class DatabaseHelper
         Dim empresa As String = TryCast(HttpContext.Current.Session("EmpresaSeleccionada"), String)
 
         If String.IsNullOrWhiteSpace(empresa) Then
-            Return "INBURSA" ' Default
+            HttpContext.Current.Response.Redirect("login.aspx", True)
         End If
-
         Return empresa
     End Function
 
