@@ -379,9 +379,9 @@ Partial Public Class Alta
     '''<remarks>
     '''Propiedad generada automáticamente.
     '''</remarks>
-    Public Shadows ReadOnly Property Master() As DAYTONAMIO.Site1
+    Public Shadows ReadOnly Property Master() As Site1
         Get
-            Return CType(MyBase.Master, DAYTONAMIO.Site1)
+            Return CType(MyBase.Master, Site1)
         End Get
     End Property
 End Class

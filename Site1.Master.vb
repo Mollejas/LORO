@@ -2,9 +2,8 @@
 Imports System.Data.SqlClient
 Imports System.Configuration
 
-Namespace DAYTONAMIO
-    Partial Public Class Site1
-        Inherits System.Web.UI.MasterPage
+Partial Public Class Site1
+    Inherits System.Web.UI.MasterPage
 
     ' === Propiedades públicas para que las páginas hijas puedan saber si el usuario es admin y su nombre ===
     Public ReadOnly Property IsAdmin As Boolean
@@ -83,5 +82,4 @@ Namespace DAYTONAMIO
         End Using
     End Function
 
-    End Class
-End Namespace
+End Class
