@@ -10,8 +10,8 @@
 Option Strict On
 Option Explicit On
 
-
-Partial Public Class Princi
+Namespace DAYTONAMIO
+    Partial Public Class Princi
 
     '''<summary>
     '''Control TextBox1.
@@ -183,4 +183,5 @@ Partial Public Class Princi
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents TextBox27 As Global.System.Web.UI.WebControls.TextBox
-End Class
+    End Class
+End Namespace
