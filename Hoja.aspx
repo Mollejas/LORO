@@ -3,7 +3,7 @@
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="false"
     CodeBehind="Hoja.aspx.vb"
-    Inherits="DAYTONAMIO.Hoja"
+    Inherits="Hoja"
     MaintainScrollPositionOnPostBack="true" %>
 
 <%@ MasterType VirtualPath="~/Site1.Master" %>
