@@ -125,19 +125,19 @@
         .empresa-selector label { margin-bottom: 12px; }
         .empresa-opciones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .empresa-opcion {
-            position: relative; background: rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px 8px;
+            position: relative; background: rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 16px 12px;
             text-align: center; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent;
+            min-height: 100px;
         }
         .empresa-opcion:hover { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); }
         .empresa-opcion input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
         .empresa-opcion input[type="radio"]:checked + .empresa-contenido { border-color: var(--brand); background: rgba(16, 185, 129, 0.2); }
         .empresa-contenido {
-            border: 2px solid transparent; border-radius: 6px; padding: 8px 4px; transition: all 0.3s ease;
-            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            border: 2px solid transparent; border-radius: 6px; padding: 12px; transition: all 0.3s ease;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%;
         }
-        .empresa-icono { font-size: 1.5rem; }
-        .empresa-logo { width: 60px; height: 40px; object-fit: contain; }
-        .empresa-nombre { font-size: 0.75rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.5px; }
+        .empresa-logo { width: 100%; height: 80px; object-fit: contain; }
         @media (max-width: 400px) {
             .empresa-opciones { grid-template-columns: 1fr; }
             .empresa-opcion { padding: 10px; }
@@ -174,7 +174,6 @@
                                 <asp:RadioButton ID="rbQualitas" runat="server" GroupName="Empresa" />
                                 <div class="empresa-contenido">
                                     <img src="images/logoqua.png" alt="Qualitas" class="empresa-logo" />
-                                    <div class="empresa-nombre">Qualitas</div>
                                 </div>
                             </label>
 
@@ -183,7 +182,6 @@
                                 <asp:RadioButton ID="rbInbursa" runat="server" GroupName="Empresa" Checked="true" />
                                 <div class="empresa-contenido">
                                     <img src="images/logoinbur.png" alt="Inbursa" class="empresa-logo" />
-                                    <div class="empresa-nombre">Inbursa</div>
                                 </div>
                             </label>
 
@@ -192,7 +190,6 @@
                                 <asp:RadioButton ID="rbExternos" runat="server" GroupName="Empresa" />
                                 <div class="empresa-contenido">
                                     <img src="images/logo.png" alt="Externos" class="empresa-logo" />
-                                    <div class="empresa-nombre">Externos</div>
                                 </div>
                             </label>
                         </div>
