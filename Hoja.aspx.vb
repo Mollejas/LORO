@@ -24,8 +24,9 @@ Imports System.Web.UI.HtmlControls
 Imports DrawingImage = System.Drawing.Image
 Imports System.Globalization
 
-Partial Public Class Hoja
-    Inherits System.Web.UI.Page
+Namespace DAYTONAMIO
+    Partial Public Class Hoja
+        Inherits System.Web.UI.Page
 
     ' ===================== API: Gate de diagnóstico (Mec/Hoj) =====================
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json), WebMethod()>
@@ -3154,4 +3155,5 @@ Paint:
         Return diff = 0
     End Function
 
-End Class
+    End Class
+End Namespace
