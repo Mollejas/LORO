@@ -3259,19 +3259,28 @@
             function setFlagUI(flagId, iconId, checked) {
                 const flag = document.getElementById(flagId);
                 const ico = document.getElementById(iconId);
-                const txt = flag?.querySelector('.state');
-                if (!flag || !ico || !txt) return;
+                if (!flag || !ico) return;
 
                 flag.classList.toggle('on', !!checked);
                 flag.classList.toggle('off', !checked);
                 ico.classList.toggle('bi-toggle-on', !!checked);
                 ico.classList.toggle('bi-toggle-off', !checked);
-                txt.textContent = checked ? 'Habilitado' : 'Deshabilitado';
+
+                const txt = flag.querySelector('.state');
+                if (txt) {
+                    txt.textContent = checked ? 'Habilitado' : 'Deshabilitado';
+                }
             }
 
             function applyDiagGateUI() {
-                const mec = document.getElementById('chkMecSi')?.checked;
-                const hoja = document.getElementById('chkHojaSi')?.checked;
+                const chkMec = document.getElementById('chkMecSi');
+                const chkHoja = document.getElementById('chkHojaSi');
+                const mec = chkMec?.checked;
+                const hoja = chkHoja?.checked;
+
+                console.log('applyDiagGateUI - chkMecSi:', chkMec, 'checked:', mec);
+                console.log('applyDiagGateUI - chkHojaSi:', chkHoja, 'checked:', hoja);
+
                 setFlagUI('flagMec', 'icoMec', !!mec);
                 setFlagUI('flagHoja', 'icoHoja', !!hoja);
 
@@ -3344,19 +3353,40 @@
             document.addEventListener('click', function (e) {
                 const flagDiv = e.target.closest('.diag-flag');
                 if (flagDiv) {
+                    e.preventDefault();
+                    e.stopPropagation();
                     const checkbox = flagDiv.querySelector('.form-check-input');
-                    if (checkbox && e.target !== checkbox) {
+                    if (checkbox) {
+                        const oldValue = checkbox.checked;
                         checkbox.checked = !checkbox.checked;
+                        console.log('Toggle checkbox:', checkbox.id, 'from', oldValue, 'to', checkbox.checked);
                         // Disparar evento change para activar los handlers
-                        checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                        const changeEvent = new Event('change', { bubbles: true });
+                        checkbox.dispatchEvent(changeEvent);
                     }
                 }
+            }, true);
+
+            // Ejecutar al cargar
+            document.addEventListener('DOMContentLoaded', function() {
+                applyDiagGateUI();
             });
 
-            document.addEventListener('DOMContentLoaded', applyDiagGateUI);
+            // También ejecutar cuando la página completa esté cargada
+            window.addEventListener('load', function() {
+                applyDiagGateUI();
+            });
 
             // Exponer globalmente para que pueda ser llamada desde otros scripts
             window.applyDiagGateUI = applyDiagGateUI;
+
+            // Ejecutar inmediatamente si el DOM ya está listo
+            if (document.readyState === 'loading') {
+                // DOM aún se está cargando, los listeners arriba se encargarán
+            } else {
+                // DOM ya está listo, ejecutar ahora
+                setTimeout(applyDiagGateUI, 0);
+            }
 
             // Endurecemos openDiagPage: si está en rojo, no abrimos
             const __origOpenDiagPage = window.openDiagPage;
