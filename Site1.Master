@@ -1,4 +1,4 @@
-﻿<%@ Master Language="VB" AutoEventWireup="false" CodeBehind="Site1.master.vb" Inherits="DAYTONAMIO.Site1" %>
+﻿<%@ Master Language="VB" AutoEventWireup="false" CodeBehind="Site1.master.vb" Inherits="Site1" %>
 <!DOCTYPE html>
 <html lang="es">
 <head runat="server">
