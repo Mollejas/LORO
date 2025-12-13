@@ -1,13 +1,8 @@
 ﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="CreateUser.aspx.vb"
-    Inherits="DAYTONAMIO.CreateUser" MaintainScrollPositionOnPostBack="true" %>
+    Inherits="DAYTONAMIO.CreateUser" MaintainScrollPositionOnPostBack="true"
+    MasterPageFile="~/Site1.Master" %>
 
-<!DOCTYPE html>
-<html lang="es">
-<head runat="server">
-    <meta charset="utf-8" />
-    <title>Crear Usuario | Mi Empresa</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+<asp:Content ID="HeadBlock" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
         :root{
             --nav-bg: #062a24;
@@ -23,9 +18,7 @@
             --chip-active-bg: #065f46;
             --ok:#10b981; --okbg:#d1fae5; --okbd:#a7f3d0; --err:#dc2626; --errbg:#fee2e2; --errbd:#fecaca;
         }
-        *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:Calibri,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg-main)}
-        .wrap{min-height:100%;padding:10px}
+        .wrap{padding:10px}
         .card{width:100%;max-width:1400px;margin:0 auto;background:var(--surface);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.08);overflow:hidden}
         .hdr{display:flex;gap:12px;align-items:center;padding:12px 20px;background:var(--nav-bg);color:#fff}
         .logo{width:40px;height:40px;object-fit:contain;background:var(--surface);border-radius:8px}
@@ -44,7 +37,7 @@
         .fields-stack{display:flex;flex-direction:column;gap:8px}
 
         .field-group{display:flex;flex-direction:column;gap:3px}
-        label{display:block;color:var(--text-body);font-weight:600;font-size:.75rem}
+        .createuser-label{display:block;color:var(--text-body);font-weight:600;font-size:.75rem}
         .label-required::after{content:' *';color:#dc2626}
 
         .inp{width:100%;border:1px solid var(--border-color);border-radius:6px;padding:6px 10px;font-size:13px;outline:none;transition:all .2s;background:var(--surface)}
@@ -66,10 +59,10 @@
         .paridad-note{color:var(--text-muted);font-size:.7rem;font-style:italic;margin-top:6px}
 
         .btns{display:flex;gap:8px;justify-content:center;padding:10px 20px;background:var(--bg-main);border-top:1px solid var(--border-color)}
-        .btn{border:0;border-radius:6px;padding:8px 16px;font-weight:700;cursor:pointer;background:var(--primary);color:#fff;transition:all .2s ease;font-size:.85rem}
-        .btn:hover{background:var(--primary-hover)}
-        .btn.sec{background:var(--nav-bg)}
-        .btn.sec:hover{background:#042218}
+        .btn-cu{border:0;border-radius:6px;padding:8px 16px;font-weight:700;cursor:pointer;background:var(--primary);color:#fff;transition:all .2s ease;font-size:.85rem}
+        .btn-cu:hover{background:var(--primary-hover)}
+        .btn-cu.sec{background:var(--nav-bg)}
+        .btn-cu.sec:hover{background:#042218}
 
         .msg{margin-bottom:12px;padding:8px 12px;border-radius:6px;border:1px solid transparent;display:none;font-weight:600;font-size:.85rem}
         .msg.show{display:block}
@@ -100,9 +93,9 @@
             .body,.list{padding:12px 16px}
         }
     </style>
-</head>
-<body>
-<form id="form1" runat="server">
+</asp:Content>
+
+<asp:Content ID="BodyBlock" ContentPlaceHolderID="MainContent" runat="server">
     <div class="wrap">
         <div class="card">
             <div class="hdr">
@@ -121,15 +114,15 @@
                         <h2 class="section-title">Datos Personales</h2>
                         <div class="fields-stack">
                             <div class="field-group">
-                                <label for="txtNombre" class="label-required">Nombre</label>
+                                <label for="txtNombre" class="createuser-label label-required">Nombre</label>
                                 <asp:TextBox ID="txtNombre" runat="server" CssClass="inp" MaxLength="100" placeholder="Juan Pérez" />
                             </div>
                             <div class="field-group">
-                                <label for="txtCorreo" class="label-required">Correo</label>
+                                <label for="txtCorreo" class="createuser-label label-required">Correo</label>
                                 <asp:TextBox ID="txtCorreo" runat="server" CssClass="inp text-lowercase" TextMode="Email" MaxLength="150" placeholder="usuario@empresa.com" />
                             </div>
                             <div class="field-group">
-                                <label for="txtTelefono">Teléfono</label>
+                                <label for="txtTelefono" class="createuser-label">Teléfono</label>
                                 <asp:TextBox ID="txtTelefono" runat="server" CssClass="inp" MaxLength="30" placeholder="(55) 1234-5678" />
                             </div>
                         </div>
@@ -139,11 +132,11 @@
                         <h2 class="section-title">Seguridad</h2>
                         <div class="fields-stack">
                             <div class="field-group">
-                                <label for="txtPassword" class="label-required">Contraseña</label>
+                                <label for="txtPassword" class="createuser-label label-required">Contraseña</label>
                                 <asp:TextBox ID="txtPassword" runat="server" CssClass="inp" TextMode="Password" placeholder="Min. 8 caracteres" />
                             </div>
                             <div class="field-group">
-                                <label for="txtConfirm" class="label-required">Confirmar</label>
+                                <label for="txtConfirm" class="createuser-label label-required">Confirmar</label>
                                 <asp:TextBox ID="txtConfirm" runat="server" CssClass="inp" TextMode="Password" placeholder="Repetir contraseña" />
                             </div>
                             <div class="permissions-inline">
@@ -202,8 +195,8 @@
             </div>
 
             <div class="btns">
-                <asp:Button ID="btnGuardar" runat="server" CssClass="btn" Text="Guardar" OnClick="btnGuardar_Click" />
-                <asp:Button ID="btnLimpiar" runat="server" CssClass="btn sec" Text="Limpiar" CausesValidation="false" OnClick="btnLimpiar_Click" />
+                <asp:Button ID="btnGuardar" runat="server" CssClass="btn-cu" Text="Guardar" OnClick="btnGuardar_Click" />
+                <asp:Button ID="btnLimpiar" runat="server" CssClass="btn-cu sec" Text="Limpiar" CausesValidation="false" OnClick="btnLimpiar_Click" />
             </div>
 
             <div class="list">
@@ -322,6 +315,4 @@
             }
         })();
     </script>
-</form>
-</body>
-</html>
+</asp:Content>
