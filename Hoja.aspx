@@ -476,12 +476,18 @@
     background:linear-gradient(135deg,#fff,var(--neutral-050));
     border:1px solid var(--neutral-200);
     border-radius:999px; padding:6px 10px; box-shadow:var(--shadow-sm);
+    cursor:pointer;
+    transition:all .2s ease;
   }
-  .diag-flag .form-check-input{ margin:0; cursor:pointer; }
-  .diag-flag .bi{ font-size:18px; }
+  .diag-flag:hover{
+    background:linear-gradient(135deg,var(--neutral-050),var(--neutral-100));
+    transform:scale(1.05);
+  }
+  .diag-flag .form-check-input{ display:none; } /* Ocultar checkbox */
+  .diag-flag .bi{ font-size:28px; transition:all .2s ease; }
   .diag-flag .state{ font-size:.85rem; font-weight:700; }
-  .diag-flag.on  .bi{ color:var(--success); }
-  .diag-flag.off .bi{ color:var(--danger); }
+  .diag-flag.on  .bi{ color:#16a34a; } /* Verde más brillante */
+  .diag-flag.off .bi{ color:#dc2626; } /* Rojo más brillante */
 
   /* Ya tienes esta regla, la reutilizamos para bloquear clicks */
   /* .icon-btn.compacto.disabled,.icon-btn.compacto[disabled]{pointer-events:none;opacity:.45;} */
@@ -939,9 +945,9 @@
         </div>
 
         <div class="d-flex align-items-center justify-content-center gap-2">
-          <div id="flagMec" runat="server" ClientIDMode="Static" class="diag-flag off">
+          <div id="flagMec" runat="server" ClientIDMode="Static" class="diag-flag off" onclick="toggleDiagFlag('chkMecSi', 'flagMec', 'icoMec')">
             <asp:CheckBox ID="chkMecSi" runat="server" ClientIDMode="Static" CssClass="form-check-input" />
-            <i id="icoMec" runat="server" ClientIDMode="Static" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
+            <i id="icoMec" runat="server" ClientIDMode="Static" class="bi bi-x-circle-fill" aria-hidden="true"></i>
           </div>
           <asp:LinkButton ID="btnDiagnosticoMecanica" runat="server" CssClass="icon-btn compacto"
             ToolTip="Abrir módulo de diagnóstico mecánico"
@@ -967,9 +973,9 @@
         </div>
 
         <div class="d-flex align-items-center justify-content-center gap-2">
-          <div id="flagHoja" runat="server" ClientIDMode="Static" class="diag-flag off">
+          <div id="flagHoja" runat="server" ClientIDMode="Static" class="diag-flag off" onclick="toggleDiagFlag('chkHojaSi', 'flagHoja', 'icoHoja')">
             <asp:CheckBox ID="chkHojaSi" runat="server" ClientIDMode="Static" CssClass="form-check-input" />
-            <i id="icoHoja" runat="server" ClientIDMode="Static" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
+            <i id="icoHoja" runat="server" ClientIDMode="Static" class="bi bi-x-circle-fill" aria-hidden="true"></i>
           </div>
           <asp:LinkButton ID="btnDiagnosticoHojalateria" runat="server" CssClass="icon-btn compacto"
             ToolTip="Abrir módulo de diagnóstico de hojalatería"
@@ -3225,15 +3231,23 @@
             function setFlagUI(flagId, iconId, checked) {
                 const flag = document.getElementById(flagId);
                 const ico = document.getElementById(iconId);
-                const txt = flag?.querySelector('.state');
-                if (!flag || !ico || !txt) return;
+                if (!flag || !ico) return;
 
                 flag.classList.toggle('on', !!checked);
                 flag.classList.toggle('off', !checked);
-                ico.classList.toggle('bi-toggle-on', !!checked);
-                ico.classList.toggle('bi-toggle-off', !checked);
-                txt.textContent = checked ? 'Habilitado' : 'Deshabilitado';
+                ico.classList.toggle('bi-check-circle-fill', !!checked);
+                ico.classList.toggle('bi-x-circle-fill', !checked);
             }
+
+            // Función para toggle al hacer clic en el icono
+            window.toggleDiagFlag = function(chkId, flagId, iconId) {
+                const chk = document.getElementById(chkId);
+                if (!chk) return;
+                chk.checked = !chk.checked;
+                setFlagUI(flagId, iconId, chk.checked);
+                // Trigger change event para que se guarde
+                chk.dispatchEvent(new Event('change', { bubbles: true }));
+            };
 
             function applyDiagGateUI() {
                 const mec = document.getElementById('chkMecSi')?.checked;
@@ -3384,7 +3398,7 @@
                    const ico = document.getElementById('icoHoja');
                    const chk = document.getElementById('chkHojaSi');
                    if (flag) flag.className = 'diag-flag on';
-                   if (ico) ico.className = 'bi bi-toggle-on fs-4';
+                   if (ico) ico.className = 'bi bi-check-circle-fill';
                    if (chk) chk.checked = true;
                    // Actualizar estado del botón de diagnóstico
                    if (typeof applyDiagGateUI === 'function') {
