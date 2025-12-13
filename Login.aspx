@@ -125,19 +125,19 @@
         .empresa-selector label { margin-bottom: 12px; }
         .empresa-opciones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .empresa-opcion {
-            position: relative; background: rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 16px 12px;
+            position: relative; background: rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px;
             text-align: center; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent;
-            min-height: 100px;
+            min-height: 120px;
         }
         .empresa-opcion:hover { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); }
         .empresa-opcion input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
         .empresa-opcion input[type="radio"]:checked + .empresa-contenido { border-color: var(--brand); background: rgba(16, 185, 129, 0.2); }
         .empresa-contenido {
-            border: 2px solid transparent; border-radius: 6px; padding: 12px; transition: all 0.3s ease;
+            border: 2px solid transparent; border-radius: 6px; padding: 4px; transition: all 0.3s ease;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100%;
         }
-        .empresa-logo { width: 100%; height: 80px; object-fit: contain; }
+        .empresa-logo { width: 100%; height: 100%; min-height: 90px; object-fit: cover; border-radius: 4px; }
         @media (max-width: 400px) {
             .empresa-opciones { grid-template-columns: 1fr; }
             .empresa-opcion { padding: 10px; }
