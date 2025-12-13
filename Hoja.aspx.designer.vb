@@ -10,8 +10,8 @@
 Option Strict On
 Option Explicit On
 
-Namespace DAYTONAMIO
-    Partial Public Class Hoja
+
+Partial Public Class Hoja
 
     '''<summary>
     '''Control btnEliminarPrincipal.
@@ -1266,5 +1266,4 @@ Namespace DAYTONAMIO
             Return CType(MyBase.Master, Site1)
         End Get
     End Property
-    End Class
-End Namespace
+End Class
