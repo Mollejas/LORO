@@ -475,13 +475,45 @@
     gap:8px; margin-bottom:8px;
     background:linear-gradient(135deg,#fff,var(--neutral-050));
     border:1px solid var(--neutral-200);
-    border-radius:999px; padding:6px 10px; box-shadow:var(--shadow-sm);
+    border-radius:999px; padding:8px 14px; box-shadow:var(--shadow-sm);
+    cursor:pointer;
+    transition: all 0.3s ease;
+    position: relative;
   }
-  .diag-flag .form-check-input{ margin:0; cursor:pointer; }
-  .diag-flag .bi{ font-size:18px; }
-  .diag-flag .state{ font-size:.85rem; font-weight:700; }
+  .diag-flag:hover{
+    box-shadow:var(--shadow-md);
+    transform: translateY(-1px);
+  }
+  /* Ocultar el checkbox pero mantenerlo funcional */
+  .diag-flag .form-check-input{
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin:0;
+    cursor:pointer;
+  }
+  .diag-flag .bi{
+    font-size:24px;
+    transition: color 0.3s ease;
+  }
+  .diag-flag .state{
+    font-size:.9rem;
+    font-weight:600;
+    transition: color 0.3s ease;
+  }
   .diag-flag.on  .bi{ color:var(--success); }
   .diag-flag.off .bi{ color:var(--danger); }
+  .diag-flag.on  .state{ color:var(--success); }
+  .diag-flag.off .state{ color:var(--neutral-600); }
+  .diag-flag.on{
+    background:linear-gradient(135deg,#f0fdf4,#dcfce7);
+    border-color:var(--success);
+  }
+  .diag-flag.off{
+    background:linear-gradient(135deg,#fff,var(--neutral-050));
+    border-color:var(--neutral-300);
+  }
 
   /* Ya tienes esta regla, la reutilizamos para bloquear clicks */
   /* .icon-btn.compacto.disabled,.icon-btn.compacto[disabled]{pointer-events:none;opacity:.45;} */
@@ -942,6 +974,7 @@
           <div id="flagMec" runat="server" ClientIDMode="Static" class="diag-flag off">
             <asp:CheckBox ID="chkMecSi" runat="server" ClientIDMode="Static" CssClass="form-check-input" />
             <i id="icoMec" runat="server" ClientIDMode="Static" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
+            <span class="state">Deshabilitado</span>
           </div>
           <asp:LinkButton ID="btnDiagnosticoMecanica" runat="server" CssClass="icon-btn compacto"
             ToolTip="Abrir módulo de diagnóstico mecánico"
@@ -970,6 +1003,7 @@
           <div id="flagHoja" runat="server" ClientIDMode="Static" class="diag-flag off">
             <asp:CheckBox ID="chkHojaSi" runat="server" ClientIDMode="Static" CssClass="form-check-input" />
             <i id="icoHoja" runat="server" ClientIDMode="Static" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
+            <span class="state">Deshabilitado</span>
           </div>
           <asp:LinkButton ID="btnDiagnosticoHojalateria" runat="server" CssClass="icon-btn compacto"
             ToolTip="Abrir módulo de diagnóstico de hojalatería"
@@ -3304,6 +3338,19 @@
             document.addEventListener('change', function (e) {
                 if (e.target?.id === 'chkMecSi') { applyDiagGateUI(); saveGate('MEC', e.target.checked); }
                 if (e.target?.id === 'chkHojaSi') { applyDiagGateUI(); saveGate('HOJA', e.target.checked); }
+            });
+
+            // Hacer que el contenedor .diag-flag sea clickeable para toggle del checkbox
+            document.addEventListener('click', function (e) {
+                const flagDiv = e.target.closest('.diag-flag');
+                if (flagDiv) {
+                    const checkbox = flagDiv.querySelector('.form-check-input');
+                    if (checkbox && e.target !== checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                        // Disparar evento change para activar los handlers
+                        checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                }
             });
 
             document.addEventListener('DOMContentLoaded', applyDiagGateUI);
