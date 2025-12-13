@@ -971,11 +971,11 @@
         </div>
 
         <div class="d-flex align-items-center justify-content-center gap-2">
-          <div id="flagMec" runat="server" ClientIDMode="Static" class="diag-flag off">
+          <label id="flagMec" runat="server" ClientIDMode="Static" class="diag-flag off" for="chkMecSi">
             <asp:CheckBox ID="chkMecSi" runat="server" ClientIDMode="Static" CssClass="form-check-input" />
             <i id="icoMec" runat="server" ClientIDMode="Static" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
             <span class="state">Deshabilitado</span>
-          </div>
+          </label>
           <asp:LinkButton ID="btnDiagnosticoMecanica" runat="server" CssClass="icon-btn compacto"
             ToolTip="Abrir módulo de diagnóstico mecánico"
             UseSubmitBehavior="false"
@@ -1000,11 +1000,11 @@
         </div>
 
         <div class="d-flex align-items-center justify-content-center gap-2">
-          <div id="flagHoja" runat="server" ClientIDMode="Static" class="diag-flag off">
+          <label id="flagHoja" runat="server" ClientIDMode="Static" class="diag-flag off" for="chkHojaSi">
             <asp:CheckBox ID="chkHojaSi" runat="server" ClientIDMode="Static" CssClass="form-check-input" />
             <i id="icoHoja" runat="server" ClientIDMode="Static" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
             <span class="state">Deshabilitado</span>
-          </div>
+          </label>
           <asp:LinkButton ID="btnDiagnosticoHojalateria" runat="server" CssClass="icon-btn compacto"
             ToolTip="Abrir módulo de diagnóstico de hojalatería"
             UseSubmitBehavior="false"
@@ -3343,29 +3343,19 @@
                 }
             }
 
-            // Listeners
+            // Listeners - el label maneja el click automáticamente
             document.addEventListener('change', function (e) {
-                if (e.target?.id === 'chkMecSi') { applyDiagGateUI(); saveGate('MEC', e.target.checked); }
-                if (e.target?.id === 'chkHojaSi') { applyDiagGateUI(); saveGate('HOJA', e.target.checked); }
-            });
-
-            // Hacer que el contenedor .diag-flag sea clickeable para toggle del checkbox
-            document.addEventListener('click', function (e) {
-                const flagDiv = e.target.closest('.diag-flag');
-                if (flagDiv) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const checkbox = flagDiv.querySelector('.form-check-input');
-                    if (checkbox) {
-                        const oldValue = checkbox.checked;
-                        checkbox.checked = !checkbox.checked;
-                        console.log('Toggle checkbox:', checkbox.id, 'from', oldValue, 'to', checkbox.checked);
-                        // Disparar evento change para activar los handlers
-                        const changeEvent = new Event('change', { bubbles: true });
-                        checkbox.dispatchEvent(changeEvent);
-                    }
+                if (e.target?.id === 'chkMecSi') {
+                    console.log('chkMecSi changed to:', e.target.checked);
+                    applyDiagGateUI();
+                    saveGate('MEC', e.target.checked);
                 }
-            }, true);
+                if (e.target?.id === 'chkHojaSi') {
+                    console.log('chkHojaSi changed to:', e.target.checked);
+                    applyDiagGateUI();
+                    saveGate('HOJA', e.target.checked);
+                }
+            });
 
             // Ejecutar al cargar
             document.addEventListener('DOMContentLoaded', function() {
