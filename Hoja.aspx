@@ -1348,6 +1348,20 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
+          <!-- Texto de la carta que aparecerá en el PDF -->
+          <div class="alert alert-info mb-4" style="background-color: #f0f9ff; border-left: 4px solid #0284c7; padding: 1rem;">
+            <h6 class="fw-bold mb-3" style="color: #0c4a6e;">
+              <i class="bi bi-info-circle"></i> Contenido de la Carta de Tránsito
+            </h6>
+            <p style="text-align: justify; line-height: 1.6; margin-bottom: 1rem;">
+              Por medio de la presente, hago constar el retiro voluntario del vehículo que, como parte del proceso de atención a la reclamación de mi seguro, se encontrara en espera del dictamen correspondiente. En mi calidad de Asegurado o Apoderado Legal, asumo la responsabilidad por los daños adicionales que pudiera sufrir el vehículo en mi posesión y me comprometo a reingresarlo al Centro de Reparación asignado en un plazo no mayor a 2 días hábiles, a partir de la notificación que reciba por parte de la aseguradora o del Centro de Reparación.
+            </p>
+            <p style="text-align: justify; line-height: 1.6; margin-bottom: 0;">
+              Asimismo, me comprometo a no realizar reparaciones fuera del Centro de Reparación asignado. Estoy enterado de que el incumplimiento de lo anterior puede derivar en la cancelación del surtido de refacciones asignadas.
+            </p>
+          </div>
+
+          <h6 class="fw-bold mb-3 mt-4">Datos del vehículo</h6>
           <div class="row g-3">
             <div class="col-12 col-md-6">
               <label class="form-label">Fecha</label>
@@ -1386,21 +1400,37 @@
               <asp:TextBox ID="txtCtCorreo" runat="server" CssClass="form-control" />
             </div>
           </div>
-          <hr class="my-3" />
+
+          <hr class="my-4" />
+
+          <h6 class="fw-bold mb-3">
+            <i class="bi bi-pen"></i> Firmas
+          </h6>
+          <div class="alert alert-warning mb-3" style="background-color: #fefce8; border-left: 4px solid #eab308; padding: 0.75rem;">
+            <small>
+              <i class="bi bi-exclamation-triangle"></i>
+              <strong>Al firmar, confirmo que he leído y acepto los términos del contenido de la Carta de Tránsito mostrado arriba.</strong>
+            </small>
+          </div>
+
           <div class="row g-3">
             <div class="col-12 col-md-6">
-              <label class="form-label">Firma del Cliente</label>
-              <canvas id="sigCli" width="500" height="150" class="border rounded w-100"></canvas>
+              <label class="form-label fw-bold">Firma del Cliente</label>
+              <canvas id="sigCli" width="500" height="150" class="border rounded w-100" style="background-color: #fafafa;"></canvas>
               <div class="mt-2 d-flex gap-2">
-                <button type="button" class="btn btn-light btn-sm" onclick="clearCanvas('sigCli')">Borrar</button>
+                <button type="button" class="btn btn-light btn-sm" onclick="clearCanvas('sigCli')">
+                  <i class="bi bi-eraser"></i> Borrar
+                </button>
               </div>
               <asp:HiddenField ID="hfFirmaCliente" runat="server" ClientIDMode="Static" />
             </div>
             <div class="col-12 col-md-6">
-              <label class="form-label">Firma del Asesor</label>
-              <canvas id="sigSup" width="500" height="150" class="border rounded w-100"></canvas>
+              <label class="form-label fw-bold">Firma del Asesor</label>
+              <canvas id="sigSup" width="500" height="150" class="border rounded w-100" style="background-color: #fafafa;"></canvas>
               <div class="mt-2 d-flex gap-2">
-                <button type="button" class="btn btn-light btn-sm" onclick="clearCanvas('sigSup')">Borrar</button>
+                <button type="button" class="btn btn-light btn-sm" onclick="clearCanvas('sigSup')">
+                  <i class="bi bi-eraser"></i> Borrar
+                </button>
               </div>
               <asp:HiddenField ID="hfFirmaSupervisor" runat="server" ClientIDMode="Static" />
             </div>
