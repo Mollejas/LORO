@@ -144,8 +144,17 @@ Public Class ValuacionA
 
         ' Obtener ruta del PDF valaut.pdf
         Dim pdfPath As String = ObtenerRutaPDF(admId)
-        If String.IsNullOrWhiteSpace(pdfPath) OrElse Not File.Exists(pdfPath) Then
-            lblMensaje.Text = "No se encontró el archivo valaut.pdf"
+
+        ' Debug: Mostrar la ruta que se está intentando
+        If String.IsNullOrWhiteSpace(pdfPath) Then
+            lblMensaje.Text = "No se pudo obtener la ruta del PDF (carpeta vacía o no encontrada)"
+            lblMensaje.CssClass = "alert alert-warning d-block"
+            lblMensaje.Visible = True
+            Return
+        End If
+
+        If Not File.Exists(pdfPath) Then
+            lblMensaje.Text = "No se encontró el archivo valaut.pdf en la ruta: " & pdfPath
             lblMensaje.CssClass = "alert alert-warning d-block"
             lblMensaje.Visible = True
             Return
@@ -183,22 +192,21 @@ Public Class ValuacionA
         Dim carpetaRel As String = Nothing
 
         Using cn As New SqlConnection(cs)
-            Using cmd As New SqlCommand("SELECT carpeta FROM admisiones WHERE id = @id", cn)
+            Using cmd As New SqlCommand("SELECT carpetarel FROM admisiones WHERE id = @id", cn)
                 cmd.Parameters.AddWithValue("@id", admId)
                 cn.Open()
                 Dim result = cmd.ExecuteScalar()
                 If result IsNot Nothing Then
-                    carpetaRel = result.ToString()
+                    carpetaRel = result.ToString().Trim()
                 End If
             End Using
         End Using
 
         If String.IsNullOrWhiteSpace(carpetaRel) Then Return Nothing
 
-        ' Usar el mismo método que Hoja.aspx.vb
+        ' Usar el mismo método que ViewPdf.ashx
         Dim baseFolder As String = ResolverCarpetaFisica(carpetaRel)
-        Dim valFolder As String = Path.Combine(baseFolder, "4. VALUACION")
-        Dim fullPath As String = Path.Combine(valFolder, "valaut.pdf")
+        Dim fullPath As String = Path.Combine(baseFolder, "4. VALUACION", "valaut.pdf")
 
         Return fullPath
     End Function
