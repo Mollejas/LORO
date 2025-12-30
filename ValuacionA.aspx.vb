@@ -29,7 +29,9 @@ Public Class ValuacionA
     End Sub
 
     Private Sub CargarExpediente(admId As String)
-        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+        If cs Is Nothing Then Return
+
         Using cn As New SqlConnection(cs)
             Using cmd As New SqlCommand("SELECT expediente FROM admisiones WHERE id = @id", cn)
                 cmd.Parameters.AddWithValue("@id", admId)
@@ -43,7 +45,9 @@ Public Class ValuacionA
     End Sub
 
     Private Sub CargarRefacciones(admId As String)
-        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+        If cs Is Nothing Then Return
+
         Dim expediente As String = lblExpediente.Text
 
         Using cn As New SqlConnection(cs)
@@ -96,7 +100,9 @@ Public Class ValuacionA
     End Sub
 
     Private Sub CargarConceptosPDF(admId As String)
-        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+        If cs Is Nothing Then Return
+
         Dim expediente As String = lblExpediente.Text
 
         Using cn As New SqlConnection(cs)
@@ -188,7 +194,9 @@ Public Class ValuacionA
     End Sub
 
     Private Function ObtenerRutaPDF(admId As String) As String
-        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+        If cs Is Nothing Then Return Nothing
+
         Dim carpetaRel As String = Nothing
 
         Using cn As New SqlConnection(cs)
@@ -196,8 +204,8 @@ Public Class ValuacionA
                 cmd.Parameters.AddWithValue("@id", admId)
                 cn.Open()
                 Dim result = cmd.ExecuteScalar()
-                If result IsNot Nothing Then
-                    carpetaRel = result.ToString().Trim()
+                If result IsNot Nothing AndAlso result IsNot DBNull.Value Then
+                    carpetaRel = Convert.ToString(result).Trim()
                 End If
             End Using
         End Using
@@ -222,7 +230,8 @@ Public Class ValuacionA
     End Function
 
     Private Sub GuardarConceptosEnDB(expediente As String, dtRef As DataTable, dtPin As DataTable, dtHoj As DataTable)
-        Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+        If cs Is Nothing Then Return
 
         Using cn As New SqlConnection(cs)
             cn.Open()
@@ -282,7 +291,14 @@ Public Class ValuacionA
             Dim serializer As New JavaScriptSerializer()
             Dim relaciones As Dictionary(Of String, List(Of String)) = serializer.Deserialize(Of Dictionary(Of String, List(Of String)))(jsonRelaciones)
 
-            Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+            Dim cs As String = DatabaseHelper.GetConnectionString()
+            If cs Is Nothing Then
+                lblMensaje.Text = "Error al obtener conexión a la base de datos"
+                lblMensaje.CssClass = "alert alert-danger d-block"
+                lblMensaje.Visible = True
+                Return
+            End If
+
             Using cn As New SqlConnection(cs)
                 cn.Open()
 
