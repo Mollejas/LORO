@@ -195,11 +195,22 @@ Public Class ValuacionA
 
         If String.IsNullOrWhiteSpace(carpetaRel) Then Return Nothing
 
-        Dim basePath As String = ConfigurationManager.AppSettings("carpeta_pdfs")
-        If String.IsNullOrWhiteSpace(basePath) Then basePath = "C:\ERP\PDFS"
+        ' Usar el mismo método que Hoja.aspx.vb
+        Dim baseFolder As String = ResolverCarpetaFisica(carpetaRel)
+        Dim valFolder As String = Path.Combine(baseFolder, "4. VALUACION")
+        Dim fullPath As String = Path.Combine(valFolder, "valaut.pdf")
 
-        Dim fullPath As String = Path.Combine(basePath, carpetaRel, "4. VALUACION", "valaut.pdf")
         Return fullPath
+    End Function
+
+    Private Function ResolverCarpetaFisica(carpetaRel As String) As String
+        Dim p As String = Convert.ToString(carpetaRel).Trim()
+        If String.IsNullOrEmpty(p) Then Throw New Exception("carpetarel vacío.")
+        If Path.IsPathRooted(p) Then Return p
+        If p.StartsWith("~") OrElse p.StartsWith("/") OrElse p.StartsWith("\") Then
+            Return Server.MapPath(p)
+        End If
+        Return Server.MapPath("~/" & p.TrimStart("/"c, "\"c))
     End Function
 
     Private Sub GuardarConceptosEnDB(expediente As String, dtRef As DataTable, dtPin As DataTable, dtHoj As DataTable)
