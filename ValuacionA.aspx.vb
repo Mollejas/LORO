@@ -25,6 +25,7 @@ Public Class ValuacionA
             CargarExpediente(admId)
             CargarRefacciones(admId)
             CargarConceptosPDF(admId)
+            CargarRelacionesExistentes()
         End If
     End Sub
 
@@ -589,5 +590,56 @@ Public Class ValuacionA
             Return String.Format("Subtotal: {0:C2} | IVA: {1:C2} | Total: {2:C2}", Sub1, Iva, Tot)
         End Function
     End Class
+
+    Private Sub CargarRelacionesExistentes()
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+        If cs Is Nothing Then Return
+
+        Dim expediente As String = lblExpediente.Text
+        If String.IsNullOrWhiteSpace(expediente) Then Return
+
+        ' Cargar relaciones existentes desde la base de datos
+        Dim relacionesDict As New Dictionary(Of Integer, List(Of Integer))
+
+        Using cn As New SqlConnection(cs)
+            cn.Open()
+
+            ' Obtener todas las relaciones donde refaccion_id no es NULL
+            Using cmd As New SqlCommand("SELECT id, refaccion_id FROM ConceptosValuacion WHERE expediente = @exp AND refaccion_id IS NOT NULL", cn)
+                cmd.Parameters.AddWithValue("@exp", expediente)
+                Using reader As SqlDataReader = cmd.ExecuteReader()
+                    While reader.Read()
+                        Dim conceptoId As Integer = Convert.ToInt32(reader("id"))
+                        Dim refaccionId As Integer = Convert.ToInt32(reader("refaccion_id"))
+
+                        If Not relacionesDict.ContainsKey(refaccionId) Then
+                            relacionesDict(refaccionId) = New List(Of Integer)
+                        End If
+                        relacionesDict(refaccionId).Add(conceptoId)
+                    End While
+                End Using
+            End Using
+        End Using
+
+        ' Generar script JavaScript para inicializar las relaciones
+        If relacionesDict.Count > 0 Then
+            Dim sb As New System.Text.StringBuilder()
+            sb.AppendLine("<script type='text/javascript'>")
+            sb.AppendLine("window.relacionesIniciales = {")
+
+            Dim items As New List(Of String)
+            For Each kvp In relacionesDict
+                Dim conceptos As String = String.Join(",", kvp.Value)
+                items.Add(String.Format("'{0}': [{1}]", kvp.Key, conceptos))
+            Next
+
+            sb.AppendLine(String.Join("," & vbCrLf, items))
+            sb.AppendLine("};")
+            sb.AppendLine("</script>")
+
+            ' Registrar el script en la página
+            ClientScript.RegisterStartupScript(Me.GetType(), "RelacionesIniciales", sb.ToString(), False)
+        End If
+    End Sub
 
 End Class

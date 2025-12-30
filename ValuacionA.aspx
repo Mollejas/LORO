@@ -438,8 +438,20 @@
         }
 
         function cargarRelacionesExistentes() {
-            // Esta función se llenará desde el servidor con las relaciones ya guardadas
-            // Por ahora iniciamos vacío
+            // Cargar relaciones desde el servidor
+            if (window.relacionesIniciales) {
+                relaciones = window.relacionesIniciales;
+
+                // Aplicar las relaciones cargadas a la UI
+                for (const refId in relaciones) {
+                    const conceptos = relaciones[refId];
+                    conceptos.forEach(conceptoId => {
+                        actualizarUI(refId, conceptoId);
+                    });
+                }
+
+                console.log('Relaciones cargadas desde BD:', relaciones);
+            }
         }
 
         // Función para preparar datos antes de guardar
