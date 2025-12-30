@@ -1,22 +1,21 @@
-﻿Imports System.IO
-Imports System.Drawing
-Imports System.Text
-Imports System.Text.RegularExpressions
-Imports iTextSharp.text.pdf
-Imports iTextSharp.text.pdf.parser
-Imports Path = System.IO.Path
+Imports System
 Imports System.Data
 Imports System.Data.SqlClient
 Imports System.Configuration
-Imports System.Globalization
+Imports System.IO
+Imports System.Text
 Imports System.Net
 Imports System.Net.Mail
 Imports System.Net.Mime
-Imports System.Web
-Imports System.Linq
+Imports iTextSharp.text
+Imports iTextSharp.text.pdf
+Imports iTextSharp.text.pdf.parser
+Imports Path = System.IO.Path
 
-Public Class Alta
+Public Class AltaQua
     Inherits System.Web.UI.Page
+
+    Private Const TEMP_DIR As String = "~/App_Data/tmp"
 
     ' ===== Subcarpetas estándar =====
     Private ReadOnly SubcarpetasInbursa As String() = {
@@ -32,35 +31,23 @@ Public Class Alta
         "10. FOTOS REINGRESO DE TRANSITO "
     }
 
-    Private Const TEMP_DIR As String = "~/App_Data/tmp"
-
-    ' ================================
-    ' ============ EVENTS ============
-    ' ================================
-    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         If Not IsPostBack Then
-            ' Ocultar checkboxes de puertas (y contenedores)
-            If rowPuertas2 IsNot Nothing Then rowPuertas2.Visible = False
-            If rowPuertas4 IsNot Nothing Then rowPuertas4.Visible = False
-            If chk2Puertas IsNot Nothing Then chk2Puertas.Visible = False
-            If chk4Puertas IsNot Nothing Then chk4Puertas.Visible = False
-
             ' Sugerido en UI (no definitivo) por paridad
             SetExpedienteSugeridoPorParidad()
 
-            ' “Creado por” desde el Master
+            ' "Creado por" desde el Master
             Dim nombreCreador As String = If(Master IsNot Nothing, Master.CurrentUserName, String.Empty)
             txtCreadoPor.Text = nombreCreador
             txtCreadoPor.ReadOnly = True
             txtCreadoPor.Attributes("readonly") = "readonly"
             txtCreadoPor.CssClass = (txtCreadoPor.CssClass & " bg-light").Trim()
 
-            ' FECHA ACTUAL (YYYY-MM-DD) y solo lectura
+            ' Fecha de creación actual
             Dim ahora = DateTime.Now
             txtFechaCreacion.TextMode = TextBoxMode.DateTimeLocal
-            txtFechaCreacion.Text = ahora.ToString("yyyy-MM-ddTHH:mm") ' formato HTML5
+            txtFechaCreacion.Text = ahora.ToString("yyyy-MM-ddTHH:mm")
             txtFechaCreacion.ReadOnly = True
-            ' ya no necesitas: txtFechaCreacion.Attributes("readonly") = "readonly"
             txtFechaCreacion.CssClass = (txtFechaCreacion.CssClass & " bg-light").Trim()
 
             ' Estatus en blanco visualmente
@@ -68,138 +55,13 @@ Public Class Alta
         End If
     End Sub
 
-    ' Disparado por el botón oculto tras seleccionar/soltar PDF
-    Protected Sub BtnTrigger_Click(sender As Object, e As EventArgs) Handles btnTrigger.Click
-        ProcesarPDFyPrellenar()
-        SetExpedienteSugeridoPorParidad()
-    End Sub
-
-    Private Sub ProcesarPDFyPrellenar()
+    ' Se dispara cuando el JS hace click en btnTrigger al cargar el PDF
+    Protected Sub BtnTrigger_Click(ByVal sender As Object, ByVal e As EventArgs)
         If Not fupPDF.HasFile Then Exit Sub
-
-        Dim msOriginal As New MemoryStream()
-        fupPDF.PostedFile.InputStream.CopyTo(msOriginal)
-
-        Dim msTexto As New MemoryStream(msOriginal.ToArray())
-
-        Dim contenido As String = ExtraerTextoDePDF(msTexto)
-        Dim lineas = contenido.Split({vbCrLf, vbLf}, StringSplitOptions.RemoveEmptyEntries).ToList()
-        contenido = contenido.Replace(ChrW(&HA0), " ").Replace(vbCr, vbLf)
-
-        ' === Folio/Reporte ===
-        Dim idxFolioTxt As Integer = contenido.IndexOf("Folio", StringComparison.OrdinalIgnoreCase)
-        If idxFolioTxt >= 0 Then
-            Dim start As Integer = idxFolioTxt
-            Dim length As Integer = Math.Min(300, contenido.Length - start)
-            Dim bloque As String = contenido.Substring(start, length)
-            Dim msNums = Regex.Matches(bloque, "\d{7,}")
-            If msNums.Count > 0 Then
-                txtReporte.Text = msNums(msNums.Count - 1).Value
-            Else
-                Dim ms6 = Regex.Matches(bloque, "\d{6,}")
-                If ms6.Count > 0 Then txtReporte.Text = ms6(ms6.Count - 1).Value
-            End If
-        End If
-
-        ' === Encabezado principal ===
-        Dim idxEncabezado = lineas.FindIndex(Function(l) l.Contains("Emisor") AndAlso l.Contains("Número de carpeta"))
-        If idxEncabezado >= 0 AndAlso idxEncabezado + 1 < lineas.Count Then
-            Dim valoresLinea As String = lineas(idxEncabezado + 1).Trim()
-            Dim matches = Regex.Matches(valoresLinea, "40100\s*-\s*\d+")
-            If matches.Count >= 1 Then txtSiniestro.Text = matches(0).Value
-            Dim partes = Regex.Split(valoresLinea, "\s+")
-            If partes.Length >= 4 Then
-                txtEmisor.Text = partes(0)
-                txtCarpeta.Text = partes(1)
-                txtPoliza.Text = partes(2)
-                txtCIS.Text = partes(3)
-            End If
-        End If
-
-        ' === Cobranza / Vigencias / Fecha Siniestro ===
-        Dim idxCobranza = lineas.FindIndex(Function(l) l.Contains("Estado de cobranza"))
-        If idxCobranza >= 0 AndAlso idxCobranza + 1 < lineas.Count Then
-            Dim datos = Regex.Split(lineas(idxCobranza + 1).Trim(), "\s+")
-            If datos.Length >= 5 Then
-                txtEstCobranza.Text = datos(0) & " " & datos(1)
-                txtVigenciaDesde.Text = datos(2)
-                txtVigenciaHasta.Text = datos(3)
-                FchSiniestro.Text = datos(4)
-            End If
-        End If
-
-        ' === Ajustador ===
-        Dim idxAjustador = lineas.FindIndex(Function(l) l.Contains("Nombre del ajustador"))
-        If idxAjustador >= 0 Then
-            Dim datos = Regex.Split(lineas(idxAjustador + 1).Trim(), "\s+")
-            If datos.Length > 1 Then
-                txtAjustador.Text = String.Join(" ", datos.Take(datos.Length - 1))
-                txtClaveAjustador.Text = datos.Last()
-            End If
-        End If
-
-        ' === Asegurado / Teléfono / Correo ===
-        Dim idxAsegurado = lineas.FindIndex(Function(l) l.Contains("Nombre completo"))
-        If idxAsegurado >= 0 Then txtAsegurado.Text = lineas(idxAsegurado + 1).Trim()
-        Dim idxTel = lineas.FindIndex(Function(l) l.Contains("Teléfono celular"))
-        If idxTel >= 0 Then
-            Dim datosTel = Regex.Split(lineas(idxTel + 1).Trim(), "\s+")
-            If datosTel.Length >= 1 Then txtTelefono.Text = datosTel(0)
-            If datosTel.Length >= 2 Then txtCorreo.Text = datosTel(1)
-        End If
-
-        ' === Vehículo ===
-        Dim idxVehiculo = lineas.FindIndex(Function(l) l.Contains("Marca") AndAlso l.Contains("Modelo"))
-        Dim idxPlacas = lineas.FindIndex(Function(l) l.Contains("Placas") AndAlso l.Contains("Color"))
-        If idxVehiculo >= 0 AndAlso idxPlacas > idxVehiculo Then
-            Dim numLineas = idxPlacas - idxVehiculo - 1
-            If numLineas = 3 Then
-                Dim linea1 = lineas(idxVehiculo + 1).Trim()
-                Dim linea2 = lineas(idxVehiculo + 2).Trim()
-                Dim linea3 = lineas(idxVehiculo + 3).Trim()
-                txtMarca.Text = CleanMarca(RemoveParentheses(linea1 & " " & linea3))
-                Dim datos = Regex.Split(linea2, "\s+")
-                If datos.Length >= 4 Then
-                    txtTipo.Text = datos(0)
-                    txtModelo.Text = datos(1)
-                    txtMotor.Text = datos(2)
-                    txtSerie.Text = datos(3)
-                End If
-            Else
-                If idxVehiculo + 1 < lineas.Count Then
-                    Dim datos = Regex.Split(lineas(idxVehiculo + 1).Trim(), "\s+")
-                    If datos.Length >= 6 AndAlso datos(1).StartsWith("(") AndAlso datos(1).EndsWith(")") Then
-                        txtMarca.Text = CleanMarca(RemoveParentheses(datos(0) & " " & datos(1)))
-                        txtTipo.Text = datos(2)
-                        txtModelo.Text = datos(3)
-                        txtMotor.Text = datos(4)
-                        txtSerie.Text = datos(5)
-                    ElseIf datos.Length >= 5 Then
-                        txtMarca.Text = CleanMarca(RemoveParentheses(datos(0)))
-                        txtTipo.Text = datos(1)
-                        txtModelo.Text = datos(2)
-                        txtMotor.Text = datos(3)
-                        txtSerie.Text = datos(4)
-                    End If
-                End If
-            End If
-        End If
-
-        Dim idxPlacas2 = lineas.FindIndex(Function(l) l.Contains("Placas") AndAlso l.Contains("Color"))
-        If idxPlacas2 >= 0 AndAlso idxPlacas2 + 1 < lineas.Count Then
-            Dim datos = Regex.Split(lineas(idxPlacas2 + 1).Trim(), "\s+")
-            If datos.Length >= 5 Then
-                txtPlacas.Text = datos(0)
-                txtColor.Text = datos(1)
-                txtTransmision.Text = datos(2)
-                txtKilometros.Text = datos(3)
-                txtUso.Text = datos.Last()
-            End If
-        End If
 
         ' === Guardar temporal ODA.pdf para moverlo al Guardar ===
         Dim ext = Path.GetExtension(fupPDF.FileName).ToLowerInvariant()
-        If ext <> ".pdf" Then Throw New ApplicationException("El archivo debe ser un PDF (.pdf).")
+        If ext <> ".pdf" Then Exit Sub
         Dim dirTmp = Server.MapPath(TEMP_DIR)
         If Not Directory.Exists(dirTmp) Then Directory.CreateDirectory(dirTmp)
         Dim tempName = Guid.NewGuid().ToString("N") & ".pdf"
@@ -207,54 +69,109 @@ Public Class Alta
         fupPDF.SaveAs(tempPhysical)
         ViewState("TempPdfRel") = TEMP_DIR.TrimEnd("/"c) & "/" & tempName
 
-        ' Siniestro (últimos 7)
-        Dim ult7 As String = Ultimos7Digitos(txtSiniestro.Text)
-        txtSiniestroGen.Text = ult7
+        Try
+            Using reader As New PdfReader(tempPhysical)
+                Dim pagina As Integer = 1
+
+                ' ------- RECTÁNGULOS (coordenadas con origen abajo-izquierda) -------
+                ' Estos son los mismos rectángulos que en LeerOrden.aspx.vb
+                Dim rNumeroReporte As New Rectangle(85.0F, 1234.69F, 140.04F, 1247.06F)
+                Dim rNombreCliente As New Rectangle(23.0F, 1177.18F, 164.38F, 1188.17F)
+                Dim rTelefono As New Rectangle(338.0F, 1177.18F, 386.93F, 1188.17F)
+                Dim rEmail As New Rectangle(23.0F, 1150.18F, 102.69F, 1161.17F)
+                Dim rMarca As New Rectangle(23.0F, 1055.18F, 55.9F, 1066.17F)
+                Dim rTipo As New Rectangle(159.0F, 1055.18F, 288.36F, 1066.17F)
+                Dim rModelo As New Rectangle(295.0F, 1055.18F, 312.79F, 1066.17F)
+                Dim rColor As New Rectangle(331.0F, 1038.96F, 366.0F, 1051.33F)
+                Dim rVin As New Rectangle(22.0F, 1025.96F, 113.55F, 1038.33F)
+                Dim rPlacas As New Rectangle(331.0F, 1025.96F, 362.02F, 1038.33F)
+
+                ' ------- LECTURA DE CADA REGIÓN -------
+                txtNumeroReporte.Text = Limpiar(ExtraerTextoRegion(reader, pagina, rNumeroReporte))
+                txtNombreCliente.Text = Limpiar(ExtraerTextoRegion(reader, pagina, rNombreCliente))
+                txtTelefono.Text = Limpiar(ExtraerTextoRegion(reader, pagina, rTelefono))
+                txtEmail.Text = Limpiar(ExtraerTextoRegion(reader, pagina, rEmail))
+                txtMarca.Text = Limpiar(ExtraerTextoRegion(reader, pagina, rMarca))
+                txtTipo.Text = Limpiar(ExtraerTextoRegion(reader, pagina, rTipo))
+                txtModelo.Text = Limpiar(ExtraerTextoRegion(reader, pagina, rModelo))
+                txtColor.Text = Limpiar(ExtraerTextoRegion(reader, pagina, rColor))
+                txtVin.Text = Limpiar(ExtraerTextoRegion(reader, pagina, rVin))
+                txtPlacas.Text = Limpiar(ExtraerTextoRegion(reader, pagina, rPlacas))
+
+                ' Copiar número de reporte a siniestro
+                txtSiniestroGen.Text = txtNumeroReporte.Text
+            End Using
+        Catch ex As Exception
+            ' Manejo de error silencioso o puedes agregar un Label para mostrar el mensaje
+        End Try
+
+        ' Recalcular expediente sugerido después de cargar PDF
+        SetExpedienteSugeridoPorParidad()
     End Sub
 
-    Protected Sub btnGuardar_Click(sender As Object, e As EventArgs) Handles btnGuardar.Click
-        ' === Validaciones de selección ===
-        Dim tipoSel As String = If(ddlTipoIngreso.SelectedValue, String.Empty).Trim().ToUpperInvariant()
-        Dim estSel As String = If(ddlEstatus.SelectedValue, String.Empty).Trim().ToUpperInvariant()
+    ''' <summary>
+    ''' Extrae el texto de una región específica usando iTextSharp.
+    ''' </summary>
+    Private Function ExtraerTextoRegion(reader As PdfReader,
+                                       numPagina As Integer,
+                                       region As Rectangle) As String
+        Dim filtro As New RegionTextRenderFilter(region)
+        Dim estrategia As ITextExtractionStrategy =
+            New FilteredTextRenderListener(New LocationTextExtractionStrategy(), filtro)
 
-        If String.IsNullOrWhiteSpace(txtSiniestroGen.Text) OrElse
-       String.IsNullOrWhiteSpace(tipoSel) OrElse
-       String.IsNullOrWhiteSpace(ddlDeducible.SelectedValue) OrElse
-       String.IsNullOrWhiteSpace(estSel) Then
-            Alert("Completa Generación de expediente.")
-            Exit Sub
+        Dim texto As String = PdfTextExtractor.GetTextFromPage(reader, numPagina, estrategia)
+        Return texto
+    End Function
+
+    ''' <summary>
+    ''' Limpia saltos de línea y espacios extra.
+    ''' </summary>
+    Private Function Limpiar(texto As String) As String
+        If String.IsNullOrWhiteSpace(texto) Then
+            Return ""
         End If
 
-        ' Reglas de negocio: TipoIngreso vs Estatus
-        If (tipoSel = "GRUA" OrElse tipoSel = "PROPIO IMPULSO") AndAlso estSel <> "PISO" Then
-            Alert("Si el Tipo de Ingreso es GRUA o PROPIO IMPULSO, el Estatus debe ser PISO.")
-            Exit Sub
-        End If
-        If (tipoSel = "TRANSITO") AndAlso estSel <> "TRANSITO" Then
-            Alert("Si el Tipo de Ingreso es TRANSITO, el Estatus debe ser TRANSITO.")
-            Exit Sub
-        End If
+        texto = texto.Replace(vbCr, " ").Replace(vbLf, " ")
+        While texto.Contains("  ")
+            texto = texto.Replace("  ", " ")
+        End While
 
-        ' === 1) Número DEFINITIVO por paridad (Expediente visible para el usuario) ===
-        Dim paridadUsuario As String = ObtenerParidadUsuarioActual()
-        Dim expedienteId As Integer
+        Return texto.Trim()
+    End Function
+
+    ' Guardado en la tabla ADMISIONES
+    Protected Sub btnGuardar_Click(ByVal sender As Object, ByVal e As EventArgs)
         Try
-            expedienteId = ObtenerSiguienteExpedienteSeguro(paridadUsuario)
-        Catch ex As Exception
-            Alert("No se pudo asignar el número de expediente: " & ex.Message.Replace("'", "\'"))
-            Exit Sub
-        End Try
-        txtExpediente.Text = expedienteId.ToString("0")
+            ' Obtener la cadena de conexión del web.config
+            Dim csSetting As String = DatabaseHelper.GetConnectionString()
+            If csSetting Is Nothing OrElse String.IsNullOrWhiteSpace(csSetting) Then
+                Alert("Falta la cadena de conexión DaytonaDB en Web.config")
+                Exit Sub
+            End If
 
-        Dim csSetting As String = DatabaseHelper.GetConnectionString()
-        If csSetting Is Nothing OrElse String.IsNullOrWhiteSpace(csSetting) Then
-            Alert("Falta la cadena de conexión DaytonaDB en Web.config")
-            Exit Sub
-        End If
+            ' CreadoPor desde el textbox o Master
+            Dim creadoPorNombre As String = If(Not String.IsNullOrWhiteSpace(txtCreadoPor.Text), txtCreadoPor.Text.Trim(),
+                                            If(Master IsNot Nothing, Master.CurrentUserName, String.Empty))
 
-        Try
-            ' === 2) Preparar carpeta destino (usa Marca limpia sin paréntesis) ===
+            ' Obtener la paridad del usuario actual
+            Dim paridad As String = ObtenerParidadUsuarioActual()
+
+            ' Generar expediente seguro con sp_getapplock
+            Dim expedienteId As Integer
+            Try
+                expedienteId = ObtenerSiguienteExpedienteSeguro(paridad, csSetting)
+            Catch ex As Exception
+                Alert("No se pudo asignar el número de expediente: " & ex.Message.Replace("'", "\'"))
+                Exit Sub
+            End Try
+
+            ' Formatear expediente y actualizar el textbox
+            txtExpediente.Text = expedienteId.ToString("0")
+
+            ' Formatear expediente a 5 dígitos: "00001", "00002", etc.
             Dim idFormateado As String = expedienteId.ToString("D5")
+
+            ' Construir nombre de carpeta: "EXP 00001 MARCA TIPO MODELO COLOR PLACAS" (igual que Alta.aspx)
             Dim marcaClean As String = CleanMarca(RemoveParentheses(txtMarca.Text))
 
             Dim partes As New List(Of String)
@@ -268,18 +185,22 @@ Public Class Alta
             If partes.Count > 0 Then carpetaNombre &= " " & String.Join(" ", partes)
             carpetaNombre = SanitizeFileName(carpetaNombre)
 
+            ' Ruta virtual y física de la carpeta
             Dim baseVirtual = GetInbursaBaseVirtual().TrimEnd("/"c)   ' p.ej. ~/INBURSA
             Dim carpetaRel As String = (baseVirtual & "/" & carpetaNombre).Replace("//", "/")
-            Dim carpetaFisica = Server.MapPath(carpetaRel)
+            Dim carpetaFisica As String = Server.MapPath(carpetaRel)
 
+            ' Crear carpeta principal
             If Not Directory.Exists(carpetaFisica) Then Directory.CreateDirectory(carpetaFisica)
+
+            ' Crear las 10 subcarpetas estándar (igual que en Alta.aspx)
             For Each subc In SubcarpetasInbursa
                 Dim rel = carpetaRel & "/" & SanitizeFileName(subc)
                 Dim phy = Server.MapPath(rel)
                 If Not Directory.Exists(phy) Then Directory.CreateDirectory(phy)
             Next
 
-            ' === 3) Mover ODA.pdf desde TEMP si existe ===
+            ' === Mover ODA.pdf desde TEMP si existe ===
             Dim tempRel = TryCast(ViewState("TempPdfRel"), String)
             If Not String.IsNullOrWhiteSpace(tempRel) Then
                 Dim tempPhysical = Server.MapPath(tempRel)
@@ -294,7 +215,7 @@ Public Class Alta
                 End If
             End If
 
-            ' === 4) INSERT en Admisiones y obtener el Id (PK=Id) con OUTPUT INSERTED.Id ===
+            ' === INSERT en Admisiones y obtener el Id (PK=Id) con OUTPUT INSERTED.Id ===
             Dim newAdmId As Integer = 0
             Using cn As New SqlConnection(csSetting)
                 Const sqlInsert As String = "
@@ -302,9 +223,8 @@ Public Class Alta
             (
                 Expediente, CreadoPor, FechaCreacion, SiniestroGen, TipoIngreso, DeducibleSI_NO, Estatus,
                 Asegurado, Telefono, Correo,
-                Emisor, Carpeta, Poliza, CIS, SiniestroIdent, Reporte, EstCobranza, FechaSiniestro, VigenciaDesde, VigenciaHasta,
-                Ajustador, ClaveAjustador,
-                Marca, Tipo, Modelo, Motor, Serie, Placas, Color, Transmision, Kilometros, Uso, Puertas2, Puertas4,
+                Reporte,
+                Marca, Tipo, Modelo, Color, Serie, Placas,
                 CarpetaRel
             )
             OUTPUT INSERTED.Id
@@ -312,61 +232,36 @@ Public Class Alta
             (
                 @Expediente, @CreadoPor, @FechaCreacion, @SiniestroGen, @TipoIngreso, @DeducibleSI_NO, @Estatus,
                 @Asegurado, @Telefono, @Correo,
-                @Emisor, @Carpeta, @Poliza, @CIS, @SiniestroIdent, @Reporte, @EstCobranza, @FechaSiniestro, @VigenciaDesde, @VigenciaHasta,
-                @Ajustador, @ClaveAjustador,
-                @Marca, @Tipo, @Modelo, @Motor, @Serie, @Placas, @Color, @Transmision, @Kilometros, @Uso, @Puertas2, @Puertas4,
+                @Reporte,
+                @Marca, @Tipo, @Modelo, @Color, @Serie, @Placas,
                 @CarpetaRel
             );"
 
                 Using cmd As New SqlCommand(sqlInsert, cn)
                     cmd.CommandType = CommandType.Text
 
-                    ' CreadoPor desde el textbox o Master
-                    Dim creadoPorNombre As String = If(Not String.IsNullOrWhiteSpace(txtCreadoPor.Text), txtCreadoPor.Text.Trim(),
-                                                    If(Master IsNot Nothing, Master.CurrentUserName, String.Empty))
-
-                    ' Generación
+                    ' Generación de Expediente
                     cmd.Parameters.Add("@Expediente", SqlDbType.NVarChar, 50).Value = txtExpediente.Text.Trim()
-                    cmd.Parameters.Add("@CreadoPor", SqlDbType.NVarChar, 100).Value =
-                    If(String.IsNullOrWhiteSpace(creadoPorNombre), DBNull.Value, CType(creadoPorNombre.Trim(), Object))
+                    cmd.Parameters.Add("@CreadoPor", SqlDbType.NVarChar, 100).Value = creadoPorNombre.Trim()
                     cmd.Parameters.Add("@FechaCreacion", SqlDbType.DateTime2).Value = DateTime.Now
                     cmd.Parameters.Add("@SiniestroGen", SqlDbType.NVarChar, 50).Value = txtSiniestroGen.Text.Trim()
-                    cmd.Parameters.Add("@TipoIngreso", SqlDbType.NVarChar, 20).Value = ddlTipoIngreso.SelectedValue
-                    cmd.Parameters.Add("@DeducibleSI_NO", SqlDbType.NVarChar, 2).Value = ddlDeducible.SelectedValue
-                    cmd.Parameters.Add("@Estatus", SqlDbType.NVarChar, 20).Value = ddlEstatus.SelectedValue
+                    cmd.Parameters.Add("@TipoIngreso", SqlDbType.NVarChar, 20).Value = If(ddlTipoIngreso.SelectedValue, String.Empty)
+                    cmd.Parameters.Add("@DeducibleSI_NO", SqlDbType.NVarChar, 2).Value = If(ddlDeducible.SelectedValue, String.Empty)
+                    cmd.Parameters.Add("@Estatus", SqlDbType.NVarChar, 20).Value = If(ddlEstatus.SelectedValue, String.Empty)
 
-                    ' Cliente (reducido)
-                    cmd.Parameters.Add("@Asegurado", SqlDbType.NVarChar, 150).Value = txtAsegurado.Text.Trim()
+                    ' Datos del Cliente (extraídos del PDF)
+                    cmd.Parameters.Add("@Asegurado", SqlDbType.NVarChar, 150).Value = txtNombreCliente.Text.Trim()
                     cmd.Parameters.Add("@Telefono", SqlDbType.NVarChar, 50).Value = txtTelefono.Text.Trim()
-                    cmd.Parameters.Add("@Correo", SqlDbType.NVarChar, 150).Value = txtCorreo.Text.Trim()
+                    cmd.Parameters.Add("@Correo", SqlDbType.NVarChar, 150).Value = txtEmail.Text.Trim()
+                    cmd.Parameters.Add("@Reporte", SqlDbType.NVarChar, 50).Value = txtNumeroReporte.Text.Trim()
 
-                    ' Identificación del siniestro
-                    cmd.Parameters.Add("@Emisor", SqlDbType.NVarChar, 100).Value = txtEmisor.Text.Trim()
-                    cmd.Parameters.Add("@Carpeta", SqlDbType.NVarChar, 50).Value = txtCarpeta.Text.Trim()
-                    cmd.Parameters.Add("@Poliza", SqlDbType.NVarChar, 50).Value = txtPoliza.Text.Trim()
-                    cmd.Parameters.Add("@CIS", SqlDbType.NVarChar, 50).Value = txtCIS.Text.Trim()
-                    cmd.Parameters.Add("@SiniestroIdent", SqlDbType.NVarChar, 50).Value = txtSiniestro.Text.Trim()
-                    cmd.Parameters.Add("@Reporte", SqlDbType.NVarChar, 50).Value = txtReporte.Text.Trim()
-                    cmd.Parameters.Add("@EstCobranza", SqlDbType.NVarChar, 50).Value = txtEstCobranza.Text.Trim()
-                    cmd.Parameters.Add("@FechaSiniestro", SqlDbType.Date).Value = ParseDateOrDbNull(FchSiniestro.Text)
-                    cmd.Parameters.Add("@VigenciaDesde", SqlDbType.Date).Value = ParseDateOrDbNull(txtVigenciaDesde.Text)
-                    cmd.Parameters.Add("@VigenciaHasta", SqlDbType.Date).Value = ParseDateOrDbNull(txtVigenciaHasta.Text)
-                    cmd.Parameters.Add("@Ajustador", SqlDbType.NVarChar, 100).Value = txtAjustador.Text.Trim()
-                    cmd.Parameters.Add("@ClaveAjustador", SqlDbType.NVarChar, 50).Value = txtClaveAjustador.Text.Trim()
-
-                    ' Vehículo
+                    ' Datos del Vehículo (extraídos del PDF)
                     cmd.Parameters.Add("@Marca", SqlDbType.NVarChar, 50).Value = marcaClean
                     cmd.Parameters.Add("@Tipo", SqlDbType.NVarChar, 50).Value = txtTipo.Text.Trim()
                     cmd.Parameters.Add("@Modelo", SqlDbType.NVarChar, 20).Value = txtModelo.Text.Trim()
-                    cmd.Parameters.Add("@Motor", SqlDbType.NVarChar, 50).Value = txtMotor.Text.Trim()
-                    cmd.Parameters.Add("@Serie", SqlDbType.NVarChar, 50).Value = txtSerie.Text.Trim()
-                    cmd.Parameters.Add("@Placas", SqlDbType.NVarChar, 20).Value = txtPlacas.Text.Trim()
                     cmd.Parameters.Add("@Color", SqlDbType.NVarChar, 30).Value = txtColor.Text.Trim()
-                    cmd.Parameters.Add("@Transmision", SqlDbType.NVarChar, 30).Value = txtTransmision.Text.Trim()
-                    cmd.Parameters.Add("@Kilometros", SqlDbType.NVarChar, 20).Value = txtKilometros.Text.Trim()
-                    cmd.Parameters.Add("@Uso", SqlDbType.NVarChar, 30).Value = txtUso.Text.Trim()
-                    cmd.Parameters.Add("@Puertas2", SqlDbType.Bit).Value = chk2Puertas.Checked
-                    cmd.Parameters.Add("@Puertas4", SqlDbType.Bit).Value = chk4Puertas.Checked
+                    cmd.Parameters.Add("@Serie", SqlDbType.NVarChar, 50).Value = txtVin.Text.Trim()
+                    cmd.Parameters.Add("@Placas", SqlDbType.NVarChar, 20).Value = txtPlacas.Text.Trim()
 
                     ' Carpeta relativa
                     cmd.Parameters.Add("@CarpetaRel", SqlDbType.NVarChar, 300).Value = carpetaRel
@@ -381,8 +276,8 @@ Public Class Alta
                 End Using
             End Using
 
-            ' === 5) (Opcional) Correo de bienvenida ===
-            Dim destinatario As String = If(txtCorreo IsNot Nothing, txtCorreo.Text.Trim(), String.Empty)
+            ' === (Opcional) Correo de bienvenida ===
+            Dim destinatario As String = If(txtEmail IsNot Nothing, txtEmail.Text.Trim(), String.Empty)
             If Not String.IsNullOrWhiteSpace(destinatario) AndAlso IsValidEmail(destinatario) Then
                 Try
                     EnviarCorreoBienvenida(destinatario)
@@ -391,22 +286,27 @@ Public Class Alta
                 End Try
             End If
 
-            ' === 6) Redirección a Hoja.aspx con el Id (PK) recién creado ===
+            ' === Redirección a Hoja.aspx con el Id (PK) recién creado ===
             Dim url As String = ResolveUrl("Hoja.aspx?id=" & HttpUtility.UrlEncode(newAdmId.ToString()))
             Response.Redirect(url, False)
             Context.ApplicationInstance.CompleteRequest()
             Return
 
         Catch ex As Exception
+            ' Mostrar mensaje de error detallado al usuario
             Alert("Error al guardar: " & ex.Message.Replace("'", "\'"))
         End Try
     End Sub
 
+    ''' <summary>
+    ''' Muestra un mensaje de alerta en el navegador usando JavaScript.
+    ''' </summary>
+    Private Sub Alert(msg As String)
+        ClientScript.RegisterStartupScript(Me.GetType(), "msg", "alert('" & msg.Replace("'", "\'") & "');", True)
+    End Sub
 
+    ' ==================== FUNCIONES DE PARIDAD PAR/NON ====================
 
-    ' ================================
-    ' ============ HELPERS ===========
-    ' ================================
     Private Sub SetExpedienteSugeridoPorParidad()
         Dim paridad As String = ObtenerParidadUsuarioActual()
         Dim ultimos = ObtenerUltimosParYNonExpediente()
@@ -552,19 +452,19 @@ Public Class Alta
         Return Tuple.Create(CType(Nothing, Integer?), CType(Nothing, Integer?))
     End Function
 
-    Private Function ObtenerSiguienteExpedienteSeguro(paridad As String) As Integer
+    ' ==================== FUNCIONES PARA CREACIÓN DE CARPETAS ====================
+
+    ''' <summary>
+    ''' Obtiene el siguiente expediente de forma segura usando sp_getapplock para evitar duplicados.
+    ''' </summary>
+    Private Function ObtenerSiguienteExpedienteSeguro(paridad As String, connectionString As String) As Integer
         paridad = If(paridad, "PAR").ToUpperInvariant().Trim()
         If paridad <> "PAR" AndAlso paridad <> "NON" Then paridad = "PAR"
-
-        Dim cs As String = DatabaseHelper.GetConnectionString()
-        If cs Is Nothing OrElse String.IsNullOrWhiteSpace(cs) Then
-            Throw New ApplicationException("Falta la cadena de conexión DaytonaDB.")
-        End If
 
         Dim recursoLock As String = If(paridad = "PAR", "EXPEDIENTE_PAR", "EXPEDIENTE_NON")
         Dim paridadMod As Integer = If(paridad = "PAR", 0, 1)
 
-        Using cn As New SqlConnection(cs)
+        Using cn As New SqlConnection(connectionString)
             cn.Open()
             Using tx = cn.BeginTransaction(IsolationLevel.Serializable)
                 Using lockCmd As New SqlCommand("EXEC @rc = sp_getapplock @Resource,@LockMode,@LockOwner,@LockTimeout;", cn, tx)
@@ -604,106 +504,40 @@ Public Class Alta
         End Using
     End Function
 
-    ' -------- Utilidades varias --------
-    Private Function RemoveParentheses(s As String) As String
-        If String.IsNullOrWhiteSpace(s) Then Return String.Empty
-        Dim t As String = s
-        Dim prev As String
-        Do
-            prev = t
-            t = Regex.Replace(t, "\s*\([^)]*\)\s*", " ", RegexOptions.Multiline)
-        Loop While t <> prev
-        Return t
+    ''' <summary>
+    ''' Remueve paréntesis de un texto.
+    ''' </summary>
+    Private Function RemoveParentheses(text As String) As String
+        If String.IsNullOrWhiteSpace(text) Then Return String.Empty
+        text = text.Replace("(", "").Replace(")", "")
+        Return text.Trim()
     End Function
 
-    Private Function CleanMarca(s As String) As String
-        If String.IsNullOrWhiteSpace(s) Then Return String.Empty
-        Dim t = RemoveParentheses(s)
-        t = Regex.Replace(t, "\s{2,}", " ").Trim()
-        t = t.TrimEnd("."c, "-"c, "_"c)
-        Return t
+    ''' <summary>
+    ''' Limpia el texto de marca.
+    ''' </summary>
+    Private Function CleanMarca(text As String) As String
+        If String.IsNullOrWhiteSpace(text) Then Return String.Empty
+        Return text.Trim().ToUpperInvariant()
     End Function
 
-    Private Function Ultimos7Digitos(noSiniestro As String) As String
-        If String.IsNullOrEmpty(noSiniestro) Then Return String.Empty
-        Dim digits = New String(noSiniestro.Where(AddressOf Char.IsDigit).ToArray())
-        If digits.Length <= 7 Then Return digits
-        Return digits.Substring(digits.Length - 7)
-    End Function
+    ''' <summary>
+    ''' Sanitiza un nombre de archivo/carpeta reemplazando caracteres inválidos.
+    ''' </summary>
+    Private Function SanitizeFileName(name As String) As String
+        If String.IsNullOrWhiteSpace(name) Then Return String.Empty
 
-    Private Sub Alert(msg As String)
-        ClientScript.RegisterStartupScript(Me.GetType(), "msg", "alert('" & msg.Replace("'", "\'") & "');", True)
-    End Sub
-
-    Private Function SanitizeFileName(input As String) As String
-        If String.IsNullOrWhiteSpace(input) Then Return String.Empty
-        Dim invalid = Path.GetInvalidFileNameChars()
-        Dim limpio = New String(input.Select(Function(c) If(invalid.Contains(c), "-"c, c)).ToArray())
-        limpio = Regex.Replace(limpio, "\s{2,}", " ").Trim()
-        limpio = limpio.TrimEnd("."c, "-"c, "_"c)
-        Return limpio
-    End Function
-
-    Private Function ExtraerTextoDePDF(stream As Stream) As String
-        Dim texto As New StringWriter()
-        Using lector As New PdfReader(stream)
-            For i As Integer = 1 To lector.NumberOfPages
-                texto.WriteLine(PdfTextExtractor.GetTextFromPage(lector, i))
-            Next
-        End Using
-        Return texto.ToString()
-    End Function
-
-    Private Function HayMarcaX(bitmap As Bitmap, region As Rectangle, umbralOscuridad As Integer, umbralPorcentaje As Double) As Boolean
-        Dim pixelesOscuros As Integer = 0
-        Dim totalPixeles As Integer = region.Width * region.Height
-
-        Dim recorte As New Bitmap(region.Width, region.Height)
-        Using g As Graphics = Graphics.FromImage(recorte)
-            g.DrawImage(bitmap, 0, 0, region, GraphicsUnit.Pixel)
-        End Using
-
-        For y As Integer = 0 To recorte.Height - 1
-            For x As Integer = 0 To recorte.Width - 1
-                Dim colorPixel As Color = recorte.GetPixel(x, y)
-                Dim gris As Integer = (CInt(colorPixel.R) + CInt(colorPixel.G) + CInt(colorPixel.B)) \ 3
-                If gris < umbralOscuridad Then pixelesOscuros += 1
-            Next
+        Dim invalidos = Path.GetInvalidFileNameChars()
+        For Each c In invalidos
+            name = name.Replace(c, "_"c)
         Next
 
-        Dim porcentajeOscuros As Double = pixelesOscuros / totalPixeles
-        Return porcentajeOscuros >= umbralPorcentaje
+        Return name.Trim()
     End Function
 
-    Private Function ParseDateOrDbNull(s As String) As Object
-        If String.IsNullOrWhiteSpace(s) Then Return DBNull.Value
-        Dim dt As DateTime
-        Dim formatos = {"yyyy-MM-dd", "dd/MM/yyyy", "MM/dd/yyyy"}
-        If DateTime.TryParseExact(s.Trim(), formatos, CultureInfo.InvariantCulture, DateTimeStyles.None, dt) Then
-            Return dt.Date
-        End If
-        If DateTime.TryParse(s, CultureInfo.GetCultureInfo("es-MX"), DateTimeStyles.None, dt) Then
-            Return dt.Date
-        End If
-        Return DBNull.Value
-    End Function
-
-    Private Sub AddDec(cmd As SqlCommand, name As String, precision As Byte, scale As Byte, txt As String)
-        Dim p = cmd.Parameters.Add(name, SqlDbType.Decimal)
-        p.Precision = precision : p.Scale = scale
-        If String.IsNullOrWhiteSpace(txt) Then
-            p.Value = DBNull.Value
-        Else
-            Dim v As Decimal
-            Dim norm = txt.Replace(",", ".")
-            If Decimal.TryParse(norm, NumberStyles.Any, CultureInfo.InvariantCulture, v) Then
-                p.Value = v
-            Else
-                p.Value = DBNull.Value
-            End If
-        End If
-    End Sub
-
+    ''' <summary>
+    ''' Obtiene la ruta virtual base de INBURSA desde Web.config o usa predeterminada.
+    ''' </summary>
     Private Function GetInbursaBaseVirtual() As String
         Dim v = ConfigurationManager.AppSettings("InbursaBaseVirtual")
         If String.IsNullOrWhiteSpace(v) Then v = "~/INBURSA"
@@ -740,9 +574,9 @@ Public Class Alta
         ' === SMTP directo (sin Web.config) ===
         Const SMTP_HOST As String = "mail.loroautomotriz.com.mx"
         Const SMTP_PORT As Integer = 587
-        Const SMTP_USER As String = "no-responder@loroautomotriz.com.mx"  ' <- el que indica el hosting
-        Const SMTP_PASS As String = "2K3Le3z9pqvlo~re"                 ' <- la del cPanel
-        Const FROM_EMAIL As String = "no-responder@loroautomotriz.com.mx"  ' <- ideal: igual al usuario autenticado
+        Const SMTP_USER As String = "no-responder@loroautomotriz.com.mx"
+        Const SMTP_PASS As String = "2K3Le3z9pqvlo~re"
+        Const FROM_EMAIL As String = "no-responder@loroautomotriz.com.mx"
         Const FROM_NAME As String = "LORO REPARACION AUTOMOTRIZ"
 
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
@@ -767,12 +601,6 @@ Public Class Alta
     }
         msg.To.Add(New MailAddress(destinatario))
 
-        ' Si quieres que el cliente responda al asesor (opcional):
-        ' If Not String.IsNullOrWhiteSpace(txtCorreo.Text) Then
-        '     msg.ReplyToList.Clear()
-        '     msg.ReplyToList.Add(New MailAddress(FROM_EMAIL, asesorNombre))
-        ' End If
-
         ' Vista HTML con logo
         Dim logoPhysical As String = Server.MapPath("~/images/logo1.png")
         Dim viewHtml As AlternateView = CrearVistaHtmlConLogo(html, logoPhysical, "logoCID")
@@ -786,49 +614,36 @@ Public Class Alta
             smtp.DeliveryMethod = SmtpDeliveryMethod.Network
             smtp.UseDefaultCredentials = False
             smtp.Credentials = New NetworkCredential(SMTP_USER, SMTP_PASS)
-            smtp.EnableSsl = False ' Implicit SSL (465)
+            smtp.EnableSsl = False
             smtp.Timeout = 30000
             smtp.Send(msg)
         End Using
     End Sub
 
-
-
     Private Function ConstruirHtmlCorreo(asesorNombre As String, asesorTelefono As String) As String
-        ' Utilidades E(), CleanMarca(), RemoveParentheses() asumidas como en tu proyecto
         Dim marca = E(CleanMarca(RemoveParentheses(txtMarca.Text)))
         Dim tipo = E(txtTipo.Text)
         Dim modelo = E(txtModelo.Text)
-        Dim motor = E(txtMotor.Text)
-        Dim serie = E(txtSerie.Text)
+        Dim serie = E(txtVin.Text)
         Dim placas = E(txtPlacas.Text)
         Dim color = E(txtColor.Text)
-        Dim transmision = E(txtTransmision.Text)
-        Dim kms = E(txtKilometros.Text)
-        Dim uso = E(txtUso.Text)
         Dim expediente = E(txtExpediente.Text)
+        Dim clienteNombre = E(txtNombreCliente.Text)
+        Dim clienteTelefono = E(txtTelefono.Text)
+        Dim reporte = E(txtNumeroReporte.Text)
+        Dim tipoIngreso = E(ddlTipoIngreso.Text)
 
-        ' Datos adicionales que aparecen en el PDF
-        Dim clienteNombre = E(txtAsegurado.Text)            ' e.g., "Armando Hernández"
-        Dim clienteTelefono = E(txtTelefono.Text)        ' e.g., "(55) 584160684"
-        '  Dim tipoCliente = E(txtTipoCliente.Text)                ' e.g., "Asegurado"
-        'Dim aseguradora = E(txtAseguradora.Text)                ' e.g., "Qualitas"
-        Dim reporte = E(txtReporte.Text)                        ' e.g., "042565568698"
-        Dim tipoIngreso = E(ddlTipoIngreso.Text)                ' e.g., "Grúa"
-
-        Dim recepcion = "(55) 8717-4788 / 89 Ext: 103"          ' Ajusta si lo tomas de un control
-        Dim horario = "Lunes a Viernes<br/>8:00 AM-2:00 PM y de 3:00 PM– 6:00 PM" ' Igual que en el PDF
-        ' Dim linkQualitas = txtLinkQualitas.Text             ' URL para “Enlace”, opcional
+        Dim recepcion = "(55) 8717-4788 / 89 Ext: 103"
+        Dim horario = "Lunes a Viernes<br/>8:00 AM-2:00 PM y de 3:00 PM– 6:00 PM"
 
         Dim sb As New StringBuilder()
         sb.AppendLine("<!DOCTYPE html><html lang='es'><head><meta charset='utf-8' />")
         sb.AppendLine("<meta name='viewport' content='width=device-width, initial-scale=1' /></head>")
-        ' Fondo azul exterior como el marco del PDF
         sb.AppendLine("<body style=""margin:0;padding:0;background:#0b5d7c;font-family:Arial,Helvetica,sans-serif;color:#111827;"">")
         sb.AppendLine("<table role='presentation' width='100%' cellspacing='0' cellpadding='0' border='0' style='background:#0b5d7c;padding:28px 12px;'><tr><td align='center'>")
         sb.AppendLine("<table role='presentation' width='740' cellspacing='0' cellpadding='0' border='0' style='background:#ffffff;border-collapse:separate;border-radius:8px;overflow:hidden;box-shadow:0 6px 28px rgba(0,0,0,.08);'>")
 
-        ' ======= Encabezado con logo y título =======
+        ' Encabezado
         sb.AppendLine("<tr><td style='padding:24px 24px 10px 24px;'>")
         sb.AppendLine("<table width='100%' role='presentation' cellspacing='0' cellpadding='0'><tr>")
         sb.AppendLine("<td style='width:120px;vertical-align:top;'><img src='cid:logoCID' alt='LORO Reparación Automotriz' style='display:block;height:96px;max-width:120px;' /></td>")
@@ -845,13 +660,13 @@ Public Class Alta
         sb.AppendLine("</div>")
         sb.AppendLine("</td></tr>")
 
-        ' Número de expediente destacado
+        ' Número de expediente
         sb.AppendLine("<tr><td style='padding:6px 24px 0 24px;text-align:center;'>")
         sb.AppendLine("<div style='font-size:16px;color:#111827;'>Número de expediente LORO:</div>")
         sb.AppendLine("<div style='font-size:42px;line-height:1;font-weight:800;letter-spacing:.5px;margin:8px 0 14px 0;color:#111827;'>" & expediente & "</div>")
         sb.AppendLine("</td></tr>")
 
-        ' ======= Tarjeta Asesor asignado =======
+        ' Asesor asignado
         sb.AppendLine("<tr><td style='padding:0 24px 0 24px;'>")
         sb.AppendLine("<table role='presentation' width='100%' cellspacing='0' cellpadding='0' style='border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;margin:0 0 18px 0;'>")
         sb.AppendLine("<tr><td colspan='2' style='background:#f7fbff;padding:10px 14px;font-weight:bold;color:#0b64a3;font-size:14px;'>Asesor asignado:</td></tr>")
@@ -866,87 +681,61 @@ Public Class Alta
         sb.AppendLine("</td></tr></table>")
         sb.AppendLine("</td></tr>")
 
-        ' ======= Encabezado Información General =======
+        ' Información General
         sb.AppendLine("<tr><td style='padding:0 24px;'><div style='color:#6b7280;font-weight:bold;font-size:13px;margin:6px 0 8px 0;'>Información General</div></td></tr>")
 
-        ' ======= Datos del cliente =======
+        ' Datos del cliente
         sb.AppendLine("<tr><td style='padding:0 24px;'>")
         sb.AppendLine("<table role='presentation' width='100%' cellspacing='0' cellpadding='0' style='border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;margin:0 0 14px 0;'>")
         sb.AppendLine("<tr><td colspan='4' style='background:#f7fbff;padding:10px 14px;font-weight:bold;color:#0b64a3;font-size:14px;'>Datos del cliente</td></tr>")
         sb.AppendLine("<tr>")
         sb.AppendLine("<td style='width:25%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Nombre:</span><br/>" & clienteNombre & "</td>")
-        sb.AppendLine("<td style='width:25%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Aseguradora:</span><br/>" & clienteNombre & "</td>")
         sb.AppendLine("<td style='width:25%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Reporte:</span><br/>" & reporte & "</td>")
         sb.AppendLine("<td style='width:25%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Tipo de ingreso:</span><br/>" & tipoIngreso & "</td>")
-        sb.AppendLine("</tr>")
-        sb.AppendLine("<tr>")
-        sb.AppendLine("<td style='width:25%;padding:0 14px 14px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Teléfono:</span><br/>" & clienteTelefono & "</td>")
-        sb.AppendLine("<td style='width:25%;padding:0 14px 14px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Tipo de cliente:</span><br/>" & clienteNombre & "</td>")
-        sb.AppendLine("<td style='width:25%;padding:0 14px 14px 14px;'>&nbsp;</td>")
-        sb.AppendLine("<td style='width:25%;padding:0 14px 14px 14px;'>&nbsp;</td>")
-        sb.AppendLine("</tr>")
-        sb.AppendLine("</table>")
+        sb.AppendLine("<td style='width:25%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Teléfono:</span><br/>" & clienteTelefono & "</td>")
+        sb.AppendLine("</tr></table>")
         sb.AppendLine("</td></tr>")
 
-        ' ======= Datos del vehículo =======
+        ' Datos del vehículo
         sb.AppendLine("<tr><td style='padding:0 24px;'>")
         sb.AppendLine("<table role='presentation' width='100%' cellspacing='0' cellpadding='0' style='border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;margin:0 0 18px 0;'>")
         sb.AppendLine("<tr><td colspan='6' style='background:#f7fbff;padding:10px 14px;font-weight:bold;color:#0b64a3;font-size:14px;'>Datos del vehículo</td></tr>")
         sb.AppendLine("<tr>")
-        sb.AppendLine("<td style='width:16.6%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Marca:</span><br/>" & marca & "</td>")
-        sb.AppendLine("<td style='width:16.6%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Tipo:</span><br/>" & tipo & "</td>")
-        sb.AppendLine("<td style='width:16.6%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Modelo:</span><br/>" & modelo & "</td>")
-        sb.AppendLine("<td style='width:16.6%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Motor:</span><br/>" & motor & "</td>")
-        sb.AppendLine("<td style='width:16.6%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Serie (VIN):</span><br/>" & serie & "</td>")
-        sb.AppendLine("<td style='width:16.6%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Placas:</span><br/>" & placas & "</td>")
+        sb.AppendLine("<td style='width:20%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Marca:</span><br/>" & marca & "</td>")
+        sb.AppendLine("<td style='width:20%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Tipo:</span><br/>" & tipo & "</td>")
+        sb.AppendLine("<td style='width:20%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Modelo:</span><br/>" & modelo & "</td>")
+        sb.AppendLine("<td style='width:20%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Serie (VIN):</span><br/>" & serie & "</td>")
+        sb.AppendLine("<td style='width:20%;padding:12px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Placas:</span><br/>" & placas & "</td>")
         sb.AppendLine("</tr>")
         sb.AppendLine("<tr>")
         sb.AppendLine("<td style='padding:0 14px 14px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Color:</span><br/>" & color & "</td>")
-        sb.AppendLine("<td style='padding:0 14px 14px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Transmisión:</span><br/>" & transmision & "</td>")
-        sb.AppendLine("<td style='padding:0 14px 14px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Kilómetros:</span><br/>" & kms & "</td>")
-        sb.AppendLine("<td style='padding:0 14px 14px 14px;font-size:14px;vertical-align:top;'><span style='font-weight:bold;'>Uso:</span><br/>" & uso & "</td>")
+        sb.AppendLine("<td style='padding:0 14px 14px 14px;'>&nbsp;</td>")
+        sb.AppendLine("<td style='padding:0 14px 14px 14px;'>&nbsp;</td>")
         sb.AppendLine("<td style='padding:0 14px 14px 14px;'>&nbsp;</td>")
         sb.AppendLine("<td style='padding:0 14px 14px 14px;'>&nbsp;</td>")
         sb.AppendLine("</tr>")
         sb.AppendLine("</table>")
         sb.AppendLine("</td></tr>")
 
-        ' ======= Conozca el avance de su reparación =======
+        ' Conozca el avance
         sb.AppendLine("<tr><td style='padding:0 24px 10px 24px;'>")
         sb.AppendLine("<table role='presentation' width='100%' cellspacing='0' cellpadding='0' style='border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;margin:0 0 10px 0;'>")
         sb.AppendLine("<tr><td style='background:#eef6fb;padding:14px 16px;text-align:center;font-size:18px;color:#1182b3;font-weight:700;'>Conozca el avance de su reparación</td></tr>")
         sb.AppendLine("<tr><td style='padding:14px 16px;font-size:14px;color:#374151;line-height:1.6;'>")
-        sb.AppendLine("Queremos mantenerte informado sobre el avance de la reparación de tu vehículo. Consulta el estado de tu reparación de las siguientes maneras:")
-        sb.AppendLine("<ul style='margin:12px 0 0 18px;padding:0;'>")
-        If Not String.IsNullOrWhiteSpace(clienteNombre) Then
-            sb.AppendLine("<li>A través del portal qualitas <a href='" & clienteNombre & "' style='color:#0b64a3;text-decoration:underline;'>Enlace</a></li>")
-        Else
-            sb.AppendLine("<li>A través del portal qualitas <span style='text-decoration:underline;'>Enlace</span></li>")
-        End If
-        sb.AppendLine("<li>Escaneando el código QR en tu orden de admisión</li>")
-        sb.AppendLine("<li>O mediante los siguientes pasos:</li>")
-        sb.AppendLine("</ul>")
-        sb.AppendLine("<ol style='margin:6px 0 0 18px;padding:0;'>")
-        sb.AppendLine("<li>Identifica tu número de expediente LORO dentro de su hoja de ingreso o dentro de este correo</li>")
-        sb.AppendLine("<li>Ingresa a nuestra página de seguimiento Loro reparación Automotriz</li>")
-        sb.AppendLine("<li>Digite su número de expediente para acceder a la información.</li>")
-        sb.AppendLine("</ol>")
-        sb.AppendLine("<div style='margin-top:12px;'>Si tienes alguna duda, no dudes en contactarnos. Estamos para apoyarte.</div>")
+        sb.AppendLine("Queremos mantenerte informado sobre el avance de la reparación de tu vehículo. Si tienes alguna duda, no dudes en contactarnos. Estamos para apoyarte.")
         sb.AppendLine("<div style='margin-top:10px;'>Atentamente<br/>Centro Loro reparación automotriz</div>")
         sb.AppendLine("<div style='margin-top:8px;'>Teléfonos: (55) 8717-4788 / 89 Ext: 101<br/>E-mail: atencionaclientes@loroautomotriz.com.mx</div>")
         sb.AppendLine("</td></tr></table>")
         sb.AppendLine("</td></tr>")
 
-        ' ======= Pie de página (barra azul) =======
+        ' Pie
         sb.AppendLine("<tr><td style='background:#0b5d7c;padding:12px 24px;color:#e6f4ff;font-size:12px;text-align:center;'>")
         sb.AppendLine("© " & DateTime.Now.Year.ToString() & " LORO Reparación Automotriz. Todos los derechos reservados.")
         sb.AppendLine("</td></tr>")
 
-        ' Cierre
         sb.AppendLine("</table></td></tr></table></body></html>")
         Return sb.ToString()
     End Function
-
 
     Private Function CrearVistaHtmlConLogo(html As String, logoPhysicalPath As String, contentId As String) As AlternateView
         Dim view As AlternateView
@@ -972,9 +761,7 @@ Public Class Alta
 
                 view.LinkedResources.Add(res)
             Else
-                Dim fallbackUrl As String = "https://tu-dominio.com/images/logo-daytona.png"
-                Dim htmlConUrl As String = html.Replace("cid:" & contentId, fallbackUrl)
-                view = AlternateView.CreateAlternateViewFromString(htmlConUrl, Encoding.UTF8, MediaTypeNames.Text.Html)
+                view = AlternateView.CreateAlternateViewFromString(html, Encoding.UTF8, MediaTypeNames.Text.Html)
             End If
 
         Catch
@@ -1004,4 +791,5 @@ Public Class Alta
         tmp = System.Text.RegularExpressions.Regex.Replace(tmp, "<.*?>", String.Empty, System.Text.RegularExpressions.RegexOptions.Singleline)
         Return System.Web.HttpUtility.HtmlDecode(tmp)
     End Function
+
 End Class

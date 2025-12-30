@@ -7,7 +7,7 @@ Imports System.Data
 Imports System.Data.SqlClient
 Imports System.Configuration
 
-Public Class SaveInventario : Implements IHttpHandler
+Public Class SaveInventario : Implements IHttpHandler, IReadOnlySessionState
 
     Private Const SUBFOLDER_NAME As String = "1. DOCUMENTOS DE INGRESO"
     Private Const OUTPUT_FILE As String = "INV.pdf"
@@ -62,9 +62,9 @@ Public Class SaveInventario : Implements IHttpHandler
     End Sub
 
     Private Function GetCarpetaRelById(id As Integer) As String
-        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+        Dim cs As String = DatabaseHelper.GetConnectionString()
         If cs Is Nothing Then Return Nothing
-        Using cn As New SqlConnection(cs.ConnectionString)
+        Using cn As New SqlConnection(cs)
             cn.Open()
             Using cmd As New SqlCommand("SELECT carpetarel FROM admisiones WHERE Id=@Id", cn)
                 cmd.Parameters.AddWithValue("@Id", id)

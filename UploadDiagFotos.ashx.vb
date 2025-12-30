@@ -13,7 +13,7 @@ Imports System.Drawing
 Imports System.Drawing.Drawing2D
 Imports System.Drawing.Imaging
 
-Public Class UploadDiagFotos : Implements IHttpHandler
+Public Class UploadDiagFotos : Implements IHttpHandler, IReadOnlySessionState
 
     ' ====== PARÁMETROS DE COMPRESIÓN ======
     Private Const MAX_SIDE As Integer = 1600      ' Máximo ancho/alto final
@@ -27,7 +27,7 @@ Public Class UploadDiagFotos : Implements IHttpHandler
 
     Private ReadOnly Property CS As String
         Get
-            Return ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+            Return DatabaseHelper.GetConnectionString()
         End Get
     End Property
 

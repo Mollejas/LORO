@@ -140,6 +140,42 @@ Partial Public Class Hoja
     Protected WithEvents lblMeta3 As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
+    '''Control lblRefaccionesTotales.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblRefaccionesTotales As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblRefaccionesRecibidas.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblRefaccionesRecibidas As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblPiezasComplemento.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblPiezasComplemento As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblComplementoAumentoMO.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblComplementoAumentoMO As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
     '''Control tileODA.
     '''</summary>
     '''<remarks>
@@ -266,22 +302,112 @@ Partial Public Class Hoja
     Protected WithEvents tileComplementos As Global.System.Web.UI.HtmlControls.HtmlGenericControl
 
     '''<summary>
-    '''Control btnVerInetransito.
+    '''Control cardIneTransito.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents btnVerInetransito As Global.System.Web.UI.WebControls.LinkButton
+    Protected WithEvents cardIneTransito As Global.System.Web.UI.HtmlControls.HtmlGenericControl
 
     '''<summary>
-    '''Control fuComplementos.
+    '''Control badgeIneTransito.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents fuComplementos As Global.System.Web.UI.WebControls.FileUpload
+    Protected WithEvents badgeIneTransito As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control fuIneTransito.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents fuIneTransito As Global.System.Web.UI.WebControls.FileUpload
+
+    '''<summary>
+    '''Control btnSubirIneTransito.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnSubirIneTransito As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control cardTransitoAseg.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents cardTransitoAseg As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control badgeTransitoAseg.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents badgeTransitoAseg As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control fuTransitoAseg.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents fuTransitoAseg As Global.System.Web.UI.WebControls.FileUpload
+
+    '''<summary>
+    '''Control btnSubirTransitoAseg.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnSubirTransitoAseg As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control cardComple.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents cardComple As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control badgeComple.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents badgeComple As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control fuComple.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents fuComple As Global.System.Web.UI.WebControls.FileUpload
+
+    '''<summary>
+    '''Control btnSubirComple.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnSubirComple As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
     '''Control lblComplementosMsg.
@@ -293,13 +419,58 @@ Partial Public Class Hoja
     Protected WithEvents lblComplementosMsg As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''Control btnSubirComplementos.
+    '''Control badgeVerIneTransito.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents btnSubirComplementos As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents badgeVerIneTransito As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control btnVerIneTransitoPdf.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnVerIneTransitoPdf As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''Control badgeVerTransitoAseg.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents badgeVerTransitoAseg As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control btnVerTransitoAsegPdf.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnVerTransitoAsegPdf As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''Control badgeVerComple.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents badgeVerComple As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control btnVerComplePdf.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnVerComplePdf As Global.System.Web.UI.WebControls.LinkButton
 
     '''<summary>
     '''Control lblDiagInicio.
@@ -365,6 +536,15 @@ Partial Public Class Hoja
     Protected WithEvents btnDiagnosticoMecanica As Global.System.Web.UI.WebControls.LinkButton
 
     '''<summary>
+    '''Control tileCol.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents tileCol As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
     '''Control lblDiagFinColision.
     '''</summary>
     '''<remarks>
@@ -374,6 +554,15 @@ Partial Public Class Hoja
     Protected WithEvents lblDiagFinColision As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
+    '''Control flagHoja.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents flagHoja As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
     '''Control chkHojaSi.
     '''</summary>
     '''<remarks>
@@ -381,6 +570,15 @@ Partial Public Class Hoja
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents chkHojaSi As Global.System.Web.UI.WebControls.CheckBox
+
+    '''<summary>
+    '''Control icoHoja.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents icoHoja As Global.System.Web.UI.HtmlControls.HtmlGenericControl
 
     '''<summary>
     '''Control btnDiagnosticoHojalateria.
@@ -399,6 +597,141 @@ Partial Public Class Hoja
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents hidDiagSrc As Global.System.Web.UI.WebControls.HiddenField
+
+    '''<summary>
+    '''Control lblFechaIniVal.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblFechaIniVal As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblFechaLimEnvVal.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblFechaLimEnvVal As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblFechaEnvVal.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblFechaEnvVal As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblFechaAutVal.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblFechaAutVal As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblFechaLimAutVal.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblFechaLimAutVal As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control tileHojaTrabajo.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents tileHojaTrabajo As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control btnVerHojaTrabajo.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnVerHojaTrabajo As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''Control tileValSinAut.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents tileValSinAut As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control btnVerValSinAut.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnVerValSinAut As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''Control tileValAutPdf.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents tileValAutPdf As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control btnVerValAutPdf.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnVerValAutPdf As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''Control tileHojaTrabajoAut.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents tileHojaTrabajoAut As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control btnVerHojaTrabajoAut.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnVerHojaTrabajoAut As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''Control tileSeguimientoCompl.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents tileSeguimientoCompl As Global.System.Web.UI.HtmlControls.HtmlGenericControl
+
+    '''<summary>
+    '''Control btnVerSeguimientoCompl.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnVerSeguimientoCompl As Global.System.Web.UI.WebControls.LinkButton
 
     '''<summary>
     '''Control hidId.
@@ -662,6 +995,258 @@ Partial Public Class Hoja
     Protected WithEvents btnUploadInePdfGo As Global.System.Web.UI.WebControls.LinkButton
 
     '''<summary>
+    '''Control lblHTExpediente.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblHTExpediente As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblHTAnio.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblHTAnio As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblHTMarca.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblHTMarca As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblHTColor.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblHTColor As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblHTModelo.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblHTModelo As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblHTPlacas.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblHTPlacas As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control imgHTPrincipal.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents imgHTPrincipal As Global.System.Web.UI.WebControls.Image
+
+    '''<summary>
+    '''Control gvMecReparacion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents gvMecReparacion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control gvMecSustitucion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents gvMecSustitucion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control gvHojReparacion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents gvHojReparacion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control gvHojSustitucion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents gvHojSustitucion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control hfHTValidado.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents hfHTValidado As Global.System.Web.UI.WebControls.HiddenField
+
+    '''<summary>
+    '''Control lblValRef1.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblValRef1 As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control ddlValRef1.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents ddlValRef1 As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''Control txtPassValRef1.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtPassValRef1 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control btnValidarRef1.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnValidarRef1 As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''Control lblValRef2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblValRef2 As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control ddlValRef2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents ddlValRef2 As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''Control txtPassValRef2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtPassValRef2 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control btnValidarRef2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnValidarRef2 As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''Control lblValRef3.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblValRef3 As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control ddlValRef3.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents ddlValRef3 As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''Control txtPassValRef3.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtPassValRef3 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control btnValidarRef3.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnValidarRef3 As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''Control fuValSinAut.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents fuValSinAut As Global.System.Web.UI.WebControls.FileUpload
+
+    '''<summary>
+    '''Control btnUploadValSinAut.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnUploadValSinAut As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''Control fuValAutPdf.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents fuValAutPdf As Global.System.Web.UI.WebControls.FileUpload
+
+    '''<summary>
+    '''Control btnUploadValAutPdf.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnUploadValAutPdf As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
     '''Control btnDeleteDiag.
     '''</summary>
     '''<remarks>
@@ -676,9 +1261,9 @@ Partial Public Class Hoja
     '''<remarks>
     '''Propiedad generada automáticamente.
     '''</remarks>
-    Public Shadows ReadOnly Property Master() As DAYTONAMIO.Site1
+    Public Shadows ReadOnly Property Master() As Site1
         Get
-            Return CType(MyBase.Master, DAYTONAMIO.Site1)
+            Return CType(MyBase.Master, Site1)
         End Get
     End Property
 End Class

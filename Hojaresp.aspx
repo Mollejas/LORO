@@ -143,7 +143,6 @@
     .icon-btn.compacto i{font-size:18px;}
     .icon-btn.compacto:hover{background:var(--brand-600);color:#fff;border-color:var(--brand-700);transform:translateY(-1px);}
     .icon-btn.compacto.disabled,.icon-btn.compacto[disabled]{pointer-events:none;opacity:.45;}
-    .icon-btn.compacto.soft-disabled{opacity:.5;}
     .icon-row.inv.compacto{display:grid!important;grid-template-columns:repeat(2,36px);grid-auto-rows:36px;gap:8px 10px;justify-content:center;align-content:center;}
     @media (min-width: 992px){.icon-row.inv.compacto{grid-template-columns:repeat(4,36px);}}
     .icon-row.inv.compacto .icon-btn{width:36px;height:36px;}
@@ -475,45 +474,13 @@
     gap:8px; margin-bottom:8px;
     background:linear-gradient(135deg,#fff,var(--neutral-050));
     border:1px solid var(--neutral-200);
-    border-radius:999px; padding:8px 14px; box-shadow:var(--shadow-sm);
-    cursor:pointer;
-    transition: all 0.3s ease;
-    position: relative;
+    border-radius:999px; padding:6px 10px; box-shadow:var(--shadow-sm);
   }
-  .diag-flag:hover{
-    box-shadow:var(--shadow-md);
-    transform: translateY(-1px);
-  }
-  /* Ocultar el checkbox pero mantenerlo funcional */
-  .diag-flag .form-check-input{
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-    margin:0;
-    cursor:pointer;
-  }
-  .diag-flag .bi{
-    font-size:24px;
-    transition: color 0.3s ease;
-  }
-  .diag-flag .state{
-    font-size:.9rem;
-    font-weight:600;
-    transition: color 0.3s ease;
-  }
+  .diag-flag .form-check-input{ margin:0; cursor:pointer; }
+  .diag-flag .bi{ font-size:18px; }
+  .diag-flag .state{ font-size:.85rem; font-weight:700; }
   .diag-flag.on  .bi{ color:var(--success); }
   .diag-flag.off .bi{ color:var(--danger); }
-  .diag-flag.on  .state{ color:var(--success); }
-  .diag-flag.off .state{ color:var(--neutral-600); }
-  .diag-flag.on{
-    background:linear-gradient(135deg,#f0fdf4,#dcfce7);
-    border-color:var(--success);
-  }
-  .diag-flag.off{
-    background:linear-gradient(135deg,#fff,var(--neutral-050));
-    border-color:var(--neutral-300);
-  }
 
   /* Ya tienes esta regla, la reutilizamos para bloquear clicks */
   /* .icon-btn.compacto.disabled,.icon-btn.compacto[disabled]{pointer-events:none;opacity:.45;} */
@@ -549,12 +516,10 @@
   text-align: center;
 }
 .ht-toggle:hover { background: #f0f0f0; border-radius: 3px; }
+.ht-toggle:empty::after { content: "○"; color: #ccc; } /* placeholder cuando está vacío */
 .ht-si { color: #16a34a; } /* verde */
 .ht-no { color: #dc2626; } /* rojo */
 .ht-status { color: #2563eb; } /* azul */
-.ht-complemento { color: #0066ff; font-weight: bold; } /* azul fuerte */
-.ht-nivel-rep { color: #10b981; font-weight: bold; } /* verde primario - Nivel Reparación */
-.ht-nivel-pint { color: #10b981; font-weight: bold; } /* verde primario - Nivel Reparación Pintura */
 
 </style>
 
@@ -566,7 +531,8 @@
 <asp:Content ID="MainContent" ContentPlaceHolderID="MainContent" runat="server">
   <div class="container py-4">
     <div class="page-header mb-4">
-      <h3>CONTROL DE PROCESO DE EXPEDIENTE</h3>
+      <h3>Hoja de trabajo</h3>
+      <div class="page-sub">Gestión de expediente e imágenes</div>
     </div>
 
     <div class="row g-4">
@@ -620,7 +586,7 @@
           </div>
         </div>
 
-        <div class="mt-3 info-strip" style="display:none;">
+        <div class="mt-3 info-strip">
           <span class="field-label" data-field="id">ID:</span><asp:Label ID="lblId" runat="server" ClientIDMode="Static" />
           <span class="field-label ms-4" data-field="carpeta">Carpeta destino:</span><asp:Label ID="lblCarpeta" runat="server" ClientIDMode="Static" />
         </div>
@@ -628,84 +594,22 @@
     </div>
 
     <!-- ====== META ====== -->
-    <div class="card-pane p-2 mt-3">
-      <div class="card-title h6 mb-2">
-        <i class="bi bi-clock-history"></i>
-        Información del Expediente
-      </div>
-      <div class="row g-2">
-        <div class="col-12 col-sm-6 col-md-4">
-          <div class="field-label" data-field="fecha-creacion">
-            <i class="bi bi-calendar3"></i>
-            Creado
-          </div>
-          <div class="value fs-6 fw-bold text-primary">
-            <asp:Label ID="lblFechaCreacion" runat="server" Text="—" ClientIDMode="Static" />
-          </div>
+    <div class="card-pane doc-strip p-2 mb-2">
+      <div class="meta-bar">
+        <div class="meta-chip">
+          <i class="bi bi-calendar3"></i>
+          <span class="meta-caption">Creado:</span>
+          <span class="meta-value"><asp:Label ID="lblFechaCreacion" runat="server" Text="—" ClientIDMode="Static" /></span>
         </div>
-        <div class="col-12 col-sm-6 col-md-4">
-          <div class="field-label" data-field="dias-transcurridos">
-            <i class="bi bi-hourglass-split"></i>
-            Días Transcurridos
-          </div>
-          <div class="value fs-6 fw-bold text-success">
-            <asp:Label ID="lblDiasTranscurridos" runat="server" Text="—" ClientIDMode="Static" />
-          </div>
+        <div class="meta-chip">
+          <i class="bi bi-hourglass-split"></i>
+          <span class="meta-caption">Días:</span>
+          <span class="meta-value"><asp:Label ID="lblDiasTranscurridos" runat="server" Text="—" ClientIDMode="Static" /></span>
         </div>
-        <div class="col-12 col-sm-6 col-md-4">
-          <div class="field-label" data-field="meta-extra">
-            <i class="bi bi-info-circle"></i>
-            Extra
-          </div>
-          <div class="value fs-6 fw-bold text-info">
-            <asp:Label ID="lblMeta3" runat="server" Text="—" ClientIDMode="Static" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ====== RESUMEN DE REFACCIONES ====== -->
-    <div class="card-pane p-2 mt-3">
-      <div class="card-title h6 mb-2">
-        <i class="bi bi-tools"></i>
-        Resumen de Refacciones
-      </div>
-      <div class="row g-2">
-        <div class="col-12 col-sm-6 col-md-3">
-          <div class="field-label" data-field="refacciones-totales">
-            <i class="bi bi-box-seam"></i>
-            Refacciones Totales
-          </div>
-          <div class="value fs-5 fw-bold text-primary">
-            <asp:Label ID="lblRefaccionesTotales" runat="server" Text="0" ClientIDMode="Static" />
-          </div>
-        </div>
-        <div class="col-12 col-sm-6 col-md-3">
-          <div class="field-label" data-field="refacciones-recibidas">
-            <i class="bi bi-check-circle"></i>
-            Refacciones Recibidas
-          </div>
-          <div class="value fs-5 fw-bold text-success">
-            <asp:Label ID="lblRefaccionesRecibidas" runat="server" Text="0" ClientIDMode="Static" />
-          </div>
-        </div>
-        <div class="col-12 col-sm-6 col-md-3">
-          <div class="field-label" data-field="piezas-complemento">
-            <i class="bi bi-puzzle"></i>
-            Piezas en Complemento
-          </div>
-          <div class="value fs-5 fw-bold text-warning">
-            <asp:Label ID="lblPiezasComplemento" runat="server" Text="0" ClientIDMode="Static" />
-          </div>
-        </div>
-        <div class="col-12 col-sm-6 col-md-3">
-          <div class="field-label" data-field="complemento-aumento-mo">
-            <i class="bi bi-graph-up-arrow"></i>
-            Complemento Aumento MO
-          </div>
-          <div class="value fs-5 fw-bold text-info">
-            <asp:Label ID="lblComplementoAumentoMO" runat="server" Text="$0.00" ClientIDMode="Static" />
-          </div>
+        <div class="meta-chip d-none d-sm-inline-flex">
+          <i class="bi bi-info-circle"></i>
+          <span class="meta-caption">Extra:</span>
+          <span class="meta-value"><asp:Label ID="lblMeta3" runat="server" Text="—" ClientIDMode="Static" /></span>
         </div>
       </div>
     </div>
@@ -971,11 +875,10 @@
         </div>
 
         <div class="d-flex align-items-center justify-content-center gap-2">
-          <label id="flagMec" runat="server" ClientIDMode="Static" class="diag-flag off" for="chkMecSi">
+          <div id="flagMec" runat="server" ClientIDMode="Static" class="diag-flag off">
             <asp:CheckBox ID="chkMecSi" runat="server" ClientIDMode="Static" CssClass="form-check-input" />
             <i id="icoMec" runat="server" ClientIDMode="Static" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
-            <span class="state">Deshabilitado</span>
-          </label>
+          </div>
           <asp:LinkButton ID="btnDiagnosticoMecanica" runat="server" CssClass="icon-btn compacto"
             ToolTip="Abrir módulo de diagnóstico mecánico"
             UseSubmitBehavior="false"
@@ -1000,11 +903,10 @@
         </div>
 
         <div class="d-flex align-items-center justify-content-center gap-2">
-          <label id="flagHoja" runat="server" ClientIDMode="Static" class="diag-flag off" for="chkHojaSi">
+          <div id="flagHoja" runat="server" ClientIDMode="Static" class="diag-flag off">
             <asp:CheckBox ID="chkHojaSi" runat="server" ClientIDMode="Static" CssClass="form-check-input" />
             <i id="icoHoja" runat="server" ClientIDMode="Static" class="bi bi-toggle-off fs-4" aria-hidden="true"></i>
-            <span class="state">Deshabilitado</span>
-          </label>
+          </div>
           <asp:LinkButton ID="btnDiagnosticoHojalateria" runat="server" CssClass="icon-btn compacto"
             ToolTip="Abrir módulo de diagnóstico de hojalatería"
             UseSubmitBehavior="false"
@@ -1097,7 +999,10 @@
         <div id="tileHojaTrabajoAut" runat="server" class="tile compacto">
           <div class="title">Hoja trabajo autorizada</div>
           <div class="icon-row compacto">
-            <asp:LinkButton ID="btnVerHojaTrabajoAut" runat="server" CssClass="icon-btn compacto" ToolTip="Ver hoja de trabajo autorizada" aria-label="Ver hoja de trabajo autorizada" OnClick="btnVerHojaTrabajoAut_Click">
+            <a href="#" class="icon-btn compacto" id="btnSubirHojaTrabajoAut" title="Subir hoja de trabajo autorizada">
+              <i class="bi bi-cloud-upload"></i>
+            </a>
+            <asp:LinkButton ID="btnVerHojaTrabajoAut" runat="server" CssClass="icon-btn compacto" ToolTip="Ver hoja de trabajo autorizada" aria-label="Ver hoja de trabajo autorizada">
               <i class="bi bi-eye"></i>
             </asp:LinkButton>
           </div>
@@ -1345,20 +1250,6 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
-          <!-- Texto de la carta que aparecerá en el PDF -->
-          <div class="alert alert-info mb-4" style="background-color: #f0f9ff; border-left: 4px solid #0284c7; padding: 1rem;">
-            <h6 class="fw-bold mb-3" style="color: #0c4a6e;">
-              <i class="bi bi-info-circle"></i> Contenido de la Carta de Tránsito
-            </h6>
-            <p style="text-align: justify; line-height: 1.6; margin-bottom: 1rem;">
-              Por medio de la presente, hago constar el retiro voluntario del vehículo que, como parte del proceso de atención a la reclamación de mi seguro, se encontrara en espera del dictamen correspondiente. En mi calidad de Asegurado o Apoderado Legal, asumo la responsabilidad por los daños adicionales que pudiera sufrir el vehículo en mi posesión y me comprometo a reingresarlo al Centro de Reparación asignado en un plazo no mayor a 2 días hábiles, a partir de la notificación que reciba por parte de la aseguradora o del Centro de Reparación.
-            </p>
-            <p style="text-align: justify; line-height: 1.6; margin-bottom: 0;">
-              Asimismo, me comprometo a no realizar reparaciones fuera del Centro de Reparación asignado. Estoy enterado de que el incumplimiento de lo anterior puede derivar en la cancelación del surtido de refacciones asignadas.
-            </p>
-          </div>
-
-          <h6 class="fw-bold mb-3 mt-4">Datos del vehículo</h6>
           <div class="row g-3">
             <div class="col-12 col-md-6">
               <label class="form-label">Fecha</label>
@@ -1397,37 +1288,21 @@
               <asp:TextBox ID="txtCtCorreo" runat="server" CssClass="form-control" />
             </div>
           </div>
-
-          <hr class="my-4" />
-
-          <h6 class="fw-bold mb-3">
-            <i class="bi bi-pen"></i> Firmas
-          </h6>
-          <div class="alert alert-warning mb-3" style="background-color: #fefce8; border-left: 4px solid #eab308; padding: 0.75rem;">
-            <small>
-              <i class="bi bi-exclamation-triangle"></i>
-              <strong>Al firmar, confirmo que he leído y acepto los términos del contenido de la Carta de Tránsito mostrado arriba.</strong>
-            </small>
-          </div>
-
+          <hr class="my-3" />
           <div class="row g-3">
             <div class="col-12 col-md-6">
-              <label class="form-label fw-bold">Firma del Cliente</label>
-              <canvas id="sigCli" width="500" height="150" class="border rounded w-100" style="background-color: #fafafa;"></canvas>
+              <label class="form-label">Firma del Cliente</label>
+              <canvas id="sigCli" width="500" height="150" class="border rounded w-100"></canvas>
               <div class="mt-2 d-flex gap-2">
-                <button type="button" class="btn btn-light btn-sm" onclick="clearCanvas('sigCli')">
-                  <i class="bi bi-eraser"></i> Borrar
-                </button>
+                <button type="button" class="btn btn-light btn-sm" onclick="clearCanvas('sigCli')">Borrar</button>
               </div>
               <asp:HiddenField ID="hfFirmaCliente" runat="server" ClientIDMode="Static" />
             </div>
             <div class="col-12 col-md-6">
-              <label class="form-label fw-bold">Firma del Asesor</label>
-              <canvas id="sigSup" width="500" height="150" class="border rounded w-100" style="background-color: #fafafa;"></canvas>
+              <label class="form-label">Firma del Asesor</label>
+              <canvas id="sigSup" width="500" height="150" class="border rounded w-100"></canvas>
               <div class="mt-2 d-flex gap-2">
-                <button type="button" class="btn btn-light btn-sm" onclick="clearCanvas('sigSup')">
-                  <i class="bi bi-eraser"></i> Borrar
-                </button>
+                <button type="button" class="btn btn-light btn-sm" onclick="clearCanvas('sigSup')">Borrar</button>
               </div>
               <asp:HiddenField ID="hfFirmaSupervisor" runat="server" ClientIDMode="Static" />
             </div>
@@ -1571,28 +1446,8 @@
           <h6 class="fw-bold text-primary mb-2"><i class="bi bi-wrench"></i> Mecánica</h6>
           <div class="row mb-4">
             <div class="col-lg-6">
-              <h6 class="text-muted">Sustitución</h6>
-              <asp:GridView ID="gvMecSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros">
-                <Columns>
-                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
-                  <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
-                  <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
-                  <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <HeaderTemplate><span style="color: #0066ff; font-weight: bold;">C</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                </Columns>
-              </asp:GridView>
-            </div>
-            <div class="col-lg-6">
               <h6 class="text-muted">Reparación</h6>
-              <asp:GridView ID="gvMecReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros">
+              <asp:GridView ID="gvMecReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
                 <Columns>
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
@@ -1603,27 +1458,39 @@
                   <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
                     <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <HeaderTemplate><span style="color: #0066ff; font-weight: bold;">C</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
+                  <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_l" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_l")) = 1, "✓", "") %></span></ItemTemplate>
+                  <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_m" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_m")) = 1, "✓", "") %></span></ItemTemplate>
+                  <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_f" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_f")) = 1, "✓", "") %></span></ItemTemplate>
+                </Columns>
+              </asp:GridView>
+            </div>
+            <div class="col-lg-6">
+              <h6 class="text-muted">Sustitución</h6>
+              <asp:GridView ID="gvMecSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
+                <Columns>
+                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
+                  <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
+                  <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
+                  <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_l" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_l")) = 1, "✓", "") %></span></ItemTemplate>
+                  <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_m" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_m")) = 1, "✓", "") %></span></ItemTemplate>
+                  <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_f" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_f")) = 1, "✓", "") %></span></ItemTemplate>
+                  <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -1634,28 +1501,8 @@
           <h6 class="fw-bold text-warning mb-2"><i class="bi bi-tools"></i> Hojalatería</h6>
           <div class="row">
             <div class="col-lg-6">
-              <h6 class="text-muted">Sustitución</h6>
-              <asp:GridView ID="gvHojSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros">
-                <Columns>
-                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
-                  <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
-                  <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
-                  <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <HeaderTemplate><span style="color: #0066ff; font-weight: bold;">C</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                </Columns>
-              </asp:GridView>
-            </div>
-            <div class="col-lg-6">
               <h6 class="text-muted">Reparación</h6>
-              <asp:GridView ID="gvHojReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros">
+              <asp:GridView ID="gvHojReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
                 <Columns>
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
@@ -1666,64 +1513,42 @@
                   <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
                     <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <HeaderTemplate><span style="color: #0066ff; font-weight: bold;">C</span></HeaderTemplate>
-                    <ItemTemplate><span class="ht-toggle ht-complemento" data-id='<%# Eval("id") %>' data-field="complemento" data-val="1"><%# IIf(Convert.ToInt32(Eval("complemento")) = 1, "✓", "") %></span></ItemTemplate>
+                  <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_l" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_l")) = 1, "✓", "") %></span></ItemTemplate>
+                  <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_m" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_m")) = 1, "✓", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_f" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_f")) = 1, "✓", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_l" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_l")) = 1, "✓", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_m" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_m")) = 1, "✓", "") %></span></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_f" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_f")) = 1, "✓", "") %></span></ItemTemplate>
+                  <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
             </div>
-          </div>
-
-          <!-- Sección de Validaciones -->
-          <hr class="my-4" />
-          <h6 class="fw-bold text-success mb-3"><i class="bi bi-check-circle"></i> Validaciones de Refacciones</h6>
-          <asp:HiddenField ID="hfHTValidado" runat="server" Value="0" />
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Validación 1</label>
-              <div class="mb-2"><asp:Label ID="lblValRef1" runat="server" /></div>
-              <asp:DropDownList ID="ddlValRef1" runat="server" CssClass="form-select form-select-sm mb-2" />
-              <asp:TextBox ID="txtPassValRef1" runat="server" TextMode="Password" CssClass="form-control form-control-sm mb-2" placeholder="Contraseña" />
-              <asp:LinkButton ID="btnValidarRef1" runat="server" CssClass="btn btn-sm btn-success" OnClick="btnValidarRef1_Click">
-                <i class="bi bi-check"></i> Validar
-              </asp:LinkButton>
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Validación 2</label>
-              <div class="mb-2"><asp:Label ID="lblValRef2" runat="server" /></div>
-              <asp:DropDownList ID="ddlValRef2" runat="server" CssClass="form-select form-select-sm mb-2" />
-              <asp:TextBox ID="txtPassValRef2" runat="server" TextMode="Password" CssClass="form-control form-control-sm mb-2" placeholder="Contraseña" />
-              <asp:LinkButton ID="btnValidarRef2" runat="server" CssClass="btn btn-sm btn-success" OnClick="btnValidarRef2_Click">
-                <i class="bi bi-check"></i> Validar
-              </asp:LinkButton>
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Validación 3</label>
-              <div class="mb-2"><asp:Label ID="lblValRef3" runat="server" /></div>
-              <asp:DropDownList ID="ddlValRef3" runat="server" CssClass="form-select form-select-sm mb-2" />
-              <asp:TextBox ID="txtPassValRef3" runat="server" TextMode="Password" CssClass="form-control form-control-sm mb-2" placeholder="Contraseña" />
-              <asp:LinkButton ID="btnValidarRef3" runat="server" CssClass="btn btn-sm btn-success" OnClick="btnValidarRef3_Click">
-                <i class="bi bi-check"></i> Validar
-              </asp:LinkButton>
+            <div class="col-lg-6">
+              <h6 class="text-muted">Sustitución</h6>
+              <asp:GridView ID="gvHojSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin registros" OnRowDataBound="gvHT_RowDataBound">
+                <Columns>
+                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
+                  <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
+                  <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
+                  <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="P" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="P"><%# IIf(Convert.ToString(Eval("estatus")) = "P", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="E" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="E"><%# IIf(Convert.ToString(Eval("estatus")) = "E", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="D" ItemStyle-Width="25px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-status" data-id='<%# Eval("id") %>' data-field="estatus" data-val="D"><%# IIf(Convert.ToString(Eval("estatus")) = "D", "●", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                </Columns>
+              </asp:GridView>
             </div>
           </div>
         </div>
@@ -1833,24 +1658,6 @@
   Cerrar
 </button>
 
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===================== MODAL: Valuación Autorizada (Relacionar conceptos) ===================== -->
-  <div class="modal fade" id="modalValuacionA" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Hoja de Trabajo Autorizada - Relacionar Conceptos</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body p-0" style="height: calc(100vh - 120px);">
-          <iframe id="valuacionAFrame" style="width:100%;height:100%;border:0;"></iframe>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>
       </div>
     </div>
@@ -2494,17 +2301,7 @@
         diasTranscurridos: gt('lblDiasTranscurridos')
       };
     }
-    window.openDiagPage = function(pageUrl) {
-      // Verificar si el módulo está habilitado
-      const isMec = /Mecanica\.aspx$/i.test(pageUrl);
-      const isHoja = /Hojalateria\.aspx$/i.test(pageUrl);
-      const allowMec = !!document.getElementById('chkMecSi')?.checked;
-      const allowHoja = !!document.getElementById('chkHojaSi')?.checked;
-      if ((isMec && !allowMec) || (isHoja && !allowHoja)) {
-        alert('Este módulo está bloqueado (rojo). Activa el switch para continuar.');
-        return false;
-      }
-
+    function openDiagPage(pageUrl) {
       // Destruir TODOS los modales (no solo los visibles) antes de abrir diagModal
       document.querySelectorAll('.modal').forEach(function(m) {
         if (m.id === 'diagModal') return; // No destruir el que vamos a abrir
@@ -2566,21 +2363,10 @@
 
         function pos(e) {
           const r = c.getBoundingClientRect();
-          let clientX, clientY;
           if (e.touches && e.touches.length) {
-            clientX = e.touches[0].clientX;
-            clientY = e.touches[0].clientY;
-          } else {
-            clientX = e.clientX;
-            clientY = e.clientY;
+            return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top };
           }
-          // Ajustar coordenadas considerando la escala del canvas
-          const scaleX = c.width / r.width;
-          const scaleY = c.height / r.height;
-          return {
-            x: (clientX - r.left) * scaleX,
-            y: (clientY - r.top) * scaleY
-          };
+          return { x: e.clientX - r.left, y: e.clientY - r.top };
         }
 
         function start(e) { e.preventDefault(); drawing = true; const p = pos(e); lastX = p.x; lastY = p.y; }
@@ -3314,42 +3100,27 @@
             function setFlagUI(flagId, iconId, checked) {
                 const flag = document.getElementById(flagId);
                 const ico = document.getElementById(iconId);
-                if (!flag || !ico) return;
+                const txt = flag?.querySelector('.state');
+                if (!flag || !ico || !txt) return;
 
                 flag.classList.toggle('on', !!checked);
                 flag.classList.toggle('off', !checked);
                 ico.classList.toggle('bi-toggle-on', !!checked);
                 ico.classList.toggle('bi-toggle-off', !checked);
-
-                const txt = flag.querySelector('.state');
-                if (txt) {
-                    txt.textContent = checked ? 'Habilitado' : 'Deshabilitado';
-                }
+                txt.textContent = checked ? 'Habilitado' : 'Deshabilitado';
             }
 
             function applyDiagGateUI() {
-                const chkMec = document.getElementById('chkMecSi');
-                const chkHoja = document.getElementById('chkHojaSi');
-                const mec = chkMec?.checked;
-                const hoja = chkHoja?.checked;
-
-                console.log('applyDiagGateUI - chkMecSi:', chkMec, 'checked:', mec);
-                console.log('applyDiagGateUI - chkHojaSi:', chkHoja, 'checked:', hoja);
-
+                const mec = document.getElementById('chkMecSi')?.checked;
+                const hoja = document.getElementById('chkHojaSi')?.checked;
                 setFlagUI('flagMec', 'icoMec', !!mec);
                 setFlagUI('flagHoja', 'icoHoja', !!hoja);
 
-                // Deja clickeables los accesos a diagnóstico; solo atenuamos visualmente
+                // Bloquear/permitir clic visualmente (pointer-events: none ya existe en .disabled)
                 const lnkM = document.querySelector('a#<%= btnDiagnosticoMecanica.ClientID %>');
                 const lnkH = document.querySelector('a#<%= btnDiagnosticoHojalateria.ClientID %>');
-                if(lnkM){
-                    lnkM.classList.toggle('soft-disabled', !mec);
-                    lnkM.removeAttribute('aria-disabled');
-                }
-                if(lnkH){
-                    lnkH.classList.toggle('soft-disabled', !hoja);
-                    lnkH.removeAttribute('aria-disabled');
-                }
+                if(lnkM) lnkM.classList.toggle('disabled', !mec);
+                if(lnkH) lnkH.classList.toggle('disabled', !hoja);
 
                 // Actualizar estado del botón PROCESO DE DIAGNOSTICO y el contenedor
                 const btnDiag = document.getElementById('btnToggleStripDiag');
@@ -3398,33 +3169,30 @@
                 }
             }
 
-            // Listeners - el label maneja el click automáticamente
+            // Listeners
             document.addEventListener('change', function (e) {
-                if (e.target?.id === 'chkMecSi') {
-                    console.log('chkMecSi changed to:', e.target.checked);
-                    applyDiagGateUI();
-                    saveGate('MEC', e.target.checked);
-                }
-                if (e.target?.id === 'chkHojaSi') {
-                    console.log('chkHojaSi changed to:', e.target.checked);
-                    applyDiagGateUI();
-                    saveGate('HOJA', e.target.checked);
-                }
+                if (e.target?.id === 'chkMecSi') { applyDiagGateUI(); saveGate('MEC', e.target.checked); }
+                if (e.target?.id === 'chkHojaSi') { applyDiagGateUI(); saveGate('HOJA', e.target.checked); }
             });
 
-            // Ejecutar al cargar
-            document.addEventListener('DOMContentLoaded', function() {
-                applyDiagGateUI();
-            });
-
-            // También ejecutar cuando la página completa esté cargada
-            window.addEventListener('load', function() {
-                applyDiagGateUI();
-            });
+            document.addEventListener('DOMContentLoaded', applyDiagGateUI);
 
             // Exponer globalmente para que pueda ser llamada desde otros scripts
             window.applyDiagGateUI = applyDiagGateUI;
 
+            // Endurecemos openDiagPage: si está en rojo, no abrimos
+            const __origOpenDiagPage = window.openDiagPage;
+            window.openDiagPage = function (pageUrl) {
+                const isMec = /Mecanica\.aspx$/i.test(pageUrl);
+                const isHoja = /Hojalateria\.aspx$/i.test(pageUrl);
+                const allowMec = !!document.getElementById('chkMecSi')?.checked;
+                const allowHoja = !!document.getElementById('chkHojaSi')?.checked;
+                if ((isMec && !allowMec) || (isHoja && !allowHoja)) {
+                    alert('Este módulo está bloqueado (rojo). Activa el switch para continuar.');
+                    return false;
+                }
+                if (typeof __origOpenDiagPage === 'function') return __origOpenDiagPage(pageUrl);
+            };
         })();
     </script>
 
@@ -3503,93 +3271,60 @@
    <script>
        // Toggle handlers para Hoja de Trabajo
        document.addEventListener('click', function (e) {
-           var toggle = e.target.closest('.ht-toggle');
-           if (!toggle) return;
-
-           // Verificar si las 3 validaciones están completas (buscar texto "Validado" en los labels)
-           var lbl1 = document.getElementById('<%= lblValRef1.ClientID %>');
-           var lbl2 = document.getElementById('<%= lblValRef2.ClientID %>');
-           var lbl3 = document.getElementById('<%= lblValRef3.ClientID %>');
-
-           var v1 = lbl1 && lbl1.innerText.indexOf('Validado') >= 0;
-           var v2 = lbl2 && lbl2.innerText.indexOf('Validado') >= 0;
-           var v3 = lbl3 && lbl3.innerText.indexOf('Validado') >= 0;
-
-           if (v1 && v2 && v3) {
-               alert('Las 3 validaciones están completas. No se puede modificar.');
+           const toggle = e.target.closest('.ht-toggle');
+           if (!toggle) {
+               // Debug: ver si click llega pero no encuentra toggle
+               if (e.target.closest('#modalHojaTrabajo')) {
+                   console.log('Click en modal pero no en toggle:', e.target);
+               }
                return;
            }
-       }
-   }
 
-   // Check on page load and when modal shows
-   window.addEventListener('load', checkHTValidationState);
-   document.getElementById('modalHojaTrabajo')?.addEventListener('shown.bs.modal', checkHTValidationState);
+           console.log('Toggle encontrado:', toggle);
 
-   // Toggle handlers para Hoja de Trabajo
-   document.addEventListener('click', function(e) {
-       const toggle = e.target.closest('.ht-toggle');
-       if (!toggle) return;
+           const id = toggle.dataset.id;
+           const field = toggle.dataset.field;
+           const val = toggle.dataset.val;
 
-       // Check if validated (disabled)
-       const modalBody = toggle.closest('.modal-body');
-       if (modalBody && modalBody.classList.contains('ht-validated')) {
-           console.log('Toggle bloqueado - validaciones completas');
-           return;
-       }
+           console.log('Datos:', { id, field, val });
 
-       const id = toggle.dataset.id;
-       const field = toggle.dataset.field;
-       const val = toggle.dataset.val;
-
-       console.log('Toggle click - ID:', id, 'Field:', field, 'Val:', val);
-
-       const row = toggle.closest('tr');
-       if (!row) return;
-
-       if (field === 'autorizado') {
-           // Toggle Si/No - mutuamente excluyente
-           const siSpan = row.querySelector('.ht-si');
-           const noSpan = row.querySelector('.ht-no');
-
-           if (val === '1') {
-               siSpan.textContent = '✓';
-               noSpan.textContent = '';
-           } else {
-               siSpan.textContent = '';
-               noSpan.textContent = '✗';
+           // Encontrar la fila
+           const row = toggle.closest('tr');
+           if (!row) {
+               console.log('No se encontró la fila');
+               return;
            }
-       } else if (field === 'estatus') {
-           // Toggle P/E/D - mutuamente excluyente
-           const statusSpans = row.querySelectorAll('.ht-status');
-           statusSpans.forEach(span => {
-               span.textContent = span.dataset.val === val ? '●' : '';
-           });
-       }
 
-       // Guardar en la base de datos
-       const url = 'UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val;
-       console.log('Guardando...', url);
+           if (field === 'autorizado') {
+               // Toggle Si/No - mutuamente excluyente
+               const siSpan = row.querySelector('.ht-si');
+               const noSpan = row.querySelector('.ht-no');
 
-       fetch(url)
-           .then(r => {
-               console.log('Respuesta recibida, status:', r.status);
-               return r.json();
-           })
-           .then(data => {
-               console.log('Datos recibidos:', data);
-               if (!data.ok) {
-                   console.error('Error al guardar:', data.error);
-                   alert('Error al guardar: ' + (data.error || 'desconocido'));
+               if (val === '1') {
+                   siSpan.textContent = '✓';
+                   noSpan.textContent = '';
                } else {
-                   console.log('Guardado exitoso');
+                   siSpan.textContent = '';
+                   noSpan.textContent = '✗';
                }
-           })
-           .catch(err => {
-               console.error('Error en fetch:', err);
-               alert('Error en la comunicación: ' + err.message);
-           });
-   });
+           } else if (field === 'estatus') {
+               // Toggle P/E/D - mutuamente excluyente
+               const statusSpans = row.querySelectorAll('.ht-status');
+               statusSpans.forEach(span => {
+                   span.textContent = span.dataset.val === val ? '●' : '';
+               });
+           }
+
+           // Guardar en la base de datos
+           fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val)
+               .then(r => r.json())
+               .then(data => {
+                   if (!data.ok) {
+                       console.error('Error al guardar:', data.error);
+                   }
+               })
+               .catch(err => console.error('Error:', err));
+       });
    </script>
 
 

@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class CreateUser
+Partial Public Class LeerOrden
 
     '''<summary>
     '''Control form1.
@@ -23,31 +23,49 @@ Partial Public Class CreateUser
     Protected WithEvents form1 As Global.System.Web.UI.HtmlControls.HtmlForm
 
     '''<summary>
-    '''Control lblMsg.
+    '''Control fuPdf.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents lblMsg As Global.System.Web.UI.WebControls.Label
+    Protected WithEvents fuPdf As Global.System.Web.UI.WebControls.FileUpload
 
     '''<summary>
-    '''Control txtNombre.
+    '''Control btnProcesar.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtNombre As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents btnProcesar As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''Control txtCorreo.
+    '''Control lblMensaje.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtCorreo As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control txtNumeroReporte.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtNumeroReporte As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtNombreCliente.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtNombreCliente As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtTelefono.
@@ -59,119 +77,65 @@ Partial Public Class CreateUser
     Protected WithEvents txtTelefono As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtPassword.
+    '''Control txtEmail.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtPassword As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtEmail As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtConfirm.
+    '''Control txtMarca.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtConfirm As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtMarca As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control chkValidador.
+    '''Control txtTipo.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents chkValidador As Global.System.Web.UI.WebControls.CheckBox
+    Protected WithEvents txtTipo As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control chkAdmin.
+    '''Control txtModelo.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents chkAdmin As Global.System.Web.UI.WebControls.CheckBox
+    Protected WithEvents txtModelo As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control chkJefeServicio.
+    '''Control txtColor.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents chkJefeServicio As Global.System.Web.UI.WebControls.CheckBox
+    Protected WithEvents txtColor As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control chkJefeRefacciones.
+    '''Control txtVin.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents chkJefeRefacciones As Global.System.Web.UI.WebControls.CheckBox
+    Protected WithEvents txtVin As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control chkJefeAdministracion.
+    '''Control txtPlacas.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents chkJefeAdministracion As Global.System.Web.UI.WebControls.CheckBox
-
-    '''<summary>
-    '''Control chkJefeTaller.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents chkJefeTaller As Global.System.Web.UI.WebControls.CheckBox
-
-    '''<summary>
-    '''Control chkPar.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents chkPar As Global.System.Web.UI.WebControls.CheckBox
-
-    '''<summary>
-    '''Control chkNon.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents chkNon As Global.System.Web.UI.WebControls.CheckBox
-
-    '''<summary>
-    '''Control btnGuardar.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents btnGuardar As Global.System.Web.UI.WebControls.Button
-
-    '''<summary>
-    '''Control btnLimpiar.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents btnLimpiar As Global.System.Web.UI.WebControls.Button
-
-    '''<summary>
-    '''Control gvUsuarios.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents gvUsuarios As Global.System.Web.UI.WebControls.GridView
+    Protected WithEvents txtPlacas As Global.System.Web.UI.WebControls.TextBox
 End Class

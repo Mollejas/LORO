@@ -39,7 +39,36 @@ Partial Public Class Site1
 
             ' Calcula y cachea en ViewState si el usuario es admin
             ViewState("IsAdminFlag") = LookupIsAdmin(If(nombre, ""))
+
+            ' Mostrar icono de configuración solo si es admin (desktop y móvil)
+            pnlAdminConfig.Visible = IsAdmin
+            pnlAdminConfigMobile.Visible = IsAdmin
+
+            ' Configurar logo y links según empresa
+            ConfigurarEmpresa()
         End If
+    End Sub
+
+    ' Configura logo y links según la empresa seleccionada en sesión
+    Private Sub ConfigurarEmpresa()
+        Dim empresa As String = DatabaseHelper.GetEmpresaSeleccionada()
+
+        ' Configurar logo2 según empresa
+        Select Case empresa.ToUpperInvariant()
+            Case "QUALITAS"
+                imgLogo2.ImageUrl = "~/images/logoqua.png"
+                lnkCarpeta.NavigateUrl = "~/altaqua.aspx"
+                lnkCarpetaMobile.NavigateUrl = "~/altaqua.aspx"
+            Case "INBURSA"
+                imgLogo2.ImageUrl = "~/images/logoinbur.png"
+                lnkCarpeta.NavigateUrl = "~/alta.aspx"
+                lnkCarpetaMobile.NavigateUrl = "~/alta.aspx"
+            Case Else
+                ' Default: INBURSA
+                imgLogo2.ImageUrl = "~/images/logoinbur.png"
+                lnkCarpeta.NavigateUrl = "~/alta.aspx"
+                lnkCarpetaMobile.NavigateUrl = "~/alta.aspx"
+        End Select
     End Sub
 
     Private Sub RequireAuth()
@@ -58,10 +87,10 @@ Partial Public Class Site1
     Private Function LookupIsAdmin(nombre As String) As Boolean
         If String.IsNullOrWhiteSpace(nombre) Then Return False
 
-        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+        Dim cs As String = DatabaseHelper.GetConnectionString()
         If cs Is Nothing Then Return False
 
-        Using cn As New SqlConnection(cs.ConnectionString)
+        Using cn As New SqlConnection(cs)
             cn.Open()
             ' Búsqueda case-insensitive usando UPPER
             Using cmd As New SqlCommand("SELECT esadmin FROM usuarios WHERE UPPER(nombre) = UPPER(@n)", cn)

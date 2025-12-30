@@ -380,7 +380,6 @@ END"
             lblId.Text = sid
 
             CargarAdmision(Convert.ToInt32(sid))
-            CargarResumenRefacciones(Convert.ToInt32(sid))
             UpdateBottomWidgets()
             PrefillCtModal()
             UpdateInvGruaButtons()
@@ -432,37 +431,6 @@ END"
         If fuCompl IsNot Nothing Then fuCompl.Attributes("accept") = "application/pdf"
     End Sub
 
-    Protected Sub Page_PreRender(ByVal sender As Object, ByVal e As EventArgs) Handles Me.PreRender
-        ' Re-add HojaTrabajo grid headers during postbacks if grids have data
-        If IsPostBack Then
-            EnsureHTGridHeaders(gvMecReparacion)
-            EnsureHTGridHeaders(gvMecSustitucion)
-            EnsureHTGridHeaders(gvHojReparacion)
-            EnsureHTGridHeaders(gvHojSustitucion)
-        End If
-    End Sub
-
-    Private Sub EnsureHTGridHeaders(gv As GridView)
-        If gv Is Nothing OrElse gv.Rows.Count = 0 Then Exit Sub
-        If gv.Controls.Count = 0 Then Exit Sub
-
-        ' Check if grouped header already exists (should have 2 header rows)
-        Dim table As Table = TryCast(gv.Controls(0), Table)
-        If table Is Nothing Then Exit Sub
-
-        Dim headerCount As Integer = 0
-        For Each ctrl As Control In table.Controls
-            Dim row As GridViewRow = TryCast(ctrl, GridViewRow)
-            If row IsNot Nothing AndAlso row.RowType = DataControlRowType.Header Then
-                headerCount += 1
-            End If
-        Next
-
-        ' Only add if we have exactly 1 header row (missing the grouped header)
-        If headerCount = 1 Then
-            AddHTGridGroupHeader(gv)
-        End If
-    End Sub
 
     '====================== Datos de admisión ======================
     Private _marca As String = "", _version As String = "", _anio As String = "", _placas As String = ""
@@ -559,52 +527,6 @@ END"
         Next
         Return False
     End Function
-
-    '====================== Resumen de Refacciones ======================
-    Private Sub CargarResumenRefacciones(id As Integer)
-        ' TODO: Conectar con la base de datos cuando se proporcione la información
-        ' Por ahora se inicializan con valores por defecto
-
-        Try
-            ' Inicializar valores por defecto
-            Dim refaccionesTotales As Integer = 0
-            Dim refaccionesRecibidas As Integer = 0
-            Dim piezasComplemento As Integer = 0
-            Dim complementoAumentoMO As Decimal = 0.0
-
-            ' TODO: Aquí irá la consulta a la base de datos
-            ' Dim cs As String = DatabaseHelper.GetConnectionString()
-            ' If cs Is Nothing Then Exit Sub
-            '
-            ' Using cn As New SqlConnection(cs)
-            '     cn.Open()
-            '     Using cmd As New SqlCommand("SELECT ... FROM [tabla] WHERE expediente_id=@Id", cn)
-            '         cmd.Parameters.AddWithValue("@Id", id)
-            '         Using rd = cmd.ExecuteReader()
-            '             If rd.Read() Then
-            '                 refaccionesTotales = GetInt(rd, "RefaccionesTotales")
-            '                 refaccionesRecibidas = GetInt(rd, "RefaccionesRecibidas")
-            '                 piezasComplemento = GetInt(rd, "PiezasComplemento")
-            '                 complementoAumentoMO = GetDecimal(rd, "ComplementoAumentoMO")
-            '             End If
-            '         End Using
-            '     End Using
-            ' End Using
-
-            ' Asignar valores a los labels
-            lblRefaccionesTotales.Text = refaccionesTotales.ToString()
-            lblRefaccionesRecibidas.Text = refaccionesRecibidas.ToString()
-            lblPiezasComplemento.Text = piezasComplemento.ToString()
-            lblComplementoAumentoMO.Text = String.Format("${0:N2}", complementoAumentoMO)
-
-        Catch ex As Exception
-            ' En caso de error, mantener valores por defecto
-            lblRefaccionesTotales.Text = "0"
-            lblRefaccionesRecibidas.Text = "0"
-            lblPiezasComplemento.Text = "0"
-            lblComplementoAumentoMO.Text = "$0.00"
-        End Try
-    End Sub
 
     Private Sub UpdateMetaLabels()
         Dim lblFC As Label = TryCast(FindControlRecursive(Me, "lblFechaCreacion"), Label)
@@ -1302,97 +1224,59 @@ $"(function(){{
 
         ' Pinceles/colores (NO usar Using; XSolidBrush NO es IDisposable)
         Dim brushText As XBrush = XBrushes.Black
-        Dim colorBrand As XColor = XColor.FromArgb(0, 59, 120)
-        Dim brushBrand As XBrush = New XSolidBrush(colorBrand)
+        Dim brushBrand As XBrush = New XSolidBrush(XColor.FromArgb(0, 59, 120))
         Dim penLight As New XPen(XColors.LightGray, 0.8)
         Dim penDark As New XPen(XColors.Gray, 0.8)
-        Dim penBrand As New XPen(colorBrand, 1.5)
 
         Using gfx As XGraphics = XGraphics.FromPdfPage(page)
 
-            ' ====== Encabezado con logos a ambos lados ======
+            ' ====== Encabezado con logo ======
             Dim xMargin As Double = 40.0
-            Dim y As Double = 30.0
+            Dim y As Double = 35.0
             Dim usableW As Double = page.Width.Point - (xMargin * 2)
-            Dim logoH As Double = 50.0
-            Dim yLogoTop As Double = y
 
-            ' Logo izquierdo (logoqua.png)
+            ' Logo (si existe)
             Try
-                Dim logoQuaPath As String = Server.MapPath("~/images/logoqua.png")
-                If System.IO.File.Exists(logoQuaPath) Then
-                    Using xi As XImage = XImage.FromFile(logoQuaPath)
-                        Dim scale As Double = logoH / xi.PointHeight
-                        Dim logoW As Double = xi.PointWidth * scale
-                        gfx.DrawImage(xi, xMargin, yLogoTop, logoW, logoH)
-                    End Using
-                End If
-            Catch
-                ' Si falla el logo, continuamos sin interrumpir
-            End Try
-
-            ' Logo derecho (logo.png)
-            Try
-                Dim logoPath As String = Server.MapPath("~/images/logo.png")
+                Dim logoPath As String = Server.MapPath("~/images/logoinbur.png")
                 If System.IO.File.Exists(logoPath) Then
                     Using xi As XImage = XImage.FromFile(logoPath)
+                        Dim logoH As Double = 40.0
                         Dim scale As Double = logoH / xi.PointHeight
                         Dim logoW As Double = xi.PointWidth * scale
-                        Dim xLogoRight As Double = xMargin + usableW - logoW
-                        gfx.DrawImage(xi, xLogoRight, yLogoTop, logoW, logoH)
+                        gfx.DrawImage(xi, xMargin, y, logoW, logoH)
                     End Using
                 End If
             Catch
                 ' Si falla el logo, continuamos sin interrumpir
             End Try
 
-            ' Título centrado (entre los logos)
-            y = yLogoTop + (logoH / 2) - 10
+            ' Título y fecha
             gfx.DrawString("Carta de Tránsito", fontTitle, brushBrand, New XRect(xMargin, y, usableW, 28), XStringFormats.TopCenter)
+            y += 46
+            gfx.DrawString("Fecha: " & fecha.ToString("dd/MM/yyyy"), fontB, brushText, New XRect(xMargin, y, usableW, 18), XStringFormats.TopRight)
+            y += 8
 
-            ' Espacio después de logos y título
-            y = yLogoTop + logoH + 15
-
-            ' Fecha con línea debajo
-            Dim fechaY As Double = y
-            Dim fechaText As String = fecha.ToString("dd/MM/yyyy")
-            gfx.DrawString("Fecha: ", fontB, brushText, New XRect(xMargin + usableW - 150, fechaY, 50, 18), XStringFormats.TopLeft)
-
-            ' Línea debajo de la fecha
-            Dim lineY As Double = fechaY + 18
-            Dim lineX As Double = xMargin + usableW - 95
-            Dim lineW As Double = 90
-            gfx.DrawLine(penDark, lineX, lineY, lineX + lineW, lineY)
-            gfx.DrawString(fechaText, fontB, brushText, New XRect(lineX, fechaY, lineW, 18), XStringFormats.TopCenter)
-            y = lineY + 8
-
-            ' Separador principal
-            gfx.DrawLine(penBrand, xMargin, y, xMargin + usableW, y)
-            y += 18
+            ' Separador
+            gfx.DrawLine(penDark, xMargin, y, xMargin + usableW, y)
+            y += 16
 
             ' ====== Cuerpo del texto ======
             Dim pText1 As String =
 "Por medio de la presente, hago constar el retiro voluntario del vehículo que, como parte del proceso de atención a la reclamación de mi seguro, se encontrara en espera del dictamen correspondiente. En mi calidad de Asegurado o Apoderado Legal, asumo la responsabilidad por los daños adicionales que pudiera sufrir el vehículo en mi posesión y me comprometo a reingresarlo al Centro de Reparación asignado en un plazo no mayor a 2 días hábiles, a partir de la notificación que reciba por parte de la aseguradora o del Centro de Reparación."
-            y = DrawParagraph(gfx, pText1, fontB, brushText, xMargin, y, usableW, 17)
+            y = DrawParagraph(gfx, pText1, fontB, brushText, xMargin, y, usableW, 16)
 
-            y += 8
+            y += 6
             Dim pText2 As String =
 "Asimismo, me comprometo a no realizar reparaciones fuera del Centro de Reparación asignado. Estoy enterado de que el incumplimiento de lo anterior puede derivar en la cancelación del surtido de refacciones asignadas."
-            y = DrawParagraph(gfx, pText2, fontB, brushText, xMargin, y, usableW, 17)
+            y = DrawParagraph(gfx, pText2, fontB, brushText, xMargin, y, usableW, 16)
 
-            y += 20
+            y += 18
 
             ' ====== Tabla de datos del auto ======
             gfx.DrawString("Datos del vehículo", fontH, brushBrand, New XRect(xMargin, y, usableW, 16), XStringFormats.TopLeft)
-            y += 16
+            y += 10
 
-            ' Colores y pinceles mejorados para la tabla
-            Dim brushHeaderBg As XBrush = New XSolidBrush(XColor.FromArgb(0, 59, 120))
-            Dim brushHeaderText As XBrush = XBrushes.White
-            Dim brushAltRow As XBrush = New XSolidBrush(XColor.FromArgb(245, 248, 250))
-            Dim penTable As New XPen(XColor.FromArgb(200, 200, 200), 1.0)
-
-            Dim rowH As Double = 26.0
+            Dim rowH As Double = 22.0
             Dim colW() As Double = {usableW * 0.25, usableW * 0.25, usableW * 0.25, usableW * 0.25}
             Dim colX(3) As Double
             colX(0) = xMargin
@@ -1400,56 +1284,50 @@ $"(function(){{
                 colX(i) = colX(i - 1) + colW(i - 1)
             Next
 
-            ' Datos de la tabla
+            ' Cabeceras
             Dim headers() As String = {"Siniestro", "Marca", "Versión", "Año"}
             Dim values1() As String = {siniestro, marca, version, anio}
             Dim headers2() As String = {"Placas", "Teléfono", "Celular", "Correo"}
             Dim values2() As String = {placas, tel, cel, correo}
 
-            ' Dibuja una fila con header y valores
+            ' Dibuja una fila (header + valores)
             Dim functionRow = Sub(hdr() As String, vals() As String)
-                                  ' Fila de cabecera con fondo azul
+                                  ' Rectángulos
                                   For c = 0 To 3
-                                      ' Dibujar relleno
-                                      gfx.DrawRectangle(brushHeaderBg, colX(c), y, colW(c), rowH)
-                                      ' Dibujar borde
-                                      gfx.DrawRectangle(penTable, colX(c), y, colW(c), rowH)
-                                      gfx.DrawString(hdr(c), New XFont("Arial", 10, XFontStyle.Bold), brushHeaderText,
-                                                   New XRect(colX(c) + 6, y + 6, colW(c) - 12, rowH - 12),
-                                                   XStringFormats.CenterLeft)
+                                      gfx.DrawRectangle(penLight, New XRect(colX(c), y, colW(c), rowH))
+                                  Next
+                                  ' Encabezados
+                                  For c = 0 To 3
+                                      gfx.DrawString(hdr(c), fontS, brushBrand, New XRect(colX(c) + 4, y + 3, colW(c) - 8, rowH - 6), XStringFormats.TopLeft)
                                   Next
                                   y += rowH
 
-                                  ' Fila de valores con fondo alternado
                                   For c = 0 To 3
-                                      ' Dibujar relleno
-                                      gfx.DrawRectangle(brushAltRow, colX(c), y, colW(c), rowH)
-                                      ' Dibujar borde
-                                      gfx.DrawRectangle(penTable, colX(c), y, colW(c), rowH)
-                                      gfx.DrawString(vals(c), fontB, brushText,
-                                                   New XRect(colX(c) + 6, y + 6, colW(c) - 12, rowH - 12),
-                                                   XStringFormats.CenterLeft)
+                                      gfx.DrawRectangle(penLight, New XRect(colX(c), y, colW(c), rowH))
                                   Next
-                                  y += rowH + 4
+                                  For c = 0 To 3
+                                      gfx.DrawString(vals(c), fontB, brushText, New XRect(colX(c) + 4, y + 3, colW(c) - 8, rowH - 6), XStringFormats.TopLeft)
+                                  Next
+                                  y += rowH + 6
                               End Sub
 
             functionRow(headers, values1)
             functionRow(headers2, values2)
 
-            y += 12
+            y += 10
 
             ' ====== Firmas ======
-            Dim boxH As Double = 100
+            Dim boxH As Double = 90
             Dim gap As Double = 40
             Dim fw As Double = (usableW - gap) / 2.0
-            Dim penSignature As New XPen(XColor.FromArgb(100, 100, 100), 1.2)
 
             ' Cliente
-            gfx.DrawRectangle(penSignature, New XRect(xMargin, y, fw, boxH))
+            gfx.DrawRectangle(penLight, New XRect(xMargin, y, fw, boxH))
+            gfx.DrawString("Firma del Cliente", fontS, brushText, New XRect(xMargin, y + boxH + 4, fw, 12), XStringFormats.TopCenter)
             If firmaCliente IsNot Nothing AndAlso firmaCliente.Length > 0 Then
                 Using ms As New MemoryStream(firmaCliente)
                     Using xi As XImage = XImage.FromStream(ms)
-                        Dim scale As Double = Math.Min((fw - 12) / xi.PointWidth, (boxH - 12) / xi.PointHeight)
+                        Dim scale As Double = Math.Min((fw - 10) / xi.PointWidth, (boxH - 10) / xi.PointHeight)
                         If scale > 1 Then scale = 1
                         Dim dw As Double = xi.PointWidth * scale, dh As Double = xi.PointHeight * scale
                         Dim dx As Double = xMargin + (fw - dw) / 2, dy As Double = y + (boxH - dh) / 2
@@ -1457,19 +1335,15 @@ $"(function(){{
                     End Using
                 End Using
             End If
-            ' Línea para firma y texto
-            Dim lineYCliente As Double = y + boxH + 10
-            gfx.DrawLine(penDark, xMargin + 20, lineYCliente, xMargin + fw - 20, lineYCliente)
-            gfx.DrawString("Firma del Cliente", New XFont("Arial", 10, XFontStyle.Bold), brushText,
-                         New XRect(xMargin, lineYCliente + 4, fw, 14), XStringFormats.TopCenter)
 
             ' Supervisor
             Dim x2 As Double = xMargin + fw + gap
-            gfx.DrawRectangle(penSignature, New XRect(x2, y, fw, boxH))
+            gfx.DrawRectangle(penLight, New XRect(x2, y, fw, boxH))
+            gfx.DrawString("Firma del Asesor", fontS, brushText, New XRect(x2, y + boxH + 4, fw, 12), XStringFormats.TopCenter)
             If firmaSupervisor IsNot Nothing AndAlso firmaSupervisor.Length > 0 Then
                 Using ms As New MemoryStream(firmaSupervisor)
                     Using xi As XImage = XImage.FromStream(ms)
-                        Dim scale As Double = Math.Min((fw - 12) / xi.PointWidth, (boxH - 12) / xi.PointHeight)
+                        Dim scale As Double = Math.Min((fw - 10) / xi.PointWidth, (boxH - 10) / xi.PointHeight)
                         If scale > 1 Then scale = 1
                         Dim dw As Double = xi.PointWidth * scale, dh As Double = xi.PointHeight * scale
                         Dim dx As Double = x2 + (fw - dw) / 2, dy As Double = y + (boxH - dh) / 2
@@ -1477,11 +1351,6 @@ $"(function(){{
                     End Using
                 End Using
             End If
-            ' Línea para firma y texto
-            Dim lineYAsesor As Double = y + boxH + 10
-            gfx.DrawLine(penDark, x2 + 20, lineYAsesor, x2 + fw - 20, lineYAsesor)
-            gfx.DrawString("Firma del Asesor", New XFont("Arial", 10, XFontStyle.Bold), brushText,
-                         New XRect(x2, lineYAsesor + 4, fw, 14), XStringFormats.TopCenter)
         End Using
 
         doc.Save(rutaPdf)
@@ -2375,21 +2244,18 @@ Paint:
 
         Dim allOk As Boolean = a1 AndAlso a2 AndAlso a3
 
-        ' Asegura estado visual del tile (NO sobrescribir checkbox - se lee de BD en CargarExpediente)
+        ' Asegura estado visual del tile
         Dim cls As String = tileMec.Attributes("class")
         If allOk Then
             If Not cls.Contains(" ok") Then tileMec.Attributes("class") = cls & " ok"
-        Else
-            tileMec.Attributes("class") = cls.Replace(" ok", "")
-        End If
-
-        ' Actualizar visual del flag basado en el estado del checkbox (NO cambiar el checkbox)
-        If chkMecSi.Checked Then
             flagMec.Attributes("class") = "diag-flag on"
             icoMec.Attributes("class") = "bi bi-toggle-on fs-4"
+            chkMecSi.Checked = True
         Else
+            tileMec.Attributes("class") = cls.Replace(" ok", "")
             flagMec.Attributes("class") = "diag-flag off"
             icoMec.Attributes("class") = "bi bi-toggle-off fs-4"
+            chkMecSi.Checked = False
         End If
     End Sub
     Private Sub PintarTileColision(admId As Integer)
@@ -2412,21 +2278,18 @@ Paint:
 
         Dim allOk As Boolean = a1 AndAlso a2 AndAlso a3
 
-        ' Asegura estado visual del tile (NO sobrescribir checkbox - se lee de BD en CargarExpediente)
+        ' Asegura estado visual del tile
         Dim cls As String = tileCol.Attributes("class")
         If allOk Then
             If Not cls.Contains(" ok") Then tileCol.Attributes("class") = cls & " ok"
-        Else
-            tileCol.Attributes("class") = cls.Replace(" ok", "")
-        End If
-
-        ' Actualizar visual del flag basado en el estado del checkbox (NO cambiar el checkbox)
-        If chkHojaSi.Checked Then
             flagHoja.Attributes("class") = "diag-flag on"
             icoHoja.Attributes("class") = "bi bi-toggle-on fs-4"
+            chkHojaSi.Checked = True
         Else
+            tileCol.Attributes("class") = cls.Replace(" ok", "")
             flagHoja.Attributes("class") = "diag-flag off"
             icoHoja.Attributes("class") = "bi bi-toggle-off fs-4"
+            chkHojaSi.Checked = False
         End If
     End Sub
 
@@ -2728,7 +2591,7 @@ Paint:
 
             ' Cargar refacciones - Mecánica Reparación
             Dim dtMecRep As New DataTable()
-            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento, ISNULL(nivel_rep_l, 0) as nivel_rep_l, ISNULL(nivel_rep_m, 0) as nivel_rep_m, ISNULL(nivel_rep_f, 0) as nivel_rep_f, ISNULL(nivel_rep_pint_l, 0) as nivel_rep_pint_l, ISNULL(nivel_rep_pint_m, 0) as nivel_rep_pint_m, ISNULL(nivel_rep_pint_f, 0) as nivel_rep_pint_f FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
                 cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtMecRep)
@@ -2736,11 +2599,10 @@ Paint:
             End Using
             gvMecReparacion.DataSource = dtMecRep
             gvMecReparacion.DataBind()
-            AddHTGridGroupHeader(gvMecReparacion)
 
             ' Cargar refacciones - Mecánica Sustitución
             Dim dtMecSus As New DataTable()
-            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
                 cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtMecSus)
@@ -2748,11 +2610,10 @@ Paint:
             End Using
             gvMecSustitucion.DataSource = dtMecSus
             gvMecSustitucion.DataBind()
-            AddHTGridGroupHeader(gvMecSustitucion)
 
             ' Cargar refacciones - Hojalatería Reparación
             Dim dtHojRep As New DataTable()
-            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento, ISNULL(nivel_rep_l, 0) as nivel_rep_l, ISNULL(nivel_rep_m, 0) as nivel_rep_m, ISNULL(nivel_rep_f, 0) as nivel_rep_f, ISNULL(nivel_rep_pint_l, 0) as nivel_rep_pint_l, ISNULL(nivel_rep_pint_m, 0) as nivel_rep_pint_m, ISNULL(nivel_rep_pint_f, 0) as nivel_rep_pint_f FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
                 cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtHojRep)
@@ -2760,11 +2621,10 @@ Paint:
             End Using
             gvHojReparacion.DataSource = dtHojRep
             gvHojReparacion.DataBind()
-            AddHTGridGroupHeader(gvHojReparacion)
 
             ' Cargar refacciones - Hojalatería Sustitución
             Dim dtHojSus As New DataTable()
-            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
                 cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtHojSus)
@@ -2772,153 +2632,43 @@ Paint:
             End Using
             gvHojSustitucion.DataSource = dtHojSus
             gvHojSustitucion.DataBind()
-            AddHTGridGroupHeader(gvHojSustitucion)
-
-            ' Cargar admins para validaciones
-            LoadAdminsForHTValidation(cn)
-
-            ' Verificar y pintar estado de validaciones
-            PaintHTValFlags(cn, expediente)
         End Using
 
         ' Abrir modal
         EmitStartupScript("openHojaTrabajo", "bootstrap.Modal.getOrCreateInstance(document.getElementById('modalHojaTrabajo')).show();")
     End Sub
 
-    Private Sub LoadAdminsForHTValidation(cn As SqlConnection)
-        Dim dt As New DataTable()
-        Using da As New SqlDataAdapter("SELECT UsuarioId, COALESCE(Nombre, Correo) AS Nombre FROM dbo.Usuarios WHERE EsAdmin = 1 ORDER BY Nombre", cn)
-            da.Fill(dt)
-        End Using
+    ' Handler para agregar encabezados agrupados a los GridViews de Hoja de Trabajo
+    Protected Sub gvHT_RowDataBound(sender As Object, e As GridViewRowEventArgs)
+        If e.Row.RowType = DataControlRowType.Header Then
+            Dim gv As GridView = DirectCast(sender, GridView)
+            Dim headerRow As New GridViewRow(0, 0, DataControlRowType.Header, DataControlRowState.Normal)
 
-        ' Buscar controles usando FindControl
-        Dim ddl1 As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef1"), DropDownList)
-        Dim ddl2 As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef2"), DropDownList)
-        Dim ddl3 As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef3"), DropDownList)
+            ' Determinar número de columnas base (3 para todos)
+            Dim baseColSpan As Integer = 3
 
-        Dim ddlList() As DropDownList = {ddl1, ddl2, ddl3}
-        For Each ddl As DropDownList In ddlList
-            If ddl IsNot Nothing Then
-                ddl.Items.Clear()
-                ddl.DataSource = dt
-                ddl.DataTextField = "Nombre"
-                ddl.DataValueField = "UsuarioId"
-                ddl.DataBind()
-                ddl.Items.Insert(0, New ListItem("-- Selecciona usuario --", ""))
-                ddl.SelectedIndex = 0
-            End If
-        Next
+            ' Columnas base
+            Dim cellBase As New TableHeaderCell()
+            cellBase.ColumnSpan = baseColSpan
+            cellBase.Text = ""
+            headerRow.Cells.Add(cellBase)
 
-        ' Limpiar campos de contraseña
-        Dim txt1 As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef1"), TextBox)
-        Dim txt2 As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef2"), TextBox)
-        Dim txt3 As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef3"), TextBox)
-        If txt1 IsNot Nothing Then txt1.Text = ""
-        If txt2 IsNot Nothing Then txt2.Text = ""
-        If txt3 IsNot Nothing Then txt3.Text = ""
-    End Sub
+            ' Autorización (2 columnas: Si, No)
+            Dim cellAut As New TableHeaderCell()
+            cellAut.ColumnSpan = 2
+            cellAut.Text = "Autorización"
+            cellAut.CssClass = "text-center bg-light"
+            headerRow.Cells.Add(cellAut)
 
-    Private Sub PaintHTValFlags(cn As SqlConnection, expediente As String)
-        Dim v1 As Boolean = False, v2 As Boolean = False, v3 As Boolean = False
-        Dim n1 As String = "", n2 As String = "", n3 As String = ""
+            ' Estatus (3 columnas: P, E, D)
+            Dim cellEst As New TableHeaderCell()
+            cellEst.ColumnSpan = 3
+            cellEst.Text = "Estatus"
+            cellEst.CssClass = "text-center bg-light"
+            headerRow.Cells.Add(cellEst)
 
-        Using cmd As New SqlCommand("SELECT TOP 1 ISNULL(valrefmec1,0), ISNULL(valrefmec1nombre,''), ISNULL(valrefmec2,0), ISNULL(valrefmec2nombre,''), ISNULL(valrefmec3,0), ISNULL(valrefmec3nombre,'') FROM dbo.Admisiones WHERE Expediente=@exp", cn)
-            cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
-            Using rd = cmd.ExecuteReader()
-                If rd.Read() Then
-                    v1 = Convert.ToInt32(rd(0)) = 1 : n1 = Convert.ToString(rd(1))
-                    v2 = Convert.ToInt32(rd(2)) = 1 : n2 = Convert.ToString(rd(3))
-                    v3 = Convert.ToInt32(rd(4)) = 1 : n3 = Convert.ToString(rd(5))
-                End If
-            End Using
-        End Using
-
-        ' Buscar controles usando FindControl
-        Dim lbl1 As Label = TryCast(FindControlRecursive(Me, "lblValRef1"), Label)
-        Dim lbl2 As Label = TryCast(FindControlRecursive(Me, "lblValRef2"), Label)
-        Dim lbl3 As Label = TryCast(FindControlRecursive(Me, "lblValRef3"), Label)
-
-        If lbl1 IsNot Nothing Then lbl1.Text = If(v1, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n1)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
-        If lbl2 IsNot Nothing Then lbl2.Text = If(v2, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n2)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
-        If lbl3 IsNot Nothing Then lbl3.Text = If(v3, $"<span class='badge bg-success'>Validado</span> <span class='text-success'>{HttpUtility.HtmlEncode(n3)}</span>", "<span class='badge bg-danger'>Pendiente</span>")
-
-        ' Buscar controles de validación
-        Dim ddl1 As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef1"), DropDownList)
-        Dim ddl2 As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef2"), DropDownList)
-        Dim ddl3 As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef3"), DropDownList)
-        Dim txt1 As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef1"), TextBox)
-        Dim txt2 As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef2"), TextBox)
-        Dim txt3 As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef3"), TextBox)
-        Dim btn1 As LinkButton = TryCast(FindControlRecursive(Me, "btnValidarRef1"), LinkButton)
-        Dim btn2 As LinkButton = TryCast(FindControlRecursive(Me, "btnValidarRef2"), LinkButton)
-        Dim btn3 As LinkButton = TryCast(FindControlRecursive(Me, "btnValidarRef3"), LinkButton)
-
-        ' Ocultar controles cuando está validado
-        If ddl1 IsNot Nothing Then ddl1.Visible = Not v1
-        If txt1 IsNot Nothing Then txt1.Visible = Not v1
-        If btn1 IsNot Nothing Then btn1.Visible = Not v1
-
-        If ddl2 IsNot Nothing Then ddl2.Visible = Not v2
-        If txt2 IsNot Nothing Then txt2.Visible = Not v2
-        If btn2 IsNot Nothing Then btn2.Visible = Not v2
-
-        If ddl3 IsNot Nothing Then ddl3.Visible = Not v3
-        If txt3 IsNot Nothing Then txt3.Visible = Not v3
-        If btn3 IsNot Nothing Then btn3.Visible = Not v3
-
-        ' Actualizar hidden field para JS
-        Dim hf As HiddenField = TryCast(FindControlRecursive(Me, "hfHTValidado"), HiddenField)
-        If hf IsNot Nothing Then hf.Value = If(v1 AndAlso v2 AndAlso v3, "1", "0")
-    End Sub
-
-    ' Agregar encabezados agrupados a los GridViews de Hoja de Trabajo
-    Private Sub AddHTGridGroupHeader(gv As GridView)
-        If gv.Controls.Count = 0 Then Exit Sub
-
-        Dim headerRow As New GridViewRow(0, 0, DataControlRowType.Header, DataControlRowState.Normal)
-
-        ' Determinar número de columnas base (3 para todos)
-        Dim baseColSpan As Integer = 3
-
-        ' Columnas base
-        Dim cellBase As New TableHeaderCell()
-        cellBase.ColumnSpan = baseColSpan
-        cellBase.Text = ""
-        headerRow.Cells.Add(cellBase)
-
-        ' Autorización (2 columnas: Si, No)
-        Dim cellAut As New TableHeaderCell()
-        cellAut.ColumnSpan = 2
-        cellAut.Text = "Autorización"
-        cellAut.CssClass = "text-center bg-light"
-        headerRow.Cells.Add(cellAut)
-
-        ' Compl. (1 columna: C)
-        Dim cellCompl As New TableHeaderCell()
-        cellCompl.ColumnSpan = 1
-        cellCompl.Text = "Compl."
-        cellCompl.CssClass = "text-center bg-light"
-        headerRow.Cells.Add(cellCompl)
-
-        ' Solo para grids de REPARACIÓN: agregar Nivel Reparación y Nivel Reparación Pintura
-        Dim isReparacion As Boolean = (gv.ID = "gvMecReparacion" OrElse gv.ID = "gvHojReparacion")
-        If isReparacion Then
-            ' Nivel Reparación (3 columnas: L, M, F)
-            Dim cellNivelRep As New TableHeaderCell()
-            cellNivelRep.ColumnSpan = 3
-            cellNivelRep.Text = "Nivel Reparación"
-            cellNivelRep.CssClass = "text-center bg-light"
-            headerRow.Cells.Add(cellNivelRep)
-
-            ' Nivel Reparación Pintura (3 columnas: L, M, F)
-            Dim cellNivelPint As New TableHeaderCell()
-            cellNivelPint.ColumnSpan = 3
-            cellNivelPint.Text = "Nivel Reparación Pintura"
-            cellNivelPint.CssClass = "text-center bg-light"
-            headerRow.Cells.Add(cellNivelPint)
+            gv.Controls(0).Controls.AddAt(0, headerRow)
         End If
-
-        gv.Controls(0).Controls.AddAt(0, headerRow)
     End Sub
 
     ' Ver Valuación Sin Autorizar
@@ -2992,177 +2742,5 @@ Paint:
         ")
     End Sub
 
-    ' Ver Hoja de Trabajo Autorizada (Relacionar conceptos)
-    Protected Sub btnVerHojaTrabajoAut_Click(sender As Object, e As EventArgs)
-        If String.IsNullOrWhiteSpace(hidId.Value) Then Exit Sub
-
-        Dim url As String = ResolveUrl("~/ValuacionA.aspx?id=" & hidId.Value)
-        EmitStartupScript("openValuacionA", "
-            document.getElementById('valuacionAFrame').src = '" & url & "';
-            bootstrap.Modal.getOrCreateInstance(document.getElementById('modalValuacionA')).show();
-        ")
-    End Sub
-
-    ' ====== Validaciones de Hoja de Trabajo ======
-    Protected Sub btnValidarRef1_Click(sender As Object, e As EventArgs)
-        Dim ddl As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef1"), DropDownList)
-        Dim txt As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef1"), TextBox)
-        Dim lbl As Label = TryCast(FindControlRecursive(Me, "lblValRef1"), Label)
-        If ddl IsNot Nothing AndAlso txt IsNot Nothing Then
-            HandleHTValidation(ddl, txt, "valrefmec1", lbl)
-        End If
-    End Sub
-
-    Protected Sub btnValidarRef2_Click(sender As Object, e As EventArgs)
-        Dim ddl As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef2"), DropDownList)
-        Dim txt As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef2"), TextBox)
-        Dim lbl As Label = TryCast(FindControlRecursive(Me, "lblValRef2"), Label)
-        If ddl IsNot Nothing AndAlso txt IsNot Nothing Then
-            HandleHTValidation(ddl, txt, "valrefmec2", lbl)
-        End If
-    End Sub
-
-    Protected Sub btnValidarRef3_Click(sender As Object, e As EventArgs)
-        Dim ddl As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef3"), DropDownList)
-        Dim txt As TextBox = TryCast(FindControlRecursive(Me, "txtPassValRef3"), TextBox)
-        Dim lbl As Label = TryCast(FindControlRecursive(Me, "lblValRef3"), Label)
-        If ddl IsNot Nothing AndAlso txt IsNot Nothing Then
-            HandleHTValidation(ddl, txt, "valrefmec3", lbl)
-        End If
-    End Sub
-
-    Private Sub HandleHTValidation(ddl As DropDownList, txtPass As TextBox, fieldName As String, lbl As Label)
-        Dim cs As String = DatabaseHelper.GetConnectionString()
-        Dim expediente As String = lblHTExpediente.Text
-        If String.IsNullOrWhiteSpace(expediente) Then Exit Sub
-        If String.IsNullOrWhiteSpace(ddl.SelectedValue) Then Exit Sub
-
-        Dim userId As Integer
-        If Not Integer.TryParse(ddl.SelectedValue, userId) Then Exit Sub
-
-        Dim pass As String = If(txtPass.Text, "").Trim()
-        If pass = "" Then Exit Sub
-
-        ' Validar credenciales
-        If Not ValidateHTUser(userId, pass, cs) Then
-            EmitStartupScript("htValErr", "alert('Credenciales inválidas.');")
-            Exit Sub
-        End If
-
-        Dim authName As String = ddl.SelectedItem.Text
-        Dim nameField As String = fieldName & "nombre"
-
-        Using cn As New SqlConnection(cs)
-            Using cmd As New SqlCommand($"UPDATE dbo.Admisiones SET {fieldName}=1, {nameField}=@n WHERE Expediente=@exp", cn)
-                cmd.Parameters.Add("@n", SqlDbType.NVarChar).Value = authName
-                cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
-                cn.Open()
-                cmd.ExecuteNonQuery()
-            End Using
-        End Using
-
-        ' Cerrar modal completamente y reabrirlo con click en el botón
-        EmitStartupScript("reopenHTModal", "
-            var modal = bootstrap.Modal.getInstance(document.getElementById('modalHojaTrabajo'));
-            if (modal) modal.hide();
-            setTimeout(function() {
-                document.getElementById('" & btnVerHojaTrabajo.ClientID & "').click();
-            }, 300);
-        ")
-    End Sub
-
-    Private Sub ReloadHTGrids(cn As SqlConnection, expediente As String)
-        ' Cargar refacciones - Mecánica Reparación
-        Dim dtMecRep As New DataTable()
-        Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento, ISNULL(nivel_rep_l, 0) as nivel_rep_l, ISNULL(nivel_rep_m, 0) as nivel_rep_m, ISNULL(nivel_rep_f, 0) as nivel_rep_f, ISNULL(nivel_rep_pint_l, 0) as nivel_rep_pint_l, ISNULL(nivel_rep_pint_m, 0) as nivel_rep_pint_m, ISNULL(nivel_rep_pint_f, 0) as nivel_rep_pint_f FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
-            cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
-            Using da As New SqlDataAdapter(cmd)
-                da.Fill(dtMecRep)
-            End Using
-        End Using
-        gvMecReparacion.DataSource = dtMecRep
-        gvMecReparacion.DataBind()
-        AddHTGridGroupHeader(gvMecReparacion)
-
-        ' Cargar refacciones - Mecánica Sustitución
-        Dim dtMecSus As New DataTable()
-        Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
-            cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
-            Using da As New SqlDataAdapter(cmd)
-                da.Fill(dtMecSus)
-            End Using
-        End Using
-        gvMecSustitucion.DataSource = dtMecSus
-        gvMecSustitucion.DataBind()
-        AddHTGridGroupHeader(gvMecSustitucion)
-
-        ' Cargar refacciones - Hojalatería Reparación
-        Dim dtHojRep As New DataTable()
-        Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento, ISNULL(nivel_rep_l, 0) as nivel_rep_l, ISNULL(nivel_rep_m, 0) as nivel_rep_m, ISNULL(nivel_rep_f, 0) as nivel_rep_f, ISNULL(nivel_rep_pint_l, 0) as nivel_rep_pint_l, ISNULL(nivel_rep_pint_m, 0) as nivel_rep_pint_m, ISNULL(nivel_rep_pint_f, 0) as nivel_rep_pint_f FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
-            cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
-            Using da As New SqlDataAdapter(cmd)
-                da.Fill(dtHojRep)
-            End Using
-        End Using
-        gvHojReparacion.DataSource = dtHojRep
-        gvHojReparacion.DataBind()
-        AddHTGridGroupHeader(gvHojReparacion)
-
-        ' Cargar refacciones - Hojalatería Sustitución
-        Dim dtHojSus As New DataTable()
-        Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(estatus, '') as estatus, ISNULL(complemento, 0) as complemento FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
-            cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
-            Using da As New SqlDataAdapter(cmd)
-                da.Fill(dtHojSus)
-            End Using
-        End Using
-        gvHojSustitucion.DataSource = dtHojSus
-        gvHojSustitucion.DataBind()
-        AddHTGridGroupHeader(gvHojSustitucion)
-    End Sub
-
-    Private Function ValidateHTUser(userId As Integer, password As String, cs As String) As Boolean
-        Using cn As New SqlConnection(cs)
-            Using cmd As New SqlCommand("SELECT TOP 1 PasswordHash, PasswordSalt FROM dbo.Usuarios WHERE UsuarioId = @Id", cn)
-                cmd.Parameters.Add("@Id", SqlDbType.Int).Value = userId
-                cn.Open()
-                Using rd = cmd.ExecuteReader()
-                    If Not rd.Read() Then Return False
-                    Dim dbHash As Byte() = TryCast(rd("PasswordHash"), Byte())
-                    Dim salt As Byte() = TryCast(rd("PasswordSalt"), Byte())
-                    If dbHash Is Nothing OrElse salt Is Nothing Then Return False
-
-                    ' PBKDF2 or legacy SHA256
-                    Dim calc() As Byte
-                    If dbHash.Length = 64 Then
-                        Using kdf As New System.Security.Cryptography.Rfc2898DeriveBytes(password, salt, 100000, System.Security.Cryptography.HashAlgorithmName.SHA256)
-                            calc = kdf.GetBytes(64)
-                        End Using
-                    ElseIf dbHash.Length = 32 Then
-                        Dim passBytes = System.Text.Encoding.UTF8.GetBytes(password)
-                        Dim mix(salt.Length + passBytes.Length - 1) As Byte
-                        System.Buffer.BlockCopy(salt, 0, mix, 0, salt.Length)
-                        System.Buffer.BlockCopy(passBytes, 0, mix, salt.Length, passBytes.Length)
-                        Using sha As System.Security.Cryptography.SHA256 = System.Security.Cryptography.SHA256.Create()
-                            calc = sha.ComputeHash(mix)
-                        End Using
-                    Else
-                        Return False
-                    End If
-
-                    Return BytesEqualHT(calc, dbHash)
-                End Using
-            End Using
-        End Using
-    End Function
-
-    Private Function BytesEqualHT(a As Byte(), b As Byte()) As Boolean
-        If a Is Nothing OrElse b Is Nothing OrElse a.Length <> b.Length Then Return False
-        Dim diff As Integer = 0
-        For i As Integer = 0 To a.Length - 1
-            diff = diff Or (a(i) Xor b(i))
-        Next
-        Return diff = 0
-    End Function
-
 End Class
+

@@ -11,7 +11,7 @@ Imports System.Drawing.Imaging
 Imports System.Drawing.Drawing2D
 Imports System.Web.Script.Serialization
 
-Public Class UploadPrincipal : Implements IHttpHandler
+Public Class UploadPrincipal : Implements IHttpHandler, IReadOnlySessionState
 
     Private Const MAX_SIDE As Integer = 1600
     Private Const JPEG_QUALITY As Long = 88
@@ -115,9 +115,9 @@ Public Class UploadPrincipal : Implements IHttpHandler
     End Sub
 
     Private Function ObtenerCarpetaRel(id As Integer) As String
-        Dim cs = ConfigurationManager.ConnectionStrings("DaytonaDB")
+        Dim cs As String = DatabaseHelper.GetConnectionString()
         If cs Is Nothing Then Return ""
-        Using cn As New SqlConnection(cs.ConnectionString)
+        Using cn As New SqlConnection(cs)
             cn.Open()
             Using cmd As New SqlCommand("SELECT carpetarel FROM admisiones WHERE Id=@Id", cn)
                 cmd.Parameters.AddWithValue("@Id", id)

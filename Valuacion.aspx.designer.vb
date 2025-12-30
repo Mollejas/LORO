@@ -11,16 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class Site1
-
-    '''<summary>
-    '''Control HeadContent.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents HeadContent As Global.System.Web.UI.WebControls.ContentPlaceHolder
+Partial Public Class Valuacion
 
     '''<summary>
     '''Control form1.
@@ -32,65 +23,74 @@ Partial Public Class Site1
     Protected WithEvents form1 As Global.System.Web.UI.HtmlControls.HtmlForm
 
     '''<summary>
-    '''Control litUser.
+    '''Control fuPdf.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents litUser As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents fuPdf As Global.System.Web.UI.WebControls.FileUpload
 
     '''<summary>
-    '''Control pnlAdminConfig.
+    '''Control btnProcesar.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents pnlAdminConfig As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents btnProcesar As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''Control pnlAdminConfigMobile.
+    '''Control gvRefacciones.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents pnlAdminConfigMobile As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents gvRefacciones As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
-    '''Control imgLogo2.
+    '''Control lblTotRef.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents imgLogo2 As Global.System.Web.UI.WebControls.Image
+    Protected WithEvents lblTotRef As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''Control lnkCarpeta.
+    '''Control gvPintura.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents lnkCarpeta As Global.System.Web.UI.WebControls.HyperLink
+    Protected WithEvents gvPintura As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
-    '''Control lnkCarpetaMobile.
+    '''Control lblTotPintura.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents lnkCarpetaMobile As Global.System.Web.UI.WebControls.HyperLink
+    Protected WithEvents lblTotPintura As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''Control MainContent.
+    '''Control gvHojalateria.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents MainContent As Global.System.Web.UI.WebControls.ContentPlaceHolder
+    Protected WithEvents gvHojalateria As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control lblTotHoj.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents lblTotHoj As Global.System.Web.UI.WebControls.Label
 End Class

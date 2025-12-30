@@ -32,6 +32,33 @@ Partial Public Class Login
     Protected WithEvents lblError As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
+    '''Control rbQualitas.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents rbQualitas As Global.System.Web.UI.WebControls.RadioButton
+
+    '''<summary>
+    '''Control rbInbursa.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents rbInbursa As Global.System.Web.UI.WebControls.RadioButton
+
+    '''<summary>
+    '''Control rbExternos.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents rbExternos As Global.System.Web.UI.WebControls.RadioButton
+
+    '''<summary>
     '''Control txtCorreo.
     '''</summary>
     '''<remarks>

@@ -1,10 +1,10 @@
-Imports System
+﻿Imports System
 Imports System.Web
 Imports System.Data.SqlClient
 Imports System.Configuration
 
 Public Class UpdateRefaccion
-    Implements IHttpHandler
+    Implements IHttpHandler, IReadOnlySessionState
 
     Public ReadOnly Property IsReusable As Boolean Implements IHttpHandler.IsReusable
         Get
@@ -16,7 +16,7 @@ Public Class UpdateRefaccion
         context.Response.ContentType = "application/json"
 
         Dim idStr As String = context.Request("id")
-        Dim field As String = context.Request("field")
+        Dim field As String = If(context.Request("field"), "").Trim().ToLower()
         Dim val As String = context.Request("val")
 
         ' Validar parámetros
@@ -25,31 +25,41 @@ Public Class UpdateRefaccion
             Return
         End If
 
-        ' Solo permitir actualizar autorizado y estatus
-        If field <> "autorizado" AndAlso field <> "estatus" Then
-            context.Response.Write("{""ok"":false,""error"":""Campo no permitido""}")
+        ' Validar que field no esté vacío
+        If String.IsNullOrWhiteSpace(field) Then
+            context.Response.Write("{""ok"":false,""error"":""Campo vacío o no especificado""}")
+            Return
+        End If
+
+        ' Campos permitidos (case insensitive)
+        Dim allowedFields As String() = {"autorizado", "estatus", "complemento", "nivel_rep_l", "nivel_rep_m", "nivel_rep_f", "nivel_rep_pint_l", "nivel_rep_pint_m", "nivel_rep_pint_f"}
+        If Not allowedFields.Contains(field) Then
+            context.Response.Write("{""ok"":false,""error"":""Campo no permitido: [" & field & "]""}")
             Return
         End If
 
         Try
-            Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+            Dim cs As String = DatabaseHelper.GetConnectionString()
             Using cn As New SqlConnection(cs)
                 cn.Open()
 
                 Dim sql As String
-                If field = "autorizado" Then
-                    sql = "UPDATE refacciones SET autorizado = @val WHERE id = @id"
-                Else
+                ' Todos los campos excepto estatus son BIT/INT
+                If field = "estatus" Then
                     sql = "UPDATE refacciones SET estatus = @val WHERE id = @id"
+                Else
+                    ' Para autorizado, complemento, y todos los nivel_rep_* usar el nombre del campo dinámicamente
+                    sql = "UPDATE refacciones SET " & field & " = @val WHERE id = @id"
                 End If
 
                 Using cmd As New SqlCommand(sql, cn)
                     cmd.Parameters.AddWithValue("@id", Convert.ToInt32(idStr))
 
-                    If field = "autorizado" Then
-                        cmd.Parameters.AddWithValue("@val", Convert.ToInt32(val))
-                    Else
+                    If field = "estatus" Then
                         cmd.Parameters.AddWithValue("@val", val)
+                    Else
+                        ' Todos los demás campos son BIT/INT
+                        cmd.Parameters.AddWithValue("@val", Convert.ToInt32(val))
                     End If
 
                     Dim rows As Integer = cmd.ExecuteNonQuery()

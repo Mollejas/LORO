@@ -4,6 +4,7 @@ Imports System.Data.SqlClient
 Imports System.Configuration
 Imports System.Security.Cryptography
 Imports System.Text
+Imports System.Web.Security
 
 Public Class Login
     Inherits System.Web.UI.Page
@@ -76,6 +77,21 @@ Public Class Login
     End Function
 
     Private Sub btnEntrar_Click(ByVal sender As Object, ByVal e As EventArgs)
+        ' === 1. Determinar empresa seleccionada y guardar en sesión ANTES de autenticar ===
+        Dim empresaSeleccionada As String = "INBURSA" ' Default
+
+        If rbQualitas.Checked Then
+            empresaSeleccionada = "QUALITAS"
+        ElseIf rbInbursa.Checked Then
+            empresaSeleccionada = "INBURSA"
+        ElseIf rbExternos.Checked Then
+            empresaSeleccionada = "EXTERNOS"
+        End If
+
+        ' Guardar empresa en sesión (DatabaseHelper la usará para determinar la BD)
+        Session("EmpresaSeleccionada") = empresaSeleccionada
+
+        ' === 2. Validar campos de login ===
         ' Normaliza el correo (CreateUser guarda en minúsculas)
         Dim correo As String = If(txtCorreo.Text, String.Empty).Trim().ToLowerInvariant()
         Dim pass As String = If(txtPassword.Text, String.Empty)
@@ -86,7 +102,8 @@ Public Class Login
         End If
 
         Try
-            Dim cs As String = ConfigurationManager.ConnectionStrings("DaytonaDB").ConnectionString
+            ' === 3. Conectar a la BD correcta usando DatabaseHelper (que lee Session("EmpresaSeleccionada")) ===
+            Dim cs As String = DatabaseHelper.GetConnectionString()
 
             Using cn As New SqlConnection(cs)
                 Using cmd As New SqlCommand("dbo.usp_Usuarios_Login", cn)
@@ -138,6 +155,9 @@ Public Class Login
                         Session("Nombre") = nombre
                         Session("Correo") = correo
                         Session("EsAdmin") = esAdmin
+
+                        ' Establecer cookie de autenticación
+                        FormsAuthentication.SetAuthCookie(correo, chkRecordar.Checked)
                     End Using
                 End Using
             End Using
@@ -159,12 +179,12 @@ Public Class Login
                 End If
             End If
 
-            ' Redirect
+            ' Redirect - Usar True para terminar ejecución y guardar sesión correctamente
             Dim ret As String = Request.QueryString("returnUrl")
             If Not String.IsNullOrWhiteSpace(ret) Then
-                Response.Redirect(ret, False)
+                Response.Redirect(ret, True)
             Else
-                Response.Redirect("princi.aspx", False)
+                Response.Redirect("princi.aspx", True)
             End If
 
         Catch ex As Exception

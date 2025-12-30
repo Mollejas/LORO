@@ -207,6 +207,13 @@
       <DependentUpon>CreateUser.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Configuracion.aspx.designer.vb">
+      <DependentUpon>Configuracion.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Configuracion.aspx.vb">
+      <DependentUpon>Configuracion.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Dashboard.aspx.designer.vb">
       <DependentUpon>Dashboard.aspx</DependentUpon>
     </Compile>
@@ -304,13 +311,14 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Controllers\HomeController.vb" />
+    <Compile Include="DatabaseHelper.vb" />
     <Compile Include="PdfHelper.vb" />
     <Compile Include="Princi.aspx.designer.vb">
       <DependentUpon>Princi.aspx</DependentUpon>
     </Compile>
     <Compile Include="Princi.aspx.vb">
       <DependentUpon>Princi.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="RefacFotosUpload.ashx.vb">
       <DependentUpon>RefacFotosUpload.ashx</DependentUpon>
@@ -318,12 +326,16 @@
     <Compile Include="SaveInventario.ashx.vb">
       <DependentUpon>SaveInventario.ashx</DependentUpon>
     </Compile>
+    <Compile Include="SessionValidationModule.vb" />
     <Compile Include="Site1.Master.designer.vb">
       <DependentUpon>Site1.Master</DependentUpon>
     </Compile>
     <Compile Include="Site1.Master.vb">
       <DependentUpon>Site1.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UpdateRefaccion.ashx.vb">
+      <DependentUpon>UpdateRefaccion.ashx</DependentUpon>
     </Compile>
     <Compile Include="UploadDiagFotos.ashx.vb">
       <DependentUpon>UploadDiagFotos.ashx</DependentUpon>
@@ -353,6 +365,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="CreateUser.aspx" />
+    <Content Include="Configuracion.aspx" />
     <Content Include="css1.css" />
     <Content Include="Dashboard.aspx" />
     <Content Include="EMPRESAS.aspx" />
@@ -475,6 +488,7 @@
     <Content Include="ViewPdf.ashx" />
     <Content Include="UploadPrincipal.ashx" />
     <Content Include="UploadDiagFotos.ashx" />
+    <Content Include="UpdateRefaccion.ashx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />

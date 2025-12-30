@@ -1442,6 +1442,9 @@
         <!-- 👇 NUEVO botón iTextSharp -->
         <button type="button" id="download-itext-pdf">🖨️ Generar PDF (iTextSharp)</button>
 
+        <!-- 👇 Botón para descargar PDF tamaño carta -->
+        <button type="button" id="download-pc-pdf">💾 Descargar a PC</button>
+
         <button type="submit">📤 Enviar Formulario</button>
     </div>
 
@@ -1656,6 +1659,76 @@
                     alert('Hubo un error al generar el PDF. Por favor, intente de nuevo.');
                     if (downloadButton) { downloadButton.innerHTML = originalText; downloadButton.disabled = false; }
                     const buttonsContainer = document.querySelector('.buttons-container');
+                    if (buttonsContainer) buttonsContainer.style.display = 'block';
+                });
+            }
+        });
+    </script>
+
+    <!-- ===== JS: Descargar a PC (PDF tamaño carta) ===== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const downloadPCButton = document.getElementById('download-pc-pdf');
+            if (downloadPCButton) {
+                downloadPCButton.addEventListener('click', generateLetterPDF);
+            }
+
+            function generateLetterPDF() {
+                const element = document.getElementById('form-content');
+                if (!element) {
+                    alert('¡Error! No se encontró el contenido del formulario.');
+                    return;
+                }
+
+                const originalText = downloadPCButton.innerHTML;
+                const buttonsContainer = document.querySelector('.buttons-container');
+                downloadPCButton.innerHTML = '🔄 Generando PDF...';
+                downloadPCButton.disabled = true;
+                if (buttonsContainer) buttonsContainer.style.display = 'none';
+
+                html2canvas(element, {
+                    scale: 3,
+                    useCORS: true,
+                    logging: false,
+                    onclone: function (clonedDoc) {
+                        const btns = clonedDoc.querySelector('.buttons-container');
+                        if (btns) btns.style.display = 'none';
+                    }
+                }).then(canvas => {
+                    // Crear PDF tamaño carta (Letter: 215.9mm x 279.4mm)
+                    const pdfDoc = new jsPDF('p', 'mm', 'letter');
+                    const pageWidth = pdfDoc.internal.pageSize.getWidth();   // 215.9mm
+                    const pageHeight = pdfDoc.internal.pageSize.getHeight(); // 279.4mm
+
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    const ratio = canvas.height / canvas.width;
+
+                    // Márgenes mínimos para que quepa todo en una hoja
+                    const margin = 3;
+                    let finalWidth = pageWidth - (margin * 2);
+                    let finalHeight = finalWidth * ratio;
+
+                    // Si la altura excede la página, ajustar por altura
+                    if (finalHeight > pageHeight - (margin * 2)) {
+                        finalHeight = pageHeight - (margin * 2);
+                        finalWidth = finalHeight / ratio;
+                    }
+
+                    const x = (pageWidth - finalWidth) / 2;
+                    const y = (pageHeight - finalHeight) / 2;
+
+                    pdfDoc.addImage(imgData, 'JPEG', x, y, finalWidth, finalHeight);
+                    pdfDoc.save('inventariopdf.pdf');
+
+                    // Restaurar UI
+                    downloadPCButton.innerHTML = originalText;
+                    downloadPCButton.disabled = false;
+                    if (buttonsContainer) buttonsContainer.style.display = 'block';
+                }).catch(error => {
+                    console.error('Error al generar PDF:', error);
+                    alert('Hubo un error al generar el PDF. Por favor, intente de nuevo.');
+                    downloadPCButton.innerHTML = originalText;
+                    downloadPCButton.disabled = false;
                     if (buttonsContainer) buttonsContainer.style.display = 'block';
                 });
             }

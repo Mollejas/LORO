@@ -1,4 +1,4 @@
-<%@ Page Language="VB" AutoEventWireup="false" CodeBehind="Hojalateria.aspx.vb" Inherits="DAYTONAMIO.Hojalateria" MaintainScrollPositionOnPostBack="true" %><!DOCTYPE html>
+﻿<%@ Page Language="VB" AutoEventWireup="false" CodeBehind="Hojalateria.aspx.vb" Inherits="DAYTONAMIO.Hojalateria" MaintainScrollPositionOnPostBack="true" %><!DOCTYPE html>
 <html lang="es">
 <head runat="server">
   <meta charset="utf-8" />
@@ -793,14 +793,33 @@
   function refreshThumbs(){
     const list = fm.thumbs();
     list.innerHTML = '';
-    __fmFiles.forEach(f => {
+    __fmFiles.forEach((f, idx) => {
       const r = new FileReader();
       r.onload = e => {
         const wrap = document.createElement('div');
         wrap.className = 'fm-thumb';
+        wrap.style.position = 'relative';
+
         const img = document.createElement('img');
         img.src = e.target.result; img.alt = f.name; img.loading = 'lazy';
         wrap.appendChild(img);
+
+        // Botón de eliminar
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'btn btn-danger btn-sm fm-thumb-delete';
+        delBtn.innerHTML = '<i class="bi bi-x"></i>';
+        delBtn.style.cssText = 'position:absolute;top:2px;right:2px;padding:0 4px;line-height:1;font-size:14px;border-radius:50%;opacity:0.9;';
+        delBtn.title = 'Eliminar imagen';
+        delBtn.setAttribute('data-idx', idx);
+        delBtn.addEventListener('click', function(ev){
+          ev.stopPropagation();
+          const i = parseInt(this.getAttribute('data-idx'), 10);
+          __fmFiles.splice(i, 1);
+          refreshThumbs();
+        });
+        wrap.appendChild(delBtn);
+
         list.appendChild(wrap);
       };
       r.readAsDataURL(f);
@@ -825,10 +844,11 @@
     ov.className = 'cam-ov';
     ov.innerHTML = `
       <div class="cam-ov-inner">
-        <div class="text-white small px-1">Cámara activa</div>
+        <div class="text-white small px-1">Cámara activa - <span id="camCount">0</span> foto(s) capturada(s)</div>
         <video id="camLive" autoplay playsinline muted></video>
         <div class="row-actions">
           <button type="button" class="btn btn-light" id="camCapture"><i class="bi bi-camera-fill"></i> Capturar</button>
+          <button type="button" class="btn btn-success" id="camDone"><i class="bi bi-check-lg"></i> Listo</button>
           <button type="button" class="btn btn-outline-light" id="camCancel">Cancelar</button>
         </div>
       </div>`;
@@ -836,9 +856,12 @@
 
     const video = ov.querySelector('#camLive');
     const btnOk = ov.querySelector('#camCapture');
+    const btnDone = ov.querySelector('#camDone');
     const btnCancel = ov.querySelector('#camCancel');
+    const countSpan = ov.querySelector('#camCount');
 
     let stream;
+    let captureCount = 0;
 
     const stopAll = () => {
       try{ stream?.getTracks()?.forEach(t => t.stop()); }catch(_){}
@@ -846,6 +869,7 @@
     };
 
     btnCancel.addEventListener('click', stopAll);
+    btnDone.addEventListener('click', stopAll);
 
     navigator.mediaDevices.getUserMedia({
       video: { facingMode: { ideal: 'environment' } },
@@ -864,13 +888,13 @@
         const blob = await captureFromVideo(video, {maxW:1600, maxH:1600, quality:0.85});
         const file = new File([blob], genCamName(), {type:'image/jpeg'});
         __fmFiles.push(file);
+        captureCount++;
+        countSpan.textContent = captureCount;
         refreshThumbs();
       }catch(err){
         alert('No se pudo capturar: ' + err.message);
-      }finally{
-        stopAll();
       }
-    }, { once:true });
+    });
   }
 
   function captureFromVideo(video, opts){
