@@ -262,7 +262,7 @@
             document.getElementById('hfRefaccionSeleccionada').value = refId;
 
             // Encontrar y marcar la fila
-            const btn = document.querySelector(`.btn-select-ref[data-refid="${refId}"]`);
+            const btn = document.querySelector('.btn-select-ref[data-refid="' + refId + '"]');
             if (btn) {
                 const row = btn.closest('tr');
                 if (row) row.classList.add('refaccion-active');
@@ -289,7 +289,7 @@
 
         function actualizarUI(refId, conceptoId) {
             // Actualizar contador de badges
-            const badge = document.querySelector(`.badge-count[data-refid="${refId}"]`);
+            const badge = document.querySelector('.badge-count[data-refid="' + refId + '"]');
             if (badge) {
                 const count = relaciones[refId] ? relaciones[refId].length : 0;
                 badge.textContent = count;
@@ -297,7 +297,7 @@
             }
 
             // Marcar/desmarcar concepto como asignado
-            const btnConcepto = document.querySelector(`.btn-asignar-concepto[data-conceptoid="${conceptoId}"]`);
+            const btnConcepto = document.querySelector('.btn-asignar-concepto[data-conceptoid="' + conceptoId + '"]');
             if (btnConcepto) {
                 const row = btnConcepto.closest('tr');
                 if (row) {
