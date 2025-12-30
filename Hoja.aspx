@@ -1004,10 +1004,7 @@
         <div id="tileHojaTrabajoAut" runat="server" class="tile compacto">
           <div class="title">Hoja trabajo autorizada</div>
           <div class="icon-row compacto">
-            <a href="#" class="icon-btn compacto" id="btnSubirHojaTrabajoAut" title="Subir hoja de trabajo autorizada">
-              <i class="bi bi-cloud-upload"></i>
-            </a>
-            <asp:LinkButton ID="btnVerHojaTrabajoAut" runat="server" CssClass="icon-btn compacto" ToolTip="Ver hoja de trabajo autorizada" aria-label="Ver hoja de trabajo autorizada">
+            <asp:LinkButton ID="btnVerHojaTrabajoAut" runat="server" CssClass="icon-btn compacto" ToolTip="Ver hoja de trabajo autorizada" aria-label="Ver hoja de trabajo autorizada" OnClick="btnVerHojaTrabajoAut_Click">
               <i class="bi bi-eye"></i>
             </asp:LinkButton>
           </div>
@@ -1728,6 +1725,24 @@
   Cerrar
 </button>
 
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: Valuación Autorizada (Relacionar conceptos) ===================== -->
+  <div class="modal fade" id="modalValuacionA" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Hoja de Trabajo Autorizada - Relacionar Conceptos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-0" style="height: calc(100vh - 120px);">
+          <iframe id="valuacionAFrame" style="width:100%;height:100%;border:0;"></iframe>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>
       </div>
     </div>
