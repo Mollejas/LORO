@@ -1097,10 +1097,7 @@
         <div id="tileHojaTrabajoAut" runat="server" class="tile compacto">
           <div class="title">Hoja trabajo autorizada</div>
           <div class="icon-row compacto">
-            <a href="#" class="icon-btn compacto" id="btnSubirHojaTrabajoAut" title="Subir hoja de trabajo autorizada">
-              <i class="bi bi-cloud-upload"></i>
-            </a>
-            <asp:LinkButton ID="btnVerHojaTrabajoAut" runat="server" CssClass="icon-btn compacto" ToolTip="Ver hoja de trabajo autorizada" aria-label="Ver hoja de trabajo autorizada">
+            <asp:LinkButton ID="btnVerHojaTrabajoAut" runat="server" CssClass="icon-btn compacto" ToolTip="Ver hoja de trabajo autorizada" aria-label="Ver hoja de trabajo autorizada" OnClick="btnVerHojaTrabajoAut_Click">
               <i class="bi bi-eye"></i>
             </asp:LinkButton>
           </div>
@@ -1841,6 +1838,24 @@
     </div>
   </div>
 
+  <!-- ===================== MODAL: Valuación Autorizada (Relacionar conceptos) ===================== -->
+  <div class="modal fade" id="modalValuacionA" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Hoja de Trabajo Autorizada - Relacionar Conceptos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-0" style="height: calc(100vh - 120px);">
+          <iframe id="valuacionAFrame" style="width:100%;height:100%;border:0;"></iframe>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ====== SCRIPTS ====== -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -2479,7 +2494,17 @@
         diasTranscurridos: gt('lblDiasTranscurridos')
       };
     }
-    function openDiagPage(pageUrl) {
+    window.openDiagPage = function(pageUrl) {
+      // Verificar si el módulo está habilitado
+      const isMec = /Mecanica\.aspx$/i.test(pageUrl);
+      const isHoja = /Hojalateria\.aspx$/i.test(pageUrl);
+      const allowMec = !!document.getElementById('chkMecSi')?.checked;
+      const allowHoja = !!document.getElementById('chkHojaSi')?.checked;
+      if ((isMec && !allowMec) || (isHoja && !allowHoja)) {
+        alert('Este módulo está bloqueado (rojo). Activa el switch para continuar.');
+        return false;
+      }
+
       // Destruir TODOS los modales (no solo los visibles) antes de abrir diagModal
       document.querySelectorAll('.modal').forEach(function(m) {
         if (m.id === 'diagModal') return; // No destruir el que vamos a abrir
@@ -3400,27 +3425,6 @@
             // Exponer globalmente para que pueda ser llamada desde otros scripts
             window.applyDiagGateUI = applyDiagGateUI;
 
-            // Ejecutar inmediatamente si el DOM ya está listo
-            if (document.readyState === 'loading') {
-                // DOM aún se está cargando, los listeners arriba se encargarán
-            } else {
-                // DOM ya está listo, ejecutar ahora
-                setTimeout(applyDiagGateUI, 0);
-            }
-
-            // Endurecemos openDiagPage: si está en rojo, no abrimos
-            const __origOpenDiagPage = window.openDiagPage;
-            window.openDiagPage = function (pageUrl) {
-                const isMec = /Mecanica\.aspx$/i.test(pageUrl);
-                const isHoja = /Hojalateria\.aspx$/i.test(pageUrl);
-                const allowMec = !!document.getElementById('chkMecSi')?.checked;
-                const allowHoja = !!document.getElementById('chkHojaSi')?.checked;
-                if ((isMec && !allowMec) || (isHoja && !allowHoja)) {
-                    alert('Este módulo está bloqueado (rojo). Activa el switch para continuar.');
-                    return false;
-                }
-                if (typeof __origOpenDiagPage === 'function') return __origOpenDiagPage(pageUrl);
-            };
         })();
     </script>
 
@@ -3515,108 +3519,77 @@
                alert('Las 3 validaciones están completas. No se puede modificar.');
                return;
            }
+       }
+   }
 
-           var id = toggle.getAttribute('data-id');
-           var field = toggle.getAttribute('data-field');
-           var val = toggle.getAttribute('data-val');
+   // Check on page load and when modal shows
+   window.addEventListener('load', checkHTValidationState);
+   document.getElementById('modalHojaTrabajo')?.addEventListener('shown.bs.modal', checkHTValidationState);
 
-           if (!id || !field) return;
+   // Toggle handlers para Hoja de Trabajo
+   document.addEventListener('click', function(e) {
+       const toggle = e.target.closest('.ht-toggle');
+       if (!toggle) return;
 
-           // Encontrar la fila
-           var row = toggle.closest('tr');
-           if (!row) return;
+       // Check if validated (disabled)
+       const modalBody = toggle.closest('.modal-body');
+       if (modalBody && modalBody.classList.contains('ht-validated')) {
+           console.log('Toggle bloqueado - validaciones completas');
+           return;
+       }
 
-           // Actualizar visualmente
-           if (field === 'autorizado') {
-               var siSpan = row.querySelector('.ht-si');
-               var noSpan = row.querySelector('.ht-no');
-               if (val === '1') {
-                   siSpan.textContent = '✓';
-                   noSpan.textContent = '';
-               } else {
-                   siSpan.textContent = '';
-                   noSpan.textContent = '✗';
-               }
-           } else if (field === 'estatus') {
-               var statusSpans = row.querySelectorAll('.ht-status');
-               for (var i = 0; i < statusSpans.length; i++) {
-                   statusSpans[i].textContent = statusSpans[i].getAttribute('data-val') === val ? '●' : '';
-               }
-           } else if (field === 'complemento') {
-               // Toggle: si ya tiene palomita, la quitamos (val=0), si no la ponemos (val=1)
-               var currentText = toggle.textContent.trim();
-               if (currentText === '✓') {
-                   toggle.textContent = '';
-                   val = '0';
-               } else {
-                   toggle.textContent = '✓';
-                   val = '1';
-               }
-           } else if (field === 'nivel_rep_l' || field === 'nivel_rep_m' || field === 'nivel_rep_f') {
-               // Nivel Reparación: solo uno puede estar marcado (L, M o F)
-               var nivelRepSpans = row.querySelectorAll('.ht-nivel-rep');
-               // Desmarcar todos
-               for (var i = 0; i < nivelRepSpans.length; i++) {
-                   nivelRepSpans[i].textContent = '';
-               }
-               // Marcar el clickeado
-               toggle.textContent = '✓';
-               val = '1';
+       const id = toggle.dataset.id;
+       const field = toggle.dataset.field;
+       const val = toggle.dataset.val;
 
-               // Guardar los 3 campos en BD
-               var fieldsToSave = [
-                   {field: 'nivel_rep_l', val: field === 'nivel_rep_l' ? '1' : '0'},
-                   {field: 'nivel_rep_m', val: field === 'nivel_rep_m' ? '1' : '0'},
-                   {field: 'nivel_rep_f', val: field === 'nivel_rep_f' ? '1' : '0'}
-               ];
-               for (var i = 0; i < fieldsToSave.length; i++) {
-                   fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + fieldsToSave[i].field + '&val=' + fieldsToSave[i].val)
-                       .then(function (r) { return r.json(); })
-                       .then(function (data) {
-                           if (!data.ok) console.error('Error guardando:', data.error);
-                       })
-                       .catch(function (err) { console.error('Error:', err); });
-               }
-               return; // Salir aquí porque ya guardamos
-           } else if (field === 'nivel_rep_pint_l' || field === 'nivel_rep_pint_m' || field === 'nivel_rep_pint_f') {
-               // Nivel Reparación Pintura: solo uno puede estar marcado (L, M o F)
-               var nivelPintSpans = row.querySelectorAll('.ht-nivel-pint');
-               // Desmarcar todos
-               for (var i = 0; i < nivelPintSpans.length; i++) {
-                   nivelPintSpans[i].textContent = '';
-               }
-               // Marcar el clickeado
-               toggle.textContent = '✓';
-               val = '1';
+       console.log('Toggle click - ID:', id, 'Field:', field, 'Val:', val);
 
-               // Guardar los 3 campos en BD
-               var fieldsToSave = [
-                   {field: 'nivel_rep_pint_l', val: field === 'nivel_rep_pint_l' ? '1' : '0'},
-                   {field: 'nivel_rep_pint_m', val: field === 'nivel_rep_pint_m' ? '1' : '0'},
-                   {field: 'nivel_rep_pint_f', val: field === 'nivel_rep_pint_f' ? '1' : '0'}
-               ];
-               for (var i = 0; i < fieldsToSave.length; i++) {
-                   fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + fieldsToSave[i].field + '&val=' + fieldsToSave[i].val)
-                       .then(function (r) { return r.json(); })
-                       .then(function (data) {
-                           if (!data.ok) console.error('Error guardando:', data.error);
-                       })
-                       .catch(function (err) { console.error('Error:', err); });
-               }
-               return; // Salir aquí porque ya guardamos
+       const row = toggle.closest('tr');
+       if (!row) return;
+
+       if (field === 'autorizado') {
+           // Toggle Si/No - mutuamente excluyente
+           const siSpan = row.querySelector('.ht-si');
+           const noSpan = row.querySelector('.ht-no');
+
+           if (val === '1') {
+               siSpan.textContent = '✓';
+               noSpan.textContent = '';
+           } else {
+               siSpan.textContent = '';
+               noSpan.textContent = '✗';
            }
+       } else if (field === 'estatus') {
+           // Toggle P/E/D - mutuamente excluyente
+           const statusSpans = row.querySelectorAll('.ht-status');
+           statusSpans.forEach(span => {
+               span.textContent = span.dataset.val === val ? '●' : '';
+           });
+       }
 
-           // Validar que val no esté vacío para guardar
-           if (!val && val !== '0') return;
+       // Guardar en la base de datos
+       const url = 'UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val;
+       console.log('Guardando...', url);
 
-           // Guardar en la base de datos
-           fetch('UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val)
-               .then(function (r) { return r.json(); })
-               .then(function (data) {
-                   if (!data.ok) console.error('Error guardando:', data.error);
-               })
-               .catch(function (err) { console.error('Error:', err); });
-       });
+       fetch(url)
+           .then(r => {
+               console.log('Respuesta recibida, status:', r.status);
+               return r.json();
+           })
+           .then(data => {
+               console.log('Datos recibidos:', data);
+               if (!data.ok) {
+                   console.error('Error al guardar:', data.error);
+                   alert('Error al guardar: ' + (data.error || 'desconocido'));
+               } else {
+                   console.log('Guardado exitoso');
+               }
+           })
+           .catch(err => {
+               console.error('Error en fetch:', err);
+               alert('Error en la comunicación: ' + err.message);
+           });
+   });
    </script>
 
 

@@ -2992,6 +2992,17 @@ Paint:
         ")
     End Sub
 
+    ' Ver Hoja de Trabajo Autorizada (Relacionar conceptos)
+    Protected Sub btnVerHojaTrabajoAut_Click(sender As Object, e As EventArgs)
+        If String.IsNullOrWhiteSpace(hidId.Value) Then Exit Sub
+
+        Dim url As String = ResolveUrl("~/ValuacionA.aspx?id=" & hidId.Value)
+        EmitStartupScript("openValuacionA", "
+            document.getElementById('valuacionAFrame').src = '" & url & "';
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('modalValuacionA')).show();
+        ")
+    End Sub
+
     ' ====== Validaciones de Hoja de Trabajo ======
     Protected Sub btnValidarRef1_Click(sender As Object, e As EventArgs)
         Dim ddl As DropDownList = TryCast(FindControlRecursive(Me, "ddlValRef1"), DropDownList)
