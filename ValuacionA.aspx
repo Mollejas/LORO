@@ -21,6 +21,41 @@
         .section-header { background: #f8f9fa; padding: 0.5rem; margin-bottom: 0.5rem; border-left: 4px solid #0d6efd; }
         .grid-container { max-height: calc(100vh - 200px); overflow-y: auto; }
         .sticky-header { position: sticky; top: 0; z-index: 10; background: white; }
+
+        /* Estilos para cascada de conceptos */
+        .cascada-container {
+            margin-left: 20px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            padding-left: 15px;
+            border-left: 3px solid #0d6efd;
+            background: #f8f9fa;
+        }
+        .cascada-item {
+            padding: 5px 10px;
+            margin: 3px 0;
+            background: white;
+            border-left: 3px solid #28a745;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .cascada-item-concepto { flex-grow: 1; }
+        .cascada-item-importe { font-weight: bold; color: #28a745; margin: 0 10px; }
+        .cascada-item-remove {
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px 6px;
+        }
+        .cascada-item-remove:hover { color: #bb2d3b; }
+        .concepto-hidden { display: none; }
     </style>
 </head>
 <body>
@@ -208,9 +243,16 @@
     <script>
         // Objeto para almacenar relaciones temporales
         var relaciones = {}; // { refaccion_id: [concepto_id1, concepto_id2, ...] }
+        var conceptosData = {}; // { concepto_id: { concepto: 'texto', importe: 123.45 } }
         var refaccionSeleccionada = null;
 
         document.addEventListener('DOMContentLoaded', function() {
+
+            // Inicializar contenedores de cascada
+            inicializarCascadas();
+
+            // Cargar datos de conceptos
+            cargarDatosConceptos();
 
             // Cargar relaciones existentes
             cargarRelacionesExistentes();
@@ -252,6 +294,49 @@
                 });
             });
         });
+
+        function inicializarCascadas() {
+            // Agregar contenedores de cascada después de cada tabla de refacciones
+            const tables = document.querySelectorAll('.col-md-6.border-end .table');
+            tables.forEach(table => {
+                const refIds = [];
+                table.querySelectorAll('.btn-select-ref').forEach(btn => {
+                    refIds.push(btn.dataset.refid);
+                });
+
+                refIds.forEach(refId => {
+                    const btn = table.querySelector('.btn-select-ref[data-refid="' + refId + '"]');
+                    if (btn) {
+                        const row = btn.closest('tr');
+                        if (row && !row.nextElementSibling?.classList.contains('cascada-row')) {
+                            const cascadaRow = document.createElement('tr');
+                            cascadaRow.className = 'cascada-row';
+                            cascadaRow.innerHTML = '<td colspan="100"><div class="cascada-container" id="cascada-' + refId + '"></div></td>';
+                            row.parentNode.insertBefore(cascadaRow, row.nextSibling);
+                        }
+                    }
+                });
+            });
+        }
+
+        function cargarDatosConceptos() {
+            // Extraer datos de todos los conceptos de los grids del PDF
+            document.querySelectorAll('.btn-asignar-concepto').forEach(btn => {
+                const conceptoId = btn.dataset.conceptoid;
+                const row = btn.closest('tr');
+                if (row) {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 3) {
+                        const concepto = cells[1].textContent.trim();
+                        const importeText = cells[2].textContent.trim();
+                        conceptosData[conceptoId] = {
+                            concepto: concepto,
+                            importe: importeText
+                        };
+                    }
+                }
+            });
+        }
 
         function seleccionarRefaccion(refId) {
             // Remover selección anterior
@@ -296,29 +381,60 @@
                 badge.className = count > 0 ? 'badge bg-success badge-count' : 'badge bg-secondary badge-count';
             }
 
-            // Marcar/desmarcar concepto como asignado
+            // Obtener la fila del concepto
             const btnConcepto = document.querySelector('.btn-asignar-concepto[data-conceptoid="' + conceptoId + '"]');
             if (btnConcepto) {
                 const row = btnConcepto.closest('tr');
                 if (row) {
                     const estaAsignado = relaciones[refId] && relaciones[refId].includes(conceptoId);
-                    row.classList.toggle('concepto-asignado', estaAsignado);
 
-                    // Cambiar texto del botón
-                    const icon = btnConcepto.querySelector('i');
                     if (estaAsignado) {
-                        btnConcepto.classList.remove('btn-outline-success');
-                        btnConcepto.classList.add('btn-success');
-                        icon.className = 'bi bi-check-circle-fill';
-                        btnConcepto.innerHTML = '<i class="bi bi-check-circle-fill"></i> Asignado';
+                        // OCULTAR la fila del grid
+                        row.classList.add('concepto-hidden');
+                        // AGREGAR a cascada
+                        agregarACascada(refId, conceptoId);
                     } else {
-                        btnConcepto.classList.remove('btn-success');
-                        btnConcepto.classList.add('btn-outline-success');
-                        icon.className = 'bi bi-check-lg';
-                        btnConcepto.innerHTML = '<i class="bi bi-check-lg"></i> Asignar';
+                        // MOSTRAR la fila del grid
+                        row.classList.remove('concepto-hidden');
+                        // QUITAR de cascada
+                        quitarDeCascada(refId, conceptoId);
                     }
                 }
             }
+        }
+
+        function agregarACascada(refId, conceptoId) {
+            const cascada = document.getElementById('cascada-' + refId);
+            if (!cascada) return;
+
+            const datos = conceptosData[conceptoId];
+            if (!datos) return;
+
+            // Crear elemento de cascada
+            const item = document.createElement('div');
+            item.className = 'cascada-item';
+            item.id = 'cascada-item-' + conceptoId;
+            item.innerHTML = `
+                <span class="cascada-item-concepto">${datos.concepto}</span>
+                <span class="cascada-item-importe">${datos.importe}</span>
+                <span class="cascada-item-remove" onclick="removerDeCascada(${refId}, ${conceptoId})" title="Desasignar">
+                    <i class="bi bi-x-circle-fill"></i>
+                </span>
+            `;
+
+            cascada.appendChild(item);
+        }
+
+        function quitarDeCascada(refId, conceptoId) {
+            const item = document.getElementById('cascada-item-' + conceptoId);
+            if (item) {
+                item.remove();
+            }
+        }
+
+        function removerDeCascada(refId, conceptoId) {
+            // Desasignar el concepto
+            asignarConcepto(refId, conceptoId);
         }
 
         function cargarRelacionesExistentes() {
