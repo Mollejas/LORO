@@ -14,48 +14,100 @@
         .concepto-row:hover { background: #f8f9fa; }
         .concepto-selected { background: #e7f3ff !important; border-left: 3px solid #0d6efd; }
         .refaccion-row { cursor: pointer; }
-        .refaccion-active { background: #fff3cd; border-left: 3px solid #ffc107; }
+
+        /* Fila seleccionada - Amarillo brillante y visible */
+        .refaccion-active {
+            background: #ffc107 !important;
+            border-left: 5px solid #ff9800 !important;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3);
+        }
+
         .concepto-asignado { background: #d1e7dd; }
         .badge-count { font-size: 11px; }
-        .btn-sm-custom { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
         .section-header { background: #f8f9fa; padding: 0.5rem; margin-bottom: 0.5rem; border-left: 4px solid #0d6efd; }
         .grid-container { max-height: calc(100vh - 200px); overflow-y: auto; }
         .sticky-header { position: sticky; top: 0; z-index: 10; background: white; }
 
-        /* Estilos para cascada de conceptos */
-        .cascada-container {
-            margin-left: 20px;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            padding-left: 15px;
-            border-left: 3px solid #0d6efd;
-            background: #f8f9fa;
+        /* Botón de asignar más pequeño */
+        .btn-asignar-concepto {
+            padding: 0.15rem 0.4rem !important;
+            font-size: 0.75rem !important;
+            line-height: 1.2 !important;
         }
+
+        /* Estilos para cascada de conceptos - Mejorados */
+        .cascada-container {
+            margin-left: 30px;
+            margin-top: 8px;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-left: 4px solid #28a745;
+            background: linear-gradient(to right, #e8f5e9, #f8f9fa);
+            border-radius: 4px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
         .cascada-item {
-            padding: 5px 10px;
-            margin: 3px 0;
+            padding: 8px 12px;
+            margin: 5px 0;
             background: white;
-            border-left: 3px solid #28a745;
+            border-left: 4px solid #28a745;
+            border-radius: 4px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 12px;
             animation: slideIn 0.3s ease-out;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
         }
+
+        .cascada-item:hover {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            transform: translateX(2px);
+        }
+
         @keyframes slideIn {
             from { opacity: 0; transform: translateX(-10px); }
             to { opacity: 1; transform: translateX(0); }
         }
-        .cascada-item-concepto { flex-grow: 1; }
-        .cascada-item-importe { font-weight: bold; color: #28a745; margin: 0 10px; }
+
+        .cascada-item-concepto {
+            flex-grow: 1;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .cascada-item-importe {
+            font-weight: bold;
+            color: #28a745;
+            margin: 0 15px;
+            font-size: 13px;
+        }
+
         .cascada-item-remove {
             color: #dc3545;
             cursor: pointer;
-            font-size: 14px;
-            padding: 2px 6px;
+            font-size: 16px;
+            padding: 4px 8px;
+            transition: all 0.2s ease;
         }
-        .cascada-item-remove:hover { color: #bb2d3b; }
+
+        .cascada-item-remove:hover {
+            color: #bb2d3b;
+            transform: scale(1.2);
+        }
+
         .concepto-hidden { display: none; }
+
+        /* Título de sección con mejor contraste */
+        h6.text-primary, h6.text-warning {
+            font-weight: 600;
+            padding: 5px 0;
+            border-bottom: 2px solid currentColor;
+            margin-bottom: 10px !important;
+        }
     </style>
 </head>
 <body>
@@ -91,7 +143,6 @@
                         <asp:GridView ID="gvMecReparacion" runat="server" CssClass="table table-sm table-hover table-bordered"
                             AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id">
                             <Columns>
-                                <asp:BoundField DataField="id" HeaderText="ID" ItemStyle-Width="50px" ItemStyle-CssClass="text-center" />
                                 <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                                 <asp:TemplateField HeaderText="Conceptos" ItemStyle-Width="100px" ItemStyle-CssClass="text-center">
                                     <ItemTemplate>
@@ -109,7 +160,6 @@
                         <asp:GridView ID="gvMecSustitucion" runat="server" CssClass="table table-sm table-hover table-bordered"
                             AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id">
                             <Columns>
-                                <asp:BoundField DataField="id" HeaderText="ID" ItemStyle-Width="50px" ItemStyle-CssClass="text-center" />
                                 <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                                 <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="120px" />
                                 <asp:TemplateField HeaderText="Conceptos" ItemStyle-Width="100px" ItemStyle-CssClass="text-center">
@@ -128,7 +178,6 @@
                         <asp:GridView ID="gvHojReparacion" runat="server" CssClass="table table-sm table-hover table-bordered"
                             AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id">
                             <Columns>
-                                <asp:BoundField DataField="id" HeaderText="ID" ItemStyle-Width="50px" ItemStyle-CssClass="text-center" />
                                 <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                                 <asp:TemplateField HeaderText="Conceptos" ItemStyle-Width="100px" ItemStyle-CssClass="text-center">
                                     <ItemTemplate>
@@ -146,7 +195,6 @@
                         <asp:GridView ID="gvHojSustitucion" runat="server" CssClass="table table-sm table-hover table-bordered"
                             AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id">
                             <Columns>
-                                <asp:BoundField DataField="id" HeaderText="ID" ItemStyle-Width="50px" ItemStyle-CssClass="text-center" />
                                 <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                                 <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="120px" />
                                 <asp:TemplateField HeaderText="Conceptos" ItemStyle-Width="100px" ItemStyle-CssClass="text-center">
@@ -181,14 +229,13 @@
                         <asp:GridView ID="gvPDFRefacciones" runat="server" CssClass="table table-sm table-hover table-bordered"
                             AutoGenerateColumns="False" EmptyDataText="Sin conceptos extraídos">
                             <Columns>
-                                <asp:BoundField DataField="id" HeaderText="ID" ItemStyle-Width="50px" ItemStyle-CssClass="text-center" />
                                 <asp:BoundField DataField="concepto" HeaderText="Concepto" />
                                 <asp:BoundField DataField="importe" HeaderText="Importe" ItemStyle-Width="100px" ItemStyle-CssClass="text-end" DataFormatString="{0:C2}" />
-                                <asp:TemplateField HeaderText="Acción" ItemStyle-Width="80px" ItemStyle-CssClass="text-center">
+                                <asp:TemplateField HeaderText="Acción" ItemStyle-Width="70px" ItemStyle-CssClass="text-center">
                                     <ItemTemplate>
-                                        <button type="button" class="btn btn-sm btn-outline-success btn-sm-custom btn-asignar-concepto"
+                                        <button type="button" class="btn btn-sm btn-outline-success btn-asignar-concepto"
                                             data-conceptoid='<%# Eval("id") %>' data-seccion="REF">
-                                            <i class="bi bi-check-lg"></i> Asignar
+                                            <i class="bi bi-check-lg"></i>
                                         </button>
                                     </ItemTemplate>
                                 </asp:TemplateField>
@@ -200,14 +247,13 @@
                         <asp:GridView ID="gvPDFPintura" runat="server" CssClass="table table-sm table-hover table-bordered"
                             AutoGenerateColumns="False" EmptyDataText="Sin conceptos extraídos">
                             <Columns>
-                                <asp:BoundField DataField="id" HeaderText="ID" ItemStyle-Width="50px" ItemStyle-CssClass="text-center" />
                                 <asp:BoundField DataField="concepto" HeaderText="Concepto" />
                                 <asp:BoundField DataField="importe" HeaderText="Importe" ItemStyle-Width="100px" ItemStyle-CssClass="text-end" DataFormatString="{0:C2}" />
-                                <asp:TemplateField HeaderText="Acción" ItemStyle-Width="80px" ItemStyle-CssClass="text-center">
+                                <asp:TemplateField HeaderText="Acción" ItemStyle-Width="70px" ItemStyle-CssClass="text-center">
                                     <ItemTemplate>
-                                        <button type="button" class="btn btn-sm btn-outline-success btn-sm-custom btn-asignar-concepto"
+                                        <button type="button" class="btn btn-sm btn-outline-success btn-asignar-concepto"
                                             data-conceptoid='<%# Eval("id") %>' data-seccion="PIN">
-                                            <i class="bi bi-check-lg"></i> Asignar
+                                            <i class="bi bi-check-lg"></i>
                                         </button>
                                     </ItemTemplate>
                                 </asp:TemplateField>
@@ -219,14 +265,13 @@
                         <asp:GridView ID="gvPDFHojalateria" runat="server" CssClass="table table-sm table-hover table-bordered"
                             AutoGenerateColumns="False" EmptyDataText="Sin conceptos extraídos">
                             <Columns>
-                                <asp:BoundField DataField="id" HeaderText="ID" ItemStyle-Width="50px" ItemStyle-CssClass="text-center" />
                                 <asp:BoundField DataField="concepto" HeaderText="Concepto" />
                                 <asp:BoundField DataField="importe" HeaderText="Importe" ItemStyle-Width="100px" ItemStyle-CssClass="text-end" DataFormatString="{0:C2}" />
-                                <asp:TemplateField HeaderText="Acción" ItemStyle-Width="80px" ItemStyle-CssClass="text-center">
+                                <asp:TemplateField HeaderText="Acción" ItemStyle-Width="70px" ItemStyle-CssClass="text-center">
                                     <ItemTemplate>
-                                        <button type="button" class="btn btn-sm btn-outline-success btn-sm-custom btn-asignar-concepto"
+                                        <button type="button" class="btn btn-sm btn-outline-success btn-asignar-concepto"
                                             data-conceptoid='<%# Eval("id") %>' data-seccion="HOJ">
-                                            <i class="bi bi-check-lg"></i> Asignar
+                                            <i class="bi bi-check-lg"></i>
                                         </button>
                                     </ItemTemplate>
                                 </asp:TemplateField>
@@ -326,9 +371,9 @@
                 const row = btn.closest('tr');
                 if (row) {
                     const cells = row.querySelectorAll('td');
-                    if (cells.length >= 3) {
-                        const concepto = cells[1].textContent.trim();
-                        const importeText = cells[2].textContent.trim();
+                    if (cells.length >= 2) {
+                        const concepto = cells[0].textContent.trim();
+                        const importeText = cells[1].textContent.trim();
                         conceptosData[conceptoId] = {
                             concepto: concepto,
                             importe: importeText
