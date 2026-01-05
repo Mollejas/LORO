@@ -406,6 +406,7 @@ END"
             ProcesarValuacion(admId)
             CargarFechasValuacion(admId)
             PintarTilesValuacion()
+            CargarSeguimientoComplementos()
         End If
         ' <<< ADD
 
@@ -2783,6 +2784,97 @@ Paint:
 
         ' Abrir modal
         EmitStartupScript("openHojaTrabajo", "bootstrap.Modal.getOrCreateInstance(document.getElementById('modalHojaTrabajo')).show();")
+    End Sub
+
+    ' ===== Cargar Seguimiento de Complementos =====
+    Public Sub CargarSeguimientoComplementos()
+        If String.IsNullOrWhiteSpace(hidId.Value) Then Exit Sub
+
+        Dim admId As Integer
+        If Not Integer.TryParse(hidId.Value, admId) Then Exit Sub
+
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+
+        ' Cargar datos del vehículo
+        Dim expediente As String = ""
+        Dim carpetaRel As String = ""
+
+        Using cn As New SqlConnection(cs)
+            cn.Open()
+
+            ' Obtener datos de admisiones
+            Using cmd As New SqlCommand("SELECT expediente, marca, tipo, modelo, color, placas, carpetarel FROM admisiones WHERE id = @id", cn)
+                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+                Using rd = cmd.ExecuteReader()
+                    If rd.Read() Then
+                        expediente = If(rd.IsDBNull(0), "", rd.GetString(0))
+                        lblSCExpediente.Text = expediente
+                        lblSCMarca.Text = If(rd.IsDBNull(1), "", rd.GetString(1))
+                        lblSCModelo.Text = If(rd.IsDBNull(2), "", rd.GetString(2))
+                        lblSCAnio.Text = If(rd.IsDBNull(3), "", rd.GetValue(3).ToString())
+                        lblSCColor.Text = If(rd.IsDBNull(4), "", rd.GetString(4))
+                        lblSCPlacas.Text = If(rd.IsDBNull(5), "", rd.GetString(5))
+                        carpetaRel = If(rd.IsDBNull(6), "", rd.GetString(6))
+                    End If
+                End Using
+            End Using
+
+            ' Cargar imagen principal
+            If Not String.IsNullOrWhiteSpace(carpetaRel) Then
+                Dim baseFolder As String = ResolverCarpetaFisica(carpetaRel)
+                Dim imgPath As String = Path.Combine(baseFolder, "1. DOCUMENTOS DE INGRESO", "principal.jpg")
+                If File.Exists(imgPath) Then
+                    Dim bytes = File.ReadAllBytes(imgPath)
+                    imgSCPrincipal.ImageUrl = "data:image/jpeg;base64," & Convert.ToBase64String(bytes)
+                Else
+                    imgSCPrincipal.ImageUrl = ""
+                End If
+            End If
+
+            ' Cargar solo complementos - Mecánica Reparación (WHERE complemento = 1)
+            Dim dtMecRep As New DataTable()
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(nivel_rep_l, 0) as nivel_rep_l, ISNULL(nivel_rep_m, 0) as nivel_rep_m, ISNULL(nivel_rep_f, 0) as nivel_rep_f, ISNULL(nivel_rep_pint_l, 0) as nivel_rep_pint_l, ISNULL(nivel_rep_pint_m, 0) as nivel_rep_pint_m, ISNULL(nivel_rep_pint_f, 0) as nivel_rep_pint_f FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' AND ISNULL(complemento, 0) = 1 ORDER BY id", cn)
+                cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
+                Using da As New SqlDataAdapter(cmd)
+                    da.Fill(dtMecRep)
+                End Using
+            End Using
+            gvSCMecReparacion.DataSource = dtMecRep
+            gvSCMecReparacion.DataBind()
+
+            ' Cargar solo complementos - Mecánica Sustitución (WHERE complemento = 1)
+            Dim dtMecSus As New DataTable()
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1 FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'SUSTITUCION' AND ISNULL(complemento, 0) = 1 ORDER BY id", cn)
+                cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
+                Using da As New SqlDataAdapter(cmd)
+                    da.Fill(dtMecSus)
+                End Using
+            End Using
+            gvSCMecSustitucion.DataSource = dtMecSus
+            gvSCMecSustitucion.DataBind()
+
+            ' Cargar solo complementos - Hojalatería Reparación (WHERE complemento = 1)
+            Dim dtHojRep As New DataTable()
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(nivel_rep_l, 0) as nivel_rep_l, ISNULL(nivel_rep_m, 0) as nivel_rep_m, ISNULL(nivel_rep_f, 0) as nivel_rep_f, ISNULL(nivel_rep_pint_l, 0) as nivel_rep_pint_l, ISNULL(nivel_rep_pint_m, 0) as nivel_rep_pint_m, ISNULL(nivel_rep_pint_f, 0) as nivel_rep_pint_f FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' AND ISNULL(complemento, 0) = 1 ORDER BY id", cn)
+                cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
+                Using da As New SqlDataAdapter(cmd)
+                    da.Fill(dtHojRep)
+                End Using
+            End Using
+            gvSCHojReparacion.DataSource = dtHojRep
+            gvSCHojReparacion.DataBind()
+
+            ' Cargar solo complementos - Hojalatería Sustitución (WHERE complemento = 1)
+            Dim dtHojSus As New DataTable()
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1 FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'SUSTITUCION' AND ISNULL(complemento, 0) = 1 ORDER BY id", cn)
+                cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
+                Using da As New SqlDataAdapter(cmd)
+                    da.Fill(dtHojSus)
+                End Using
+            End Using
+            gvSCHojSustitucion.DataSource = dtHojSus
+            gvSCHojSustitucion.DataBind()
+        End Using
     End Sub
 
     Private Sub LoadAdminsForHTValidation(cn As SqlConnection)

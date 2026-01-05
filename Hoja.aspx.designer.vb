@@ -725,15 +725,6 @@ Partial Public Class Hoja
     Protected WithEvents tileSeguimientoCompl As Global.System.Web.UI.HtmlControls.HtmlGenericControl
 
     '''<summary>
-    '''Control btnVerSeguimientoCompl.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents btnVerSeguimientoCompl As Global.System.Web.UI.WebControls.LinkButton
-
-    '''<summary>
     '''Control hidId.
     '''</summary>
     '''<remarks>
@@ -1266,4 +1257,92 @@ Partial Public Class Hoja
             Return CType(MyBase.Master, Site1)
         End Get
     End Property
+
+    '''<summary>
+    '''Control lblSCExpediente.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents lblSCExpediente As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblSCAnio.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents lblSCAnio As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblSCMarca.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents lblSCMarca As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblSCColor.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents lblSCColor As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblSCModelo.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents lblSCModelo As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblSCPlacas.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents lblSCPlacas As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control imgSCPrincipal.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents imgSCPrincipal As Global.System.Web.UI.WebControls.Image
+
+    '''<summary>
+    '''Control gvSCMecSustitucion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents gvSCMecSustitucion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control gvSCMecReparacion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents gvSCMecReparacion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control gvSCHojSustitucion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents gvSCHojSustitucion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control gvSCHojReparacion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents gvSCHojReparacion As Global.System.Web.UI.WebControls.GridView
 End Class
