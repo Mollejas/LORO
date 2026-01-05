@@ -139,18 +139,22 @@ Public Class Hojalateria
         Dim numParte As String = If(numParteTxt IsNot Nothing, (If(numParteTxt.Text, "")).Trim(), "")
         Dim observ As String = If(obsTxt IsNot Nothing, (If(obsTxt.Text, "")).Trim(), "")
 
+        ' Verificar si las 3 validaciones están completas
+        Dim complemento As Integer = If(VerificarValidacionesCompletas(), 1, 0)
+
         Using cn As New SqlConnection(CS)
             Using cmd As New SqlCommand("
                 INSERT INTO dbo.Refacciones
-                (AdmisionId, Expediente, Area, Categoria, Cantidad, Descripcion, NumParte, Observ1, Autorizado, Checar, Aldo, AldoDateTime)
+                (AdmisionId, Expediente, Area, Categoria, Cantidad, Descripcion, NumParte, Observ1, Autorizado, Checar, Aldo, AldoDateTime, Complemento)
                 VALUES
-                (@AdmisionId, @Expediente, @Area, @Categoria, @Cantidad, @Descripcion, @NumParte, @Observ1, 0, 0, 0, NULL);", cn)
+                (@AdmisionId, @Expediente, @Area, @Categoria, @Cantidad, @Descripcion, @NumParte, @Observ1, 0, 0, 0, NULL, @Complemento);", cn)
                 cmd.Parameters.AddWithValue("@AdmisionId", DBNull.Value)
                 cmd.Parameters.AddWithValue("@Expediente", expediente)
                 cmd.Parameters.AddWithValue("@Area", AREA)
                 cmd.Parameters.AddWithValue("@Categoria", categoria)
                 cmd.Parameters.AddWithValue("@Cantidad", cant)
                 cmd.Parameters.AddWithValue("@Descripcion", desc)
+                cmd.Parameters.AddWithValue("@Complemento", complemento)
                 If String.Equals(categoria, "SUSTITUCION", StringComparison.OrdinalIgnoreCase) Then
                     cmd.Parameters.AddWithValue("@NumParte", If(String.IsNullOrWhiteSpace(numParte), CType(DBNull.Value, Object), numParte))
                     cmd.Parameters.AddWithValue("@Observ1", DBNull.Value)
@@ -169,6 +173,27 @@ Public Class Hojalateria
         If obsTxt IsNot Nothing Then obsTxt.Text = ""
         ShowStatus("Guardado correctamente.")
     End Sub
+
+    ' ====== Verificar si las 3 validaciones están completas ======
+    Private Function VerificarValidacionesCompletas() As Boolean
+        Dim expediente = GetExpediente()
+        If String.IsNullOrWhiteSpace(expediente) Then Return False
+
+        Using cn As New SqlConnection(CS)
+            Using cmd As New SqlCommand("
+                SELECT COUNT(*)
+                FROM dbo.admisiones
+                WHERE expediente = @expediente
+                  AND ISNULL(authoj1, 0) = 1
+                  AND ISNULL(authoj2, 0) = 1
+                  AND ISNULL(authoj3, 0) = 1;", cn)
+                cmd.Parameters.AddWithValue("@expediente", expediente)
+                cn.Open()
+                Dim count As Integer = Convert.ToInt32(cmd.ExecuteScalar())
+                Return count > 0
+            End Using
+        End Using
+    End Function
 
     Protected Sub btnAddSust_Click(sender As Object, e As EventArgs)
         InsertRefaccion("SUSTITUCION", txtCantSust, txtDescSust, numParteTxt:=txtNumParteSust)
