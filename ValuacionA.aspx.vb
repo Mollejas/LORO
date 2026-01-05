@@ -652,7 +652,7 @@ Public Class ValuacionA
 
     Private Function EsConceptoBloqueado(descripcion As String) As Boolean
         Dim descUpper = descripcion.ToUpper()
-        Dim descSinAcentos = descUpper.Replace("É", "E")
+        Dim descSinAcentos = descUpper.Replace("É", "E").Replace("Á", "A").Replace("Ó", "O").Replace("Í", "I")
 
         Dim bloqueados As String() = {
             "SUMA TOTAL SIN IVA",
@@ -662,10 +662,43 @@ Public Class ValuacionA
             "DEMERITO",
             "SUBTOTAL",
             "IVA",
-            "TOTAL"
+            "TOTAL",
+            "JOSE MA. CASTORENA",
+            "CASTORENA",
+            "SAN JOSE DE LOS CEDROS",
+            "CUAJIMALPA",
+            "MEXICO, D.F",
+            "TELS:",
+            "CABINA NACIONAL",
+            "LADA SIN COSTO",
+            "01 800",
+            "5002-5500",
+            "5258-2880",
+            "R E S U M E N",
+            "F I N A L",
+            "RESUMEN - FINAL",
+            "RESUMEN FINAL",
+            "COL.",
+            "NO.",
+            "TEL:"
         }
 
-        Return bloqueados.Any(Function(b) descSinAcentos.Contains(b))
+        ' Verificar si contiene algún texto bloqueado
+        If bloqueados.Any(Function(b) descSinAcentos.Contains(b)) Then
+            Return True
+        End If
+
+        ' Bloquear si parece una dirección (tiene "No." seguido de números)
+        If Regex.IsMatch(descUpper, "NO\.\s*\d+") Then
+            Return True
+        End If
+
+        ' Bloquear si parece un número de teléfono (varios dígitos con guiones)
+        If Regex.IsMatch(descripcion, "\d{4}-\d{4}") Then
+            Return True
+        End If
+
+        Return False
     End Function
 
     Private Class TotalesRubro
