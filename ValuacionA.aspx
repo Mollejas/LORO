@@ -444,18 +444,27 @@
 
         function asignarConcepto(refId, conceptoId) {
             // Asegurar que sean strings para comparación consistente
-            refId = String(refId);
-            conceptoId = String(conceptoId);
+            refId = String(refId).trim();
+            conceptoId = String(conceptoId).trim();
 
             if (!relaciones[refId]) relaciones[refId] = [];
 
+            // Limpiar cualquier duplicado que pueda existir
+            relaciones[refId] = relaciones[refId].filter((id, index, self) =>
+                self.indexOf(id) === index
+            );
+
             // Verificar si ya está asignado
-            if (relaciones[refId].includes(conceptoId)) {
-                // Desasignar
-                relaciones[refId] = relaciones[refId].filter(id => id !== conceptoId);
+            const index = relaciones[refId].findIndex(id => String(id).trim() === conceptoId);
+
+            if (index !== -1) {
+                // Desasignar - está en el array, lo quitamos
+                relaciones[refId].splice(index, 1);
+                console.log('Desasignado concepto', conceptoId, 'de refacción', refId);
             } else {
-                // Asignar
+                // Asignar - no está en el array, lo agregamos
                 relaciones[refId].push(conceptoId);
+                console.log('Asignado concepto', conceptoId, 'a refacción', refId);
             }
 
             actualizarUI(refId, conceptoId);
@@ -463,6 +472,10 @@
         }
 
         function actualizarUI(refId, conceptoId) {
+            // Normalizar IDs
+            refId = String(refId).trim();
+            conceptoId = String(conceptoId).trim();
+
             // Actualizar contador de badges
             const badge = document.querySelector('.badge-count[data-refid="' + refId + '"]');
             if (badge) {
@@ -476,7 +489,10 @@
             if (btnConcepto) {
                 const row = btnConcepto.closest('tr');
                 if (row) {
-                    const estaAsignado = relaciones[refId] && relaciones[refId].includes(conceptoId);
+                    // Verificar si está asignado usando el mismo método que asignarConcepto
+                    const estaAsignado = relaciones[refId] && relaciones[refId].findIndex(id => String(id).trim() === conceptoId) !== -1;
+
+                    console.log('Actualizando UI - Concepto', conceptoId, 'está asignado:', estaAsignado);
 
                     if (estaAsignado) {
                         // OCULTAR la fila del grid
@@ -490,15 +506,34 @@
                         quitarDeCascada(refId, conceptoId);
                     }
                 }
+            } else {
+                console.warn('No se encontró el botón para concepto', conceptoId);
             }
         }
 
         function agregarACascada(refId, conceptoId) {
+            // Normalizar IDs
+            refId = String(refId).trim();
+            conceptoId = String(conceptoId).trim();
+
             const cascada = document.getElementById('cascada-' + refId);
-            if (!cascada) return;
+            if (!cascada) {
+                console.warn('No se encontró contenedor de cascada para refacción', refId);
+                return;
+            }
 
             const datos = conceptosData[conceptoId];
-            if (!datos) return;
+            if (!datos) {
+                console.warn('No se encontraron datos para concepto', conceptoId);
+                return;
+            }
+
+            // Verificar si ya existe para evitar duplicados
+            const existente = document.getElementById('cascada-item-' + conceptoId);
+            if (existente) {
+                console.log('El concepto', conceptoId, 'ya está en la cascada');
+                return;
+            }
 
             // Crear elemento de cascada
             const item = document.createElement('div');
@@ -513,12 +548,19 @@
             `;
 
             cascada.appendChild(item);
+            console.log('Agregado a cascada - concepto', conceptoId);
         }
 
         function quitarDeCascada(refId, conceptoId) {
+            // Normalizar IDs
+            conceptoId = String(conceptoId).trim();
+
             const item = document.getElementById('cascada-item-' + conceptoId);
             if (item) {
                 item.remove();
+                console.log('Quitado de cascada - concepto', conceptoId);
+            } else {
+                console.log('No se encontró elemento en cascada para concepto', conceptoId);
             }
         }
 
@@ -530,11 +572,12 @@
         function cargarRelacionesExistentes() {
             // Cargar relaciones desde el servidor
             if (window.relacionesIniciales) {
-                // Convertir todas las claves y valores a strings
+                // Convertir todas las claves y valores a strings normalizados
                 relaciones = {};
                 for (const refId in window.relacionesIniciales) {
                     const conceptos = window.relacionesIniciales[refId];
-                    relaciones[String(refId)] = conceptos.map(id => String(id));
+                    const refIdNormalizado = String(refId).trim();
+                    relaciones[refIdNormalizado] = conceptos.map(id => String(id).trim());
                 }
 
                 // Aplicar las relaciones cargadas a la UI
