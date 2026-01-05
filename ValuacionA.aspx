@@ -266,7 +266,12 @@
                         <asp:HiddenField ID="hfRefaccionSeleccionada" runat="server" ClientIDMode="Static" Value="" />
 
                         <!-- Refacciones del PDF -->
-                        <h6 class="text-success mt-2"><i class="bi bi-gear"></i> Refacciones</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="text-success mt-2"><i class="bi bi-gear"></i> Refacciones</h6>
+                            <button type="button" class="btn btn-sm btn-success btn-agregar-concepto" data-seccion="REF">
+                                <i class="bi bi-plus-circle"></i> Agregar
+                            </button>
+                        </div>
                         <asp:GridView ID="gvPDFRefacciones" runat="server" CssClass="table table-sm table-hover table-bordered"
                             AutoGenerateColumns="False" EmptyDataText="Sin conceptos extraídos">
                             <Columns>
@@ -284,7 +289,12 @@
                         </asp:GridView>
 
                         <!-- Pintura del PDF -->
-                        <h6 class="text-success mt-3"><i class="bi bi-paint-bucket"></i> Pintura</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="text-success mt-3"><i class="bi bi-paint-bucket"></i> Pintura</h6>
+                            <button type="button" class="btn btn-sm btn-success btn-agregar-concepto" data-seccion="PIN">
+                                <i class="bi bi-plus-circle"></i> Agregar
+                            </button>
+                        </div>
                         <asp:GridView ID="gvPDFPintura" runat="server" CssClass="table table-sm table-hover table-bordered"
                             AutoGenerateColumns="False" EmptyDataText="Sin conceptos extraídos">
                             <Columns>
@@ -302,7 +312,12 @@
                         </asp:GridView>
 
                         <!-- Hojalatería del PDF -->
-                        <h6 class="text-success mt-3"><i class="bi bi-hammer"></i> Hojalatería</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="text-success mt-3"><i class="bi bi-hammer"></i> Hojalatería</h6>
+                            <button type="button" class="btn btn-sm btn-success btn-agregar-concepto" data-seccion="HOJ">
+                                <i class="bi bi-plus-circle"></i> Agregar
+                            </button>
+                        </div>
                         <asp:GridView ID="gvPDFHojalateria" runat="server" CssClass="table table-sm table-hover table-bordered"
                             AutoGenerateColumns="False" EmptyDataText="Sin conceptos extraídos">
                             <Columns>
@@ -322,6 +337,33 @@
                 </div>
             </div>
 
+        </div>
+
+        <!-- Modal para agregar conceptos manualmente -->
+        <div class="modal fade" id="modalAgregarConcepto" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Agregar Concepto Manual</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="txtDescripcion" class="form-label">Descripción</label>
+                            <input type="text" class="form-control" id="txtDescripcion" placeholder="Ingrese la descripción del concepto">
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtPrecio" class="form-label">Precio</label>
+                            <input type="number" step="0.01" class="form-control" id="txtPrecio" placeholder="0.00">
+                        </div>
+                        <input type="hidden" id="hdnSeccion" value="">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-success" id="btnGuardarConcepto">Guardar Concepto</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </form>
 
@@ -378,6 +420,20 @@
                     const conceptoId = String(this.dataset.conceptoid);
                     asignarConcepto(refaccionSeleccionada, conceptoId);
                 });
+            });
+
+            // Click en botón "Agregar" concepto manual
+            document.querySelectorAll('.btn-agregar-concepto').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const seccion = this.dataset.seccion;
+                    abrirModalAgregar(seccion);
+                });
+            });
+
+            // Click en botón "Guardar Concepto" del modal
+            document.getElementById('btnGuardarConcepto').addEventListener('click', function() {
+                guardarConceptoManual();
             });
         });
 
@@ -444,18 +500,27 @@
 
         function asignarConcepto(refId, conceptoId) {
             // Asegurar que sean strings para comparación consistente
-            refId = String(refId);
-            conceptoId = String(conceptoId);
+            refId = String(refId).trim();
+            conceptoId = String(conceptoId).trim();
 
             if (!relaciones[refId]) relaciones[refId] = [];
 
+            // Limpiar cualquier duplicado que pueda existir
+            relaciones[refId] = relaciones[refId].filter((id, index, self) =>
+                self.indexOf(id) === index
+            );
+
             // Verificar si ya está asignado
-            if (relaciones[refId].includes(conceptoId)) {
-                // Desasignar
-                relaciones[refId] = relaciones[refId].filter(id => id !== conceptoId);
+            const index = relaciones[refId].findIndex(id => String(id).trim() === conceptoId);
+
+            if (index !== -1) {
+                // Desasignar - está en el array, lo quitamos
+                relaciones[refId].splice(index, 1);
+                console.log('Desasignado concepto', conceptoId, 'de refacción', refId);
             } else {
-                // Asignar
+                // Asignar - no está en el array, lo agregamos
                 relaciones[refId].push(conceptoId);
+                console.log('Asignado concepto', conceptoId, 'a refacción', refId);
             }
 
             actualizarUI(refId, conceptoId);
@@ -463,6 +528,10 @@
         }
 
         function actualizarUI(refId, conceptoId) {
+            // Normalizar IDs
+            refId = String(refId).trim();
+            conceptoId = String(conceptoId).trim();
+
             // Actualizar contador de badges
             const badge = document.querySelector('.badge-count[data-refid="' + refId + '"]');
             if (badge) {
@@ -476,7 +545,10 @@
             if (btnConcepto) {
                 const row = btnConcepto.closest('tr');
                 if (row) {
-                    const estaAsignado = relaciones[refId] && relaciones[refId].includes(conceptoId);
+                    // Verificar si está asignado usando el mismo método que asignarConcepto
+                    const estaAsignado = relaciones[refId] && relaciones[refId].findIndex(id => String(id).trim() === conceptoId) !== -1;
+
+                    console.log('Actualizando UI - Concepto', conceptoId, 'está asignado:', estaAsignado);
 
                     if (estaAsignado) {
                         // OCULTAR la fila del grid
@@ -490,15 +562,34 @@
                         quitarDeCascada(refId, conceptoId);
                     }
                 }
+            } else {
+                console.warn('No se encontró el botón para concepto', conceptoId);
             }
         }
 
         function agregarACascada(refId, conceptoId) {
+            // Normalizar IDs
+            refId = String(refId).trim();
+            conceptoId = String(conceptoId).trim();
+
             const cascada = document.getElementById('cascada-' + refId);
-            if (!cascada) return;
+            if (!cascada) {
+                console.warn('No se encontró contenedor de cascada para refacción', refId);
+                return;
+            }
 
             const datos = conceptosData[conceptoId];
-            if (!datos) return;
+            if (!datos) {
+                console.warn('No se encontraron datos para concepto', conceptoId);
+                return;
+            }
+
+            // Verificar si ya existe para evitar duplicados
+            const existente = document.getElementById('cascada-item-' + conceptoId);
+            if (existente) {
+                console.log('El concepto', conceptoId, 'ya está en la cascada');
+                return;
+            }
 
             // Crear elemento de cascada
             const item = document.createElement('div');
@@ -513,12 +604,19 @@
             `;
 
             cascada.appendChild(item);
+            console.log('Agregado a cascada - concepto', conceptoId);
         }
 
         function quitarDeCascada(refId, conceptoId) {
+            // Normalizar IDs
+            conceptoId = String(conceptoId).trim();
+
             const item = document.getElementById('cascada-item-' + conceptoId);
             if (item) {
                 item.remove();
+                console.log('Quitado de cascada - concepto', conceptoId);
+            } else {
+                console.log('No se encontró elemento en cascada para concepto', conceptoId);
             }
         }
 
@@ -530,11 +628,12 @@
         function cargarRelacionesExistentes() {
             // Cargar relaciones desde el servidor
             if (window.relacionesIniciales) {
-                // Convertir todas las claves y valores a strings
+                // Convertir todas las claves y valores a strings normalizados
                 relaciones = {};
                 for (const refId in window.relacionesIniciales) {
                     const conceptos = window.relacionesIniciales[refId];
-                    relaciones[String(refId)] = conceptos.map(id => String(id));
+                    const refIdNormalizado = String(refId).trim();
+                    relaciones[refIdNormalizado] = conceptos.map(id => String(id).trim());
                 }
 
                 // Aplicar las relaciones cargadas a la UI
@@ -611,6 +710,82 @@
 
         // Agregar evento al botón guardar
         document.getElementById('btnGuardar').addEventListener('click', guardarRelaciones);
+
+        // Función para abrir el modal de agregar concepto
+        function abrirModalAgregar(seccion) {
+            document.getElementById('txtDescripcion').value = '';
+            document.getElementById('txtPrecio').value = '';
+            document.getElementById('hdnSeccion').value = seccion;
+
+            const modal = new bootstrap.Modal(document.getElementById('modalAgregarConcepto'));
+            modal.show();
+        }
+
+        // Función para guardar concepto manual
+        function guardarConceptoManual() {
+            const descripcion = document.getElementById('txtDescripcion').value.trim();
+            const precio = parseFloat(document.getElementById('txtPrecio').value);
+            const seccion = document.getElementById('hdnSeccion').value;
+            const expediente = document.querySelector('[id$="lblExpediente"]').textContent;
+
+            // Validaciones
+            if (!descripcion) {
+                alert('Por favor ingrese una descripción');
+                return;
+            }
+            if (isNaN(precio) || precio < 0) {
+                alert('Por favor ingrese un precio válido');
+                return;
+            }
+
+            // Deshabilitar botón mientras se guarda
+            const btnGuardar = document.getElementById('btnGuardarConcepto');
+            const textoOriginal = btnGuardar.textContent;
+            btnGuardar.disabled = true;
+            btnGuardar.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Guardando...';
+
+            // Llamar al WebMethod para guardar en BD
+            fetch('ValuacionA.aspx/AgregarConceptoManual', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                body: JSON.stringify({
+                    expediente: expediente,
+                    seccion: seccion,
+                    descripcion: descripcion,
+                    precio: precio
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const result = data.d;
+
+                if (result.success) {
+                    // Cerrar modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarConcepto'));
+                    modal.hide();
+
+                    // Mostrar mensaje
+                    mostrarMensaje(result.message, 'success');
+
+                    // Recargar la página para mostrar el nuevo concepto
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    mostrarMensaje(result.message, 'danger');
+                    btnGuardar.disabled = false;
+                    btnGuardar.textContent = textoOriginal;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarMensaje('Error al guardar concepto: ' + error.message, 'danger');
+                btnGuardar.disabled = false;
+                btnGuardar.textContent = textoOriginal;
+            });
+        }
     </script>
 </body>
 </html>
