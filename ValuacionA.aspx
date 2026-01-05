@@ -190,7 +190,6 @@
                     <p class="text-muted small mb-0">Expediente: <asp:Label ID="lblExpediente" runat="server" CssClass="fw-bold"></asp:Label></p>
                 </div>
                 <div class="col-auto">
-                    <asp:Button ID="btnProcesarPDF" runat="server" CssClass="btn btn-primary btn-sm" Text="Extraer Conceptos del PDF" OnClick="btnProcesarPDF_Click" />
                     <button type="button" id="btnGuardar" class="btn btn-success btn-sm">Guardar Relaciones</button>
                 </div>
             </div>
