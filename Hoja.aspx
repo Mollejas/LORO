@@ -3519,8 +3519,7 @@
                alert('Las 3 validaciones están completas. No se puede modificar.');
                return;
            }
-       }
-   }
+       });
 
    // Check on page load and when modal shows
    window.addEventListener('load', checkHTValidationState);
@@ -3559,16 +3558,35 @@
                siSpan.textContent = '';
                noSpan.textContent = '✗';
            }
+       } else if (field === 'complemento') {
+           // Toggle complemento
+           const complSpan = row.querySelector('.ht-complemento');
+           if (complSpan) {
+               // Toggle entre ✓ y vacío
+               const nuevoValor = complSpan.textContent === '✓' ? '0' : '1';
+               complSpan.textContent = nuevoValor === '1' ? '✓' : '';
+               // Actualizar el valor en el dataset para el fetch
+               toggle.dataset.val = nuevoValor;
+           }
        } else if (field === 'estatus') {
            // Toggle P/E/D - mutuamente excluyente
            const statusSpans = row.querySelectorAll('.ht-status');
            statusSpans.forEach(span => {
                span.textContent = span.dataset.val === val ? '●' : '';
            });
+       } else if (field.startsWith('nivel_rep')) {
+           // Toggle niveles de reparación (L/M/F)
+           const nivelSpan = toggle;
+           if (nivelSpan) {
+               const nuevoValor = nivelSpan.textContent === '✓' ? '0' : '1';
+               nivelSpan.textContent = nuevoValor === '1' ? '✓' : '';
+               toggle.dataset.val = nuevoValor;
+           }
        }
 
-       // Guardar en la base de datos
-       const url = 'UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + val;
+       // Guardar en la base de datos (usar el valor actualizado del dataset para complemento y niveles)
+       const valorFinal = toggle.dataset.val;
+       const url = 'UpdateRefaccion.ashx?id=' + id + '&field=' + field + '&val=' + valorFinal;
        console.log('Guardando...', url);
 
        fetch(url)
