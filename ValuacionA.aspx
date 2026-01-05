@@ -375,7 +375,7 @@
                         }, 3000);
                         return;
                     }
-                    const conceptoId = this.dataset.conceptoid;
+                    const conceptoId = String(this.dataset.conceptoid);
                     asignarConcepto(refaccionSeleccionada, conceptoId);
                 });
             });
@@ -408,7 +408,7 @@
         function cargarDatosConceptos() {
             // Extraer datos de todos los conceptos de los grids del PDF
             document.querySelectorAll('.btn-asignar-concepto').forEach(btn => {
-                const conceptoId = btn.dataset.conceptoid;
+                const conceptoId = String(btn.dataset.conceptoid);
                 const row = btn.closest('tr');
                 if (row) {
                     const cells = row.querySelectorAll('td');
@@ -428,8 +428,8 @@
             // Remover selección anterior
             document.querySelectorAll('.refaccion-active').forEach(el => el.classList.remove('refaccion-active'));
 
-            // Marcar como seleccionada
-            refaccionSeleccionada = refId;
+            // Marcar como seleccionada (asegurar que sea string)
+            refaccionSeleccionada = String(refId);
             document.getElementById('hfRefaccionSeleccionada').value = refId;
 
             // Encontrar y marcar la fila
@@ -443,6 +443,10 @@
         }
 
         function asignarConcepto(refId, conceptoId) {
+            // Asegurar que sean strings para comparación consistente
+            refId = String(refId);
+            conceptoId = String(conceptoId);
+
             if (!relaciones[refId]) relaciones[refId] = [];
 
             // Verificar si ya está asignado
@@ -503,7 +507,7 @@
             item.innerHTML = `
                 <span class="cascada-item-concepto">${datos.concepto}</span>
                 <span class="cascada-item-importe">${datos.importe}</span>
-                <span class="cascada-item-remove" onclick="removerDeCascada(${refId}, ${conceptoId})" title="Desasignar">
+                <span class="cascada-item-remove" onclick="removerDeCascada('${refId}', '${conceptoId}')" title="Desasignar">
                     <i class="bi bi-x-circle-fill"></i>
                 </span>
             `;
@@ -526,7 +530,12 @@
         function cargarRelacionesExistentes() {
             // Cargar relaciones desde el servidor
             if (window.relacionesIniciales) {
-                relaciones = window.relacionesIniciales;
+                // Convertir todas las claves y valores a strings
+                relaciones = {};
+                for (const refId in window.relacionesIniciales) {
+                    const conceptos = window.relacionesIniciales[refId];
+                    relaciones[String(refId)] = conceptos.map(id => String(id));
+                }
 
                 // Aplicar las relaciones cargadas a la UI
                 for (const refId in relaciones) {
