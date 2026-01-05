@@ -279,34 +279,27 @@ Public Class ValuacionA
     End Sub
 
     Protected Sub btnGuardar_Click(sender As Object, e As EventArgs)
-        ' Obtener el JSON de relaciones desde el hidden field
-        Dim jsonRelaciones As String = Request.Form("hfRelaciones")
-        If String.IsNullOrWhiteSpace(jsonRelaciones) Then
-            lblMensaje.Text = "No hay relaciones para guardar"
-            lblMensaje.CssClass = "alert alert-warning d-block"
-            lblMensaje.Visible = True
-            Return
-        End If
+        ' Este método ya no se usa, el guardado se hace por AJAX
+    End Sub
 
+    <System.Web.Services.WebMethod()>
+    Public Shared Function GuardarRelaciones(expediente As String, jsonRelaciones As String) As Object
         Try
             Dim serializer As New JavaScriptSerializer()
             Dim relaciones As Dictionary(Of String, List(Of String)) = serializer.Deserialize(Of Dictionary(Of String, List(Of String)))(jsonRelaciones)
 
             Dim cs As String = DatabaseHelper.GetConnectionString()
             If cs Is Nothing Then
-                lblMensaje.Text = "Error al obtener conexión a la base de datos"
-                lblMensaje.CssClass = "alert alert-danger d-block"
-                lblMensaje.Visible = True
-                Return
+                Return New With {.success = False, .message = "Error al obtener conexión a la base de datos"}
             End If
 
             Using cn As New SqlConnection(cs)
                 cn.Open()
 
                 ' Actualizar refaccion_id en ConceptosValuacion
-                ' Primero limpiar todas las relaciones existentes
+                ' Primero limpiar todas las relaciones existentes para este expediente
                 Using cmd As New SqlCommand("UPDATE ConceptosValuacion SET refaccion_id = NULL WHERE expediente = @exp", cn)
-                    cmd.Parameters.AddWithValue("@exp", lblExpediente.Text)
+                    cmd.Parameters.AddWithValue("@exp", expediente)
                     cmd.ExecuteNonQuery()
                 End Using
 
@@ -323,16 +316,12 @@ Public Class ValuacionA
                 Next
             End Using
 
-            lblMensaje.Text = "Relaciones guardadas exitosamente"
-            lblMensaje.CssClass = "alert alert-success d-block"
-            lblMensaje.Visible = True
+            Return New With {.success = True, .message = "Relaciones guardadas exitosamente"}
 
         Catch ex As Exception
-            lblMensaje.Text = "Error al guardar relaciones: " & ex.Message
-            lblMensaje.CssClass = "alert alert-danger d-block"
-            lblMensaje.Visible = True
+            Return New With {.success = False, .message = "Error al guardar relaciones: " & ex.Message}
         End Try
-    End Sub
+    End Function
 
     ' ========== FUNCIONES DE EXTRACCIÓN DE PDF (copiadas de Valuacion.aspx) ==========
 

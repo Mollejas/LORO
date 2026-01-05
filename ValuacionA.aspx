@@ -122,7 +122,7 @@
                 </div>
                 <div class="col-auto">
                     <asp:Button ID="btnProcesarPDF" runat="server" CssClass="btn btn-primary btn-sm" Text="Extraer Conceptos del PDF" OnClick="btnProcesarPDF_Click" />
-                    <asp:Button ID="btnGuardar" runat="server" CssClass="btn btn-success btn-sm" Text="Guardar Relaciones" OnClick="btnGuardar_Click" />
+                    <button type="button" id="btnGuardar" class="btn btn-success btn-sm">Guardar Relaciones</button>
                 </div>
             </div>
 
@@ -499,31 +499,68 @@
             }
         }
 
-        // Función para preparar datos antes de guardar
-        function prepararDatosGuardar() {
-            // Convertir objeto relaciones a JSON y guardarlo en un hidden field
+        // Función para guardar relaciones por AJAX
+        function guardarRelaciones() {
             const jsonRelaciones = JSON.stringify(relaciones);
+            const expediente = document.querySelector('[id$="lblExpediente"]').textContent;
+
             console.log('Guardando relaciones:', jsonRelaciones);
 
-            // Crear un hidden field dinámico para enviar los datos
-            let hfRelaciones = document.getElementById('hfRelaciones');
-            if (!hfRelaciones) {
-                hfRelaciones = document.createElement('input');
-                hfRelaciones.type = 'hidden';
-                hfRelaciones.id = 'hfRelaciones';
-                hfRelaciones.name = 'hfRelaciones';
-                document.forms[0].appendChild(hfRelaciones);
+            // Mostrar indicador de carga
+            const btnGuardar = document.getElementById('btnGuardar');
+            const textoOriginal = btnGuardar.textContent;
+            btnGuardar.disabled = true;
+            btnGuardar.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Guardando...';
+
+            // Llamar al WebMethod por AJAX
+            fetch('ValuacionA.aspx/GuardarRelaciones', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                body: JSON.stringify({
+                    expediente: expediente,
+                    jsonRelaciones: jsonRelaciones
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const result = data.d;
+
+                // Mostrar mensaje
+                mostrarMensaje(result.message, result.success ? 'success' : 'danger');
+
+                // Restaurar botón
+                btnGuardar.disabled = false;
+                btnGuardar.textContent = textoOriginal;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarMensaje('Error al guardar relaciones: ' + error.message, 'danger');
+
+                // Restaurar botón
+                btnGuardar.disabled = false;
+                btnGuardar.textContent = textoOriginal;
+            });
+        }
+
+        // Función para mostrar mensajes
+        function mostrarMensaje(mensaje, tipo) {
+            const lblMensaje = document.querySelector('[id$="lblMensaje"]');
+            if (lblMensaje) {
+                lblMensaje.textContent = mensaje;
+                lblMensaje.className = 'alert alert-' + tipo + ' d-block';
+                lblMensaje.style.display = 'block';
+
+                // Ocultar después de 5 segundos
+                setTimeout(() => {
+                    lblMensaje.style.display = 'none';
+                }, 5000);
             }
-            hfRelaciones.value = jsonRelaciones;
         }
 
         // Agregar evento al botón guardar
-        const btnGuardar = document.querySelector('[id$="btnGuardar"]');
-        if (btnGuardar) {
-            btnGuardar.addEventListener('click', function(e) {
-                prepararDatosGuardar();
-            });
-        }
+        document.getElementById('btnGuardar').addEventListener('click', guardarRelaciones);
     </script>
 </body>
 </html>

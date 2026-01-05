@@ -41,15 +41,6 @@ Partial Public Class ValuacionA
     Protected WithEvents btnProcesarPDF As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''btnGuardar control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents btnGuardar As Global.System.Web.UI.WebControls.Button
-
-    '''<summary>
     '''lblMensaje control.
     '''</summary>
     '''<remarks>
