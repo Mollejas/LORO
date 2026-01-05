@@ -3501,27 +3501,38 @@
    </script>
 
    <script>
-   // Check on page load and when modal shows
-   window.addEventListener('load', checkHTValidationState);
-   document.getElementById('modalHojaTrabajo')?.addEventListener('shown.bs.modal', checkHTValidationState);
+   // Esperar a que el DOM esté completamente cargado
+   document.addEventListener('DOMContentLoaded', function() {
+       console.log('DOM Cargado - Inicializando toggle handlers');
 
-   // Toggle handlers para Hoja de Trabajo
-   document.addEventListener('click', function(e) {
-       const toggle = e.target.closest('.ht-toggle');
-       if (!toggle) return;
-
-       // Check if validated (disabled)
-       const modalBody = toggle.closest('.modal-body');
-       if (modalBody && modalBody.classList.contains('ht-validated')) {
-           console.log('Toggle bloqueado - validaciones completas');
-           return;
+       // Check on page load and when modal shows
+       if (typeof checkHTValidationState === 'function') {
+           window.addEventListener('load', checkHTValidationState);
+           const modalHT = document.getElementById('modalHojaTrabajo');
+           if (modalHT) {
+               modalHT.addEventListener('shown.bs.modal', checkHTValidationState);
+           }
        }
 
-       const id = toggle.dataset.id;
-       const field = toggle.dataset.field;
-       const val = toggle.dataset.val;
+       // Toggle handlers para Hoja de Trabajo
+       document.addEventListener('click', function(e) {
+           const toggle = e.target.closest('.ht-toggle');
+           if (!toggle) return;
 
-       console.log('Toggle click - ID:', id, 'Field:', field, 'Val:', val);
+           console.log('Click detectado en toggle:', toggle);
+
+           // Check if validated (disabled)
+           const modalBody = toggle.closest('.modal-body');
+           if (modalBody && modalBody.classList.contains('ht-validated')) {
+               console.log('Toggle bloqueado - validaciones completas');
+               return;
+           }
+
+           const id = toggle.dataset.id;
+           const field = toggle.dataset.field;
+           const val = toggle.dataset.val;
+
+           console.log('Toggle click - ID:', id, 'Field:', field, 'Val:', val);
 
        const row = toggle.closest('tr');
        if (!row) return;
@@ -3587,7 +3598,10 @@
                console.error('Error en fetch:', err);
                alert('Error en la comunicación: ' + err.message);
            });
-   });
+       });
+
+       console.log('Toggle handlers registrados correctamente');
+   }); // Fin DOMContentLoaded
    </script>
 
 
