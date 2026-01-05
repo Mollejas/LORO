@@ -349,7 +349,7 @@ Public Class ValuacionA
                 cn.Open()
 
                 ' Insertar el nuevo concepto manual
-                Using cmd As New SqlCommand("INSERT INTO ConceptosValuacion (expediente, concepto, importe, seccion, es_manual) VALUES (@exp, @concepto, @importe, @seccion, 1)", cn)
+                Using cmd As New SqlCommand("INSERT INTO ConceptosValuacion (expediente, concepto, importe, seccion) VALUES (@exp, @concepto, @importe, @seccion)", cn)
                     cmd.Parameters.AddWithValue("@exp", expediente)
                     cmd.Parameters.AddWithValue("@concepto", descripcion)
                     cmd.Parameters.AddWithValue("@importe", precio)
