@@ -266,7 +266,12 @@
                         <asp:HiddenField ID="hfRefaccionSeleccionada" runat="server" ClientIDMode="Static" Value="" />
 
                         <!-- Refacciones del PDF -->
-                        <h6 class="text-success mt-2"><i class="bi bi-gear"></i> Refacciones</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="text-success mt-2"><i class="bi bi-gear"></i> Refacciones</h6>
+                            <button type="button" class="btn btn-sm btn-success btn-agregar-concepto" data-seccion="REF">
+                                <i class="bi bi-plus-circle"></i> Agregar
+                            </button>
+                        </div>
                         <asp:GridView ID="gvPDFRefacciones" runat="server" CssClass="table table-sm table-hover table-bordered"
                             AutoGenerateColumns="False" EmptyDataText="Sin conceptos extraídos">
                             <Columns>
@@ -284,7 +289,12 @@
                         </asp:GridView>
 
                         <!-- Pintura del PDF -->
-                        <h6 class="text-success mt-3"><i class="bi bi-paint-bucket"></i> Pintura</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="text-success mt-3"><i class="bi bi-paint-bucket"></i> Pintura</h6>
+                            <button type="button" class="btn btn-sm btn-success btn-agregar-concepto" data-seccion="PIN">
+                                <i class="bi bi-plus-circle"></i> Agregar
+                            </button>
+                        </div>
                         <asp:GridView ID="gvPDFPintura" runat="server" CssClass="table table-sm table-hover table-bordered"
                             AutoGenerateColumns="False" EmptyDataText="Sin conceptos extraídos">
                             <Columns>
@@ -302,7 +312,12 @@
                         </asp:GridView>
 
                         <!-- Hojalatería del PDF -->
-                        <h6 class="text-success mt-3"><i class="bi bi-hammer"></i> Hojalatería</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="text-success mt-3"><i class="bi bi-hammer"></i> Hojalatería</h6>
+                            <button type="button" class="btn btn-sm btn-success btn-agregar-concepto" data-seccion="HOJ">
+                                <i class="bi bi-plus-circle"></i> Agregar
+                            </button>
+                        </div>
                         <asp:GridView ID="gvPDFHojalateria" runat="server" CssClass="table table-sm table-hover table-bordered"
                             AutoGenerateColumns="False" EmptyDataText="Sin conceptos extraídos">
                             <Columns>
@@ -322,6 +337,33 @@
                 </div>
             </div>
 
+        </div>
+
+        <!-- Modal para agregar conceptos manualmente -->
+        <div class="modal fade" id="modalAgregarConcepto" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Agregar Concepto Manual</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="txtDescripcion" class="form-label">Descripción</label>
+                            <input type="text" class="form-control" id="txtDescripcion" placeholder="Ingrese la descripción del concepto">
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtPrecio" class="form-label">Precio</label>
+                            <input type="number" step="0.01" class="form-control" id="txtPrecio" placeholder="0.00">
+                        </div>
+                        <input type="hidden" id="hdnSeccion" value="">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-success" id="btnGuardarConcepto">Guardar Concepto</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </form>
 
@@ -378,6 +420,20 @@
                     const conceptoId = String(this.dataset.conceptoid);
                     asignarConcepto(refaccionSeleccionada, conceptoId);
                 });
+            });
+
+            // Click en botón "Agregar" concepto manual
+            document.querySelectorAll('.btn-agregar-concepto').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const seccion = this.dataset.seccion;
+                    abrirModalAgregar(seccion);
+                });
+            });
+
+            // Click en botón "Guardar Concepto" del modal
+            document.getElementById('btnGuardarConcepto').addEventListener('click', function() {
+                guardarConceptoManual();
             });
         });
 
@@ -654,6 +710,82 @@
 
         // Agregar evento al botón guardar
         document.getElementById('btnGuardar').addEventListener('click', guardarRelaciones);
+
+        // Función para abrir el modal de agregar concepto
+        function abrirModalAgregar(seccion) {
+            document.getElementById('txtDescripcion').value = '';
+            document.getElementById('txtPrecio').value = '';
+            document.getElementById('hdnSeccion').value = seccion;
+
+            const modal = new bootstrap.Modal(document.getElementById('modalAgregarConcepto'));
+            modal.show();
+        }
+
+        // Función para guardar concepto manual
+        function guardarConceptoManual() {
+            const descripcion = document.getElementById('txtDescripcion').value.trim();
+            const precio = parseFloat(document.getElementById('txtPrecio').value);
+            const seccion = document.getElementById('hdnSeccion').value;
+            const expediente = document.querySelector('[id$="lblExpediente"]').textContent;
+
+            // Validaciones
+            if (!descripcion) {
+                alert('Por favor ingrese una descripción');
+                return;
+            }
+            if (isNaN(precio) || precio < 0) {
+                alert('Por favor ingrese un precio válido');
+                return;
+            }
+
+            // Deshabilitar botón mientras se guarda
+            const btnGuardar = document.getElementById('btnGuardarConcepto');
+            const textoOriginal = btnGuardar.textContent;
+            btnGuardar.disabled = true;
+            btnGuardar.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Guardando...';
+
+            // Llamar al WebMethod para guardar en BD
+            fetch('ValuacionA.aspx/AgregarConceptoManual', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                body: JSON.stringify({
+                    expediente: expediente,
+                    seccion: seccion,
+                    descripcion: descripcion,
+                    precio: precio
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const result = data.d;
+
+                if (result.success) {
+                    // Cerrar modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarConcepto'));
+                    modal.hide();
+
+                    // Mostrar mensaje
+                    mostrarMensaje(result.message, 'success');
+
+                    // Recargar la página para mostrar el nuevo concepto
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    mostrarMensaje(result.message, 'danger');
+                    btnGuardar.disabled = false;
+                    btnGuardar.textContent = textoOriginal;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarMensaje('Error al guardar concepto: ' + error.message, 'danger');
+                btnGuardar.disabled = false;
+                btnGuardar.textContent = textoOriginal;
+            });
+        }
     </script>
 </body>
 </html>

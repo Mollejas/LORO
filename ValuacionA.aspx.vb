@@ -323,6 +323,48 @@ Public Class ValuacionA
         End Try
     End Function
 
+    <System.Web.Services.WebMethod()>
+    Public Shared Function AgregarConceptoManual(expediente As String, seccion As String, descripcion As String, precio As Decimal) As Object
+        Try
+            ' Validaciones
+            If String.IsNullOrWhiteSpace(expediente) Then
+                Return New With {.success = False, .message = "Expediente no especificado"}
+            End If
+            If String.IsNullOrWhiteSpace(seccion) Then
+                Return New With {.success = False, .message = "Sección no especificada"}
+            End If
+            If String.IsNullOrWhiteSpace(descripcion) Then
+                Return New With {.success = False, .message = "Descripción no puede estar vacía"}
+            End If
+            If precio < 0 Then
+                Return New With {.success = False, .message = "Precio no puede ser negativo"}
+            End If
+
+            Dim cs As String = DatabaseHelper.GetConnectionString()
+            If cs Is Nothing Then
+                Return New With {.success = False, .message = "Error al obtener conexión a la base de datos"}
+            End If
+
+            Using cn As New SqlConnection(cs)
+                cn.Open()
+
+                ' Insertar el nuevo concepto manual
+                Using cmd As New SqlCommand("INSERT INTO ConceptosValuacion (expediente, concepto, importe, seccion, es_manual) VALUES (@exp, @concepto, @importe, @seccion, 1)", cn)
+                    cmd.Parameters.AddWithValue("@exp", expediente)
+                    cmd.Parameters.AddWithValue("@concepto", descripcion)
+                    cmd.Parameters.AddWithValue("@importe", precio)
+                    cmd.Parameters.AddWithValue("@seccion", seccion)
+                    cmd.ExecuteNonQuery()
+                End Using
+            End Using
+
+            Return New With {.success = True, .message = "Concepto agregado exitosamente"}
+
+        Catch ex As Exception
+            Return New With {.success = False, .message = "Error al agregar concepto: " & ex.Message}
+        End Try
+    End Function
+
     ' ========== FUNCIONES DE EXTRACCIÓN DE PDF (copiadas de Valuacion.aspx) ==========
 
     Private Function CrearTabla() As DataTable
