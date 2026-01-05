@@ -136,6 +136,34 @@
 
         .concepto-hidden { display: none; }
 
+        /* Total de conceptos asignados */
+        .cascada-total {
+            margin-top: 15px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: right;
+            box-shadow: 0 3px 8px rgba(40, 167, 69, 0.4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cascada-total-label {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .cascada-total-valor {
+            font-size: 18px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
         /* Título de sección con mejor contraste */
         h6.text-primary, h6.text-warning {
             font-weight: 600;
@@ -564,6 +592,61 @@
                 }
             } else {
                 console.warn('No se encontró el botón para concepto', conceptoId);
+            }
+
+            // Actualizar el total de la cascada
+            actualizarTotal(refId);
+        }
+
+        function actualizarTotal(refId) {
+            // Normalizar ID
+            refId = String(refId).trim();
+
+            const cascada = document.getElementById('cascada-' + refId);
+            if (!cascada) return;
+
+            // Calcular el total de los importes
+            let total = 0;
+            if (relaciones[refId]) {
+                relaciones[refId].forEach(conceptoId => {
+                    const datos = conceptosData[String(conceptoId).trim()];
+                    if (datos && datos.importe) {
+                        // Extraer el valor numérico del importe
+                        const importeText = datos.importe;
+                        // Quitar símbolo de moneda y comas
+                        const valorNumerico = parseFloat(importeText.replace(/[^0-9.-]/g, ''));
+                        if (!isNaN(valorNumerico)) {
+                            total += valorNumerico;
+                        }
+                    }
+                });
+            }
+
+            // Buscar o crear el elemento de total
+            let totalElement = cascada.querySelector('.cascada-total');
+
+            if (total > 0) {
+                if (!totalElement) {
+                    totalElement = document.createElement('div');
+                    totalElement.className = 'cascada-total';
+                    cascada.appendChild(totalElement);
+                }
+
+                // Formatear el total como moneda
+                const totalFormateado = new Intl.NumberFormat('es-MX', {
+                    style: 'currency',
+                    currency: 'MXN'
+                }).format(total);
+
+                totalElement.innerHTML = `
+                    <span class="cascada-total-label">TOTAL:</span>
+                    <span class="cascada-total-valor">${totalFormateado}</span>
+                `;
+            } else {
+                // Si no hay conceptos, quitar el total
+                if (totalElement) {
+                    totalElement.remove();
+                }
             }
         }
 
