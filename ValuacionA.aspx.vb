@@ -23,10 +23,61 @@ Public Class ValuacionA
             End If
 
             CargarExpediente(admId)
+
+            ' Procesar PDF automáticamente si no hay conceptos
+            ProcesarPDFAutomaticamente(admId)
+
             CargarRefacciones(admId)
             CargarConceptosPDF(admId)
             CargarRelacionesExistentes()
         End If
+    End Sub
+
+    Private Sub ProcesarPDFAutomaticamente(admId As String)
+        Dim expediente As String = lblExpediente.Text
+        If String.IsNullOrWhiteSpace(expediente) Then Return
+
+        ' Verificar si ya existen conceptos para este expediente
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+        If cs Is Nothing Then Return
+
+        Dim yaExistenConceptos As Boolean = False
+        Using cn As New SqlConnection(cs)
+            cn.Open()
+            Using cmd As New SqlCommand("SELECT COUNT(*) FROM ConceptosValuacion WHERE expediente = @exp", cn)
+                cmd.Parameters.AddWithValue("@exp", expediente)
+                Dim count As Integer = Convert.ToInt32(cmd.ExecuteScalar())
+                yaExistenConceptos = (count > 0)
+            End Using
+        End Using
+
+        ' Si ya existen conceptos, no reprocesar
+        If yaExistenConceptos Then Return
+
+        ' Obtener ruta del PDF valaut.pdf
+        Dim pdfPath As String = ObtenerRutaPDF(admId)
+
+        If String.IsNullOrWhiteSpace(pdfPath) OrElse Not File.Exists(pdfPath) Then
+            ' Si no hay PDF, continuar sin mostrar error
+            Return
+        End If
+
+        Try
+            ' Extraer conceptos del PDF
+            Dim lineas = LeerPdfPorLineas(pdfPath)
+
+            Dim dtRef = CrearTabla()
+            Dim dtPin = CrearTabla()
+            Dim dtHoj = CrearTabla()
+
+            ProcesarLineasPDF(lineas, dtRef, dtPin, dtHoj)
+
+            ' Guardar en base de datos
+            GuardarConceptosEnDB(expediente, dtRef, dtPin, dtHoj)
+
+        Catch ex As Exception
+            ' Silenciar errores de procesamiento automático
+        End Try
     End Sub
 
     Private Sub CargarExpediente(admId As String)
