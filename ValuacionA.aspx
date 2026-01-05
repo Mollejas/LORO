@@ -15,12 +15,20 @@
         .concepto-selected { background: #e7f3ff !important; border-left: 3px solid #0d6efd; }
         .refaccion-row { cursor: pointer; }
 
-        /* Fila seleccionada - Amarillo brillante y visible */
+        /* Fila seleccionada - Amarillo brillante TODA la fila */
         .refaccion-active {
             background: #ffc107 !important;
             border-left: 5px solid #ff9800 !important;
             font-weight: 600;
-            box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3);
+            animation: pulse 2s infinite;
+            position: relative;
+        }
+
+        /* Asegurar que TODAS las celdas de la fila seleccionada sean amarillas */
+        .refaccion-active td {
+            background: #ffc107 !important;
+            color: #000 !important;
+            font-weight: 600 !important;
         }
 
         .concepto-asignado { background: #d1e7dd; }
@@ -36,67 +44,94 @@
             line-height: 1.2 !important;
         }
 
-        /* Estilos para cascada de conceptos - Mejorados */
+        /* Estilos para cascada de conceptos - MUY VISIBLE */
         .cascada-container {
-            margin-left: 30px;
-            margin-top: 8px;
-            margin-bottom: 15px;
-            padding: 10px 15px;
-            border-left: 4px solid #28a745;
-            background: linear-gradient(to right, #e8f5e9, #f8f9fa);
+            margin: 10px 20px 15px 20px;
+            padding: 15px 20px;
+            border: 3px solid #28a745;
+            background: linear-gradient(135deg, #d4edda 0%, #f1f8f4 100%);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);
+            position: relative;
+        }
+
+        /* Etiqueta "Conceptos Relacionados" */
+        .cascada-container::before {
+            content: "📎 Conceptos Relacionados";
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: #28a745;
+            color: white;
+            padding: 3px 12px;
             border-radius: 4px;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
         .cascada-item {
-            padding: 8px 12px;
-            margin: 5px 0;
+            padding: 10px 15px;
+            margin: 8px 0;
             background: white;
-            border-left: 4px solid #28a745;
-            border-radius: 4px;
+            border: 2px solid #28a745;
+            border-radius: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 12px;
+            font-size: 13px;
             animation: slideIn 0.3s ease-out;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
             transition: all 0.2s ease;
         }
 
         .cascada-item:hover {
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-            transform: translateX(2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            transform: translateX(3px) scale(1.01);
+            border-color: #1e7e34;
         }
 
         @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-10px); }
+            from { opacity: 0; transform: translateX(-15px); }
             to { opacity: 1; transform: translateX(0); }
         }
 
         .cascada-item-concepto {
             flex-grow: 1;
-            color: #2c3e50;
-            font-weight: 500;
+            color: #155724;
+            font-weight: 600;
         }
 
         .cascada-item-importe {
             font-weight: bold;
             color: #28a745;
-            margin: 0 15px;
-            font-size: 13px;
+            margin: 0 20px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            background: #d4edda;
+            padding: 4px 10px;
+            border-radius: 4px;
         }
 
         .cascada-item-remove {
             color: #dc3545;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
             padding: 4px 8px;
             transition: all 0.2s ease;
+            background: #f8d7da;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .cascada-item-remove:hover {
-            color: #bb2d3b;
-            transform: scale(1.2);
+            color: white;
+            background: #dc3545;
+            transform: scale(1.2) rotate(90deg);
         }
 
         .concepto-hidden { display: none; }
@@ -107,6 +142,12 @@
             padding: 5px 0;
             border-bottom: 2px solid currentColor;
             margin-bottom: 10px !important;
+        }
+
+        /* Efecto de pulso para pieza seleccionada */
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 2px 8px rgba(255, 152, 0, 0.5); }
+            50% { box-shadow: 0 4px 16px rgba(255, 152, 0, 0.8); }
         }
     </style>
 </head>
