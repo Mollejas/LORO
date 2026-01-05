@@ -686,7 +686,14 @@
                 </span>
             `;
 
-            cascada.appendChild(item);
+            // Insertar el concepto ANTES del total (si existe) o al final
+            const totalElement = cascada.querySelector('.cascada-total');
+            if (totalElement) {
+                cascada.insertBefore(item, totalElement);
+            } else {
+                cascada.appendChild(item);
+            }
+
             console.log('Agregado a cascada - concepto', conceptoId);
         }
 
