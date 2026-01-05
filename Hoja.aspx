@@ -3501,26 +3501,6 @@
    </script>
 
    <script>
-       // Toggle handlers para Hoja de Trabajo
-       document.addEventListener('click', function (e) {
-           var toggle = e.target.closest('.ht-toggle');
-           if (!toggle) return;
-
-           // Verificar si las 3 validaciones están completas (buscar texto "Validado" en los labels)
-           var lbl1 = document.getElementById('<%= lblValRef1.ClientID %>');
-           var lbl2 = document.getElementById('<%= lblValRef2.ClientID %>');
-           var lbl3 = document.getElementById('<%= lblValRef3.ClientID %>');
-
-           var v1 = lbl1 && lbl1.innerText.indexOf('Validado') >= 0;
-           var v2 = lbl2 && lbl2.innerText.indexOf('Validado') >= 0;
-           var v3 = lbl3 && lbl3.innerText.indexOf('Validado') >= 0;
-
-           if (v1 && v2 && v3) {
-               alert('Las 3 validaciones están completas. No se puede modificar.');
-               return;
-           }
-       });
-
    // Check on page load and when modal shows
    window.addEventListener('load', checkHTValidationState);
    document.getElementById('modalHojaTrabajo')?.addEventListener('shown.bs.modal', checkHTValidationState);
