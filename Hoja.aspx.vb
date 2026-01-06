@@ -58,7 +58,34 @@ Partial Public Class Hoja
     End Function
     ' ===================== /API: Gate de diagnóstico =====================
 
+    ' ===================== API: Verificar validaciones de refacciones completas =====================
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json), WebMethod()>
+    Public Shared Function VerificarTodasLasValidaciones(admisionId As Integer) As Object
+        Try
+            Dim valRef1 As Boolean = False, valRef2 As Boolean = False, valRef3 As Boolean = False
 
+            Using cn As New SqlConnection(GetCs())
+                Using cmd As New SqlCommand("SELECT valrefmec1, valrefmec2, valrefmec3 FROM admisiones WHERE id = @id", cn)
+                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = admisionId
+                    cn.Open()
+                    Using rd = cmd.ExecuteReader()
+                        If rd.Read() Then
+                            valRef1 = Not rd.IsDBNull(0) AndAlso Convert.ToBoolean(rd(0))
+                            valRef2 = Not rd.IsDBNull(1) AndAlso Convert.ToBoolean(rd(1))
+                            valRef3 = Not rd.IsDBNull(2) AndAlso Convert.ToBoolean(rd(2))
+                        End If
+                    End Using
+                End Using
+            End Using
+
+            ' Las 3 validaciones de refacciones deben estar completas
+            Dim allOk As Boolean = valRef1 AndAlso valRef2 AndAlso valRef3
+            Return New With {.ok = True, .todasCompletas = allOk}
+        Catch ex As Exception
+            Return New With {.ok = False, .msg = ex.Message}
+        End Try
+    End Function
+    ' ===================== /API: Verificar validaciones de refacciones completas =====================
 
 
     ' ===================== API REFACCIONES (PageMethods) =====================
@@ -402,6 +429,7 @@ END"
         If Integer.TryParse(idStr, admId) Then
             PintarTileMecanica(admId)
             PintarTileColision(admId)
+            PintarTileHojaTrabajo(admId)
             CargarFinesDiagnostico(admId)
             ProcesarValuacion(admId)
             CargarFechasValuacion(admId)
@@ -2428,6 +2456,36 @@ Paint:
         Else
             flagHoja.Attributes("class") = "diag-flag off"
             icoHoja.Attributes("class") = "bi bi-toggle-off fs-4"
+        End If
+    End Sub
+
+    Private Sub PintarTileHojaTrabajo(admId As Integer)
+        Dim valRef1 As Boolean = False, valRef2 As Boolean = False, valRef3 As Boolean = False
+
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+        Using cn As New SqlConnection(cs)
+            Using cmd As New SqlCommand("SELECT valrefmec1, valrefmec2, valrefmec3 FROM admisiones WHERE id = @id", cn)
+                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+                cn.Open()
+                Using rd = cmd.ExecuteReader()
+                    If rd.Read() Then
+                        valRef1 = Not rd.IsDBNull(0) AndAlso Convert.ToBoolean(rd(0))
+                        valRef2 = Not rd.IsDBNull(1) AndAlso Convert.ToBoolean(rd(1))
+                        valRef3 = Not rd.IsDBNull(2) AndAlso Convert.ToBoolean(rd(2))
+                    End If
+                End Using
+            End Using
+        End Using
+
+        ' Todas las 3 validaciones de refacciones deben estar completas
+        Dim allOk As Boolean = valRef1 AndAlso valRef2 AndAlso valRef3
+
+        ' Pintar el tile en verde si todas las validaciones están completas
+        Dim cls As String = tileHojaTrabajo.Attributes("class")
+        If allOk Then
+            If Not cls.Contains(" ok") Then tileHojaTrabajo.Attributes("class") = cls & " ok"
+        Else
+            tileHojaTrabajo.Attributes("class") = cls.Replace(" ok", "")
         End If
     End Sub
 

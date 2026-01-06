@@ -3787,5 +3787,44 @@
    }); // Fin DOMContentLoaded
    </script>
 
+   <!-- ===================== Script: Actualizar tile Hoja Trabajo cuando se cierra el modal ===================== -->
+   <script>
+   document.addEventListener('DOMContentLoaded', function() {
+       const modalHojaTrabajo = document.getElementById('modalHojaTrabajo');
+       if (!modalHojaTrabajo) return;
+
+       // Función para actualizar el tile según las validaciones
+       function actualizarTileHojaTrabajo() {
+           const admisionId = parseInt(document.getElementById('<%= hidId.ClientID %>')?.value || '0', 10);
+           if (!admisionId) return;
+
+           // Llamar al WebMethod para verificar si todas las validaciones están completas
+           PageMethods.VerificarTodasLasValidaciones(admisionId, function(result) {
+               if (result && result.ok) {
+                   const tile = document.getElementById('<%= tileHojaTrabajo.ClientID %>');
+                   if (tile) {
+                       if (result.todasCompletas) {
+                           // Pintar en verde
+                           if (!tile.classList.contains('ok')) {
+                               tile.classList.add('ok');
+                           }
+                       } else {
+                           // Quitar el verde
+                           tile.classList.remove('ok');
+                       }
+                   }
+               }
+           }, function(error) {
+               console.error('Error al verificar validaciones:', error);
+           });
+       }
+
+       // Actualizar el tile cuando se cierra el modal
+       modalHojaTrabajo.addEventListener('hidden.bs.modal', function() {
+           actualizarTileHojaTrabajo();
+       });
+   });
+   </script>
+
 
 </asp:Content>
