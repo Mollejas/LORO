@@ -58,37 +58,34 @@ Partial Public Class Hoja
     End Function
     ' ===================== /API: Gate de diagnóstico =====================
 
-    ' ===================== API: Verificar validaciones completas =====================
+    ' ===================== API: Verificar validaciones de refacciones completas =====================
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json), WebMethod()>
     Public Shared Function VerificarTodasLasValidaciones(admisionId As Integer) As Object
         Try
-            Dim autMec1 As Boolean = False, autMec2 As Boolean = False, autMec3 As Boolean = False
-            Dim autHoj1 As Boolean = False, autHoj2 As Boolean = False, autHoj3 As Boolean = False
+            Dim valRef1 As Boolean = False, valRef2 As Boolean = False, valRef3 As Boolean = False
 
             Using cn As New SqlConnection(GetCs())
-                Using cmd As New SqlCommand("SELECT autmec1, autmec2, autmec3, authoj1, authoj2, authoj3 FROM admisiones WHERE id = @id", cn)
+                Using cmd As New SqlCommand("SELECT valrefmec1, valrefmec2, valrefmec3 FROM admisiones WHERE id = @id", cn)
                     cmd.Parameters.Add("@id", SqlDbType.Int).Value = admisionId
                     cn.Open()
                     Using rd = cmd.ExecuteReader()
                         If rd.Read() Then
-                            autMec1 = Not rd.IsDBNull(0) AndAlso Convert.ToBoolean(rd(0))
-                            autMec2 = Not rd.IsDBNull(1) AndAlso Convert.ToBoolean(rd(1))
-                            autMec3 = Not rd.IsDBNull(2) AndAlso Convert.ToBoolean(rd(2))
-                            autHoj1 = Not rd.IsDBNull(3) AndAlso Convert.ToBoolean(rd(3))
-                            autHoj2 = Not rd.IsDBNull(4) AndAlso Convert.ToBoolean(rd(4))
-                            autHoj3 = Not rd.IsDBNull(5) AndAlso Convert.ToBoolean(rd(5))
+                            valRef1 = Not rd.IsDBNull(0) AndAlso Convert.ToBoolean(rd(0))
+                            valRef2 = Not rd.IsDBNull(1) AndAlso Convert.ToBoolean(rd(1))
+                            valRef3 = Not rd.IsDBNull(2) AndAlso Convert.ToBoolean(rd(2))
                         End If
                     End Using
                 End Using
             End Using
 
-            Dim allOk As Boolean = autMec1 AndAlso autMec2 AndAlso autMec3 AndAlso autHoj1 AndAlso autHoj2 AndAlso autHoj3
+            ' Las 3 validaciones de refacciones deben estar completas
+            Dim allOk As Boolean = valRef1 AndAlso valRef2 AndAlso valRef3
             Return New With {.ok = True, .todasCompletas = allOk}
         Catch ex As Exception
             Return New With {.ok = False, .msg = ex.Message}
         End Try
     End Function
-    ' ===================== /API: Verificar validaciones completas =====================
+    ' ===================== /API: Verificar validaciones de refacciones completas =====================
 
 
     ' ===================== API REFACCIONES (PageMethods) =====================
@@ -2463,29 +2460,25 @@ Paint:
     End Sub
 
     Private Sub PintarTileHojaTrabajo(admId As Integer)
-        Dim autMec1 As Boolean = False, autMec2 As Boolean = False, autMec3 As Boolean = False
-        Dim autHoj1 As Boolean = False, autHoj2 As Boolean = False, autHoj3 As Boolean = False
+        Dim valRef1 As Boolean = False, valRef2 As Boolean = False, valRef3 As Boolean = False
 
         Dim cs As String = DatabaseHelper.GetConnectionString()
         Using cn As New SqlConnection(cs)
-            Using cmd As New SqlCommand("SELECT autmec1, autmec2, autmec3, authoj1, authoj2, authoj3 FROM admisiones WHERE id = @id", cn)
+            Using cmd As New SqlCommand("SELECT valrefmec1, valrefmec2, valrefmec3 FROM admisiones WHERE id = @id", cn)
                 cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
                 cn.Open()
                 Using rd = cmd.ExecuteReader()
                     If rd.Read() Then
-                        autMec1 = Not rd.IsDBNull(0) AndAlso Convert.ToBoolean(rd(0))
-                        autMec2 = Not rd.IsDBNull(1) AndAlso Convert.ToBoolean(rd(1))
-                        autMec3 = Not rd.IsDBNull(2) AndAlso Convert.ToBoolean(rd(2))
-                        autHoj1 = Not rd.IsDBNull(3) AndAlso Convert.ToBoolean(rd(3))
-                        autHoj2 = Not rd.IsDBNull(4) AndAlso Convert.ToBoolean(rd(4))
-                        autHoj3 = Not rd.IsDBNull(5) AndAlso Convert.ToBoolean(rd(5))
+                        valRef1 = Not rd.IsDBNull(0) AndAlso Convert.ToBoolean(rd(0))
+                        valRef2 = Not rd.IsDBNull(1) AndAlso Convert.ToBoolean(rd(1))
+                        valRef3 = Not rd.IsDBNull(2) AndAlso Convert.ToBoolean(rd(2))
                     End If
                 End Using
             End Using
         End Using
 
-        ' Todas las validaciones deben estar completas
-        Dim allOk As Boolean = autMec1 AndAlso autMec2 AndAlso autMec3 AndAlso autHoj1 AndAlso autHoj2 AndAlso autHoj3
+        ' Todas las 3 validaciones de refacciones deben estar completas
+        Dim allOk As Boolean = valRef1 AndAlso valRef2 AndAlso valRef3
 
         ' Pintar el tile en verde si todas las validaciones están completas
         Dim cls As String = tileHojaTrabajo.Attributes("class")
