@@ -2841,6 +2841,7 @@ Paint:
             End Using
             gvSCMecReparacion.DataSource = dtMecRep
             gvSCMecReparacion.DataBind()
+            AddSCGridGroupHeader(gvSCMecReparacion)
 
             ' Cargar solo complementos - Mecánica Sustitución (WHERE complemento = 1)
             Dim dtMecSus As New DataTable()
@@ -2852,6 +2853,7 @@ Paint:
             End Using
             gvSCMecSustitucion.DataSource = dtMecSus
             gvSCMecSustitucion.DataBind()
+            AddSCGridGroupHeader(gvSCMecSustitucion)
 
             ' Cargar solo complementos - Hojalatería Reparación (WHERE complemento = 1)
             Dim dtHojRep As New DataTable()
@@ -2863,6 +2865,7 @@ Paint:
             End Using
             gvSCHojReparacion.DataSource = dtHojRep
             gvSCHojReparacion.DataBind()
+            AddSCGridGroupHeader(gvSCHojReparacion)
 
             ' Cargar solo complementos - Hojalatería Sustitución (WHERE complemento = 1)
             Dim dtHojSus As New DataTable()
@@ -2874,7 +2877,51 @@ Paint:
             End Using
             gvSCHojSustitucion.DataSource = dtHojSus
             gvSCHojSustitucion.DataBind()
+            AddSCGridGroupHeader(gvSCHojSustitucion)
         End Using
+    End Sub
+
+    ' Agregar encabezados de grupo para GridViews de Seguimiento Complementos
+    Private Sub AddSCGridGroupHeader(gv As GridView)
+        If gv.Controls.Count = 0 Then Exit Sub
+
+        Dim headerRow As New GridViewRow(0, 0, DataControlRowType.Header, DataControlRowState.Normal)
+
+        ' Determinar número de columnas base (3 para todos)
+        Dim baseColSpan As Integer = 3
+
+        ' Columnas base
+        Dim cellBase As New TableHeaderCell()
+        cellBase.ColumnSpan = baseColSpan
+        cellBase.Text = ""
+        headerRow.Cells.Add(cellBase)
+
+        ' Autorización (2 columnas: Si, No)
+        Dim cellAut As New TableHeaderCell()
+        cellAut.ColumnSpan = 2
+        cellAut.Text = "Autorización"
+        cellAut.CssClass = "text-center bg-light fw-bold"
+        headerRow.Cells.Add(cellAut)
+
+        ' Solo para grids de REPARACIÓN: agregar Nivel Reparación y Nivel Reparación Pintura
+        Dim isReparacion As Boolean = (gv.ID = "gvSCMecReparacion" OrElse gv.ID = "gvSCHojReparacion")
+        If isReparacion Then
+            ' Nivel Reparación (3 columnas: L, M, F)
+            Dim cellNivelRep As New TableHeaderCell()
+            cellNivelRep.ColumnSpan = 3
+            cellNivelRep.Text = "Nivel Reparación"
+            cellNivelRep.CssClass = "text-center bg-light fw-bold"
+            headerRow.Cells.Add(cellNivelRep)
+
+            ' Nivel Reparación Pintura (3 columnas: L, M, F)
+            Dim cellNivelPint As New TableHeaderCell()
+            cellNivelPint.ColumnSpan = 3
+            cellNivelPint.Text = "Nivel Reparación Pintura"
+            cellNivelPint.CssClass = "text-center bg-light fw-bold"
+            headerRow.Cells.Add(cellNivelPint)
+        End If
+
+        gv.Controls(0).Controls.AddAt(0, headerRow)
     End Sub
 
     Private Sub LoadAdminsForHTValidation(cn As SqlConnection)

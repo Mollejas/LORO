@@ -3719,12 +3719,42 @@
                span.textContent = span.dataset.val === val ? '●' : '';
            });
        } else if (field.startsWith('nivel_rep')) {
-           // Toggle niveles de reparación (L/M/F)
+           // Toggle niveles de reparación (L/M/F) - mutuamente excluyentes
            const nivelSpan = toggle;
            if (nivelSpan) {
-               const nuevoValor = nivelSpan.textContent === '✓' ? '0' : '1';
-               nivelSpan.textContent = nuevoValor === '1' ? '✓' : '';
-               toggle.dataset.val = nuevoValor;
+               // Determinar si es nivel_rep o nivel_rep_pint
+               const isNivelPint = field.includes('_pint');
+               const baseField = isNivelPint ? 'nivel_rep_pint' : 'nivel_rep';
+
+               // Limpiar todos los niveles del mismo grupo (L/M/F)
+               const nivelSpans = row.querySelectorAll(`.ht-toggle[data-field^="${baseField}_"]`);
+               nivelSpans.forEach(span => {
+                   span.textContent = '';
+                   span.dataset.val = '0';
+               });
+
+               // Marcar el seleccionado
+               nivelSpan.textContent = '✓';
+               toggle.dataset.val = '1';
+
+               // Guardar TODOS los niveles del grupo en la base de datos
+               nivelSpans.forEach(span => {
+                   const spanField = span.dataset.field;
+                   const spanId = span.dataset.id;
+                   const spanVal = span.dataset.val;
+
+                   fetch('UpdateRefaccion.ashx?id=' + spanId + '&field=' + spanField + '&val=' + spanVal)
+                       .then(r => r.json())
+                       .then(data => {
+                           if (!data.ok) {
+                               console.error('Error al limpiar nivel:', data.error);
+                           }
+                       })
+                       .catch(err => console.error('Error en fetch nivel:', err));
+               });
+
+               // No ejecutar el fetch normal al final para estos campos
+               return;
            }
        }
 
