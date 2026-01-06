@@ -128,7 +128,7 @@ Public Class Mecanica
         End If
 
         Dim cant = ParseCantidad(cantTxt)
-        Dim desc = If(descTxt.Text, "").Trim()
+        Dim desc = If(descTxt.Text, "").Trim().ToUpper()
         If cant <= 0 Then
             ShowStatus("Cantidad inválida (1-9999).", isOk:=False) : Exit Sub
         End If
@@ -136,8 +136,8 @@ Public Class Mecanica
             ShowStatus("Descripción requerida.", isOk:=False) : Exit Sub
         End If
 
-        Dim numParte As String = If(numParteTxt IsNot Nothing, (If(numParteTxt.Text, "")).Trim(), "")
-        Dim observ As String = If(obsTxt IsNot Nothing, (If(obsTxt.Text, "")).Trim(), "")
+        Dim numParte As String = If(numParteTxt IsNot Nothing, (If(numParteTxt.Text, "")).Trim().ToUpper(), "")
+        Dim observ As String = If(obsTxt IsNot Nothing, (If(obsTxt.Text, "")).Trim().ToUpper(), "")
 
         ' Verificar si las 3 validaciones están completas
         Dim complemento As Integer = If(VerificarValidacionesCompletas(), 1, 0)
@@ -297,8 +297,8 @@ Public Class Mecanica
 
         Dim cantidad As Integer = 0
         Integer.TryParse(txtCantidad.Text.Trim(), cantidad)
-        Dim descripcion As String = txtDescripcion.Text.Trim()
-        Dim numParte As String = txtNumParte.Text.Trim()
+        Dim descripcion As String = txtDescripcion.Text.Trim().ToUpper()
+        Dim numParte As String = txtNumParte.Text.Trim().ToUpper()
 
         Using cn As New SqlConnection(CS)
             Using cmd As New SqlCommand("UPDATE dbo.Refacciones SET Cantidad=@Cantidad, Descripcion=@Descripcion, NumParte=@NumParte WHERE Id=@Id", cn)
@@ -336,8 +336,8 @@ Public Class Mecanica
 
         Dim cantidad As Integer = 0
         Integer.TryParse(txtCantidad.Text.Trim(), cantidad)
-        Dim descripcion As String = txtDescripcion.Text.Trim()
-        Dim observ1 As String = txtObserv1.Text.Trim()
+        Dim descripcion As String = txtDescripcion.Text.Trim().ToUpper()
+        Dim observ1 As String = txtObserv1.Text.Trim().ToUpper()
 
         Using cn As New SqlConnection(CS)
             Using cmd As New SqlCommand("UPDATE dbo.Refacciones SET Cantidad=@Cantidad, Descripcion=@Descripcion, Observ1=@Observ1 WHERE Id=@Id", cn)
