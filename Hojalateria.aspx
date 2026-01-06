@@ -2,7 +2,7 @@
 <html lang="es">
 <head runat="server">
   <meta charset="utf-8" />
-  <title>Diagnóstico – Hojalatería</title>
+  <title>Diagnostico - Hojalateria</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Bootstrap + Icons -->
@@ -150,13 +150,13 @@
     <div class="hero mb-3">
       <div class="d-flex align-items-center gap-2">
         <i class="bi bi-hammer fs-4"></i>
-        <h1>Diagnóstico – Hojalatería</h1>
+        <h1>Diagnostico - Hojalateria</h1>
       </div>
-      <div class="hero-sub">Captura y control de refacciones por sustitución y reparación</div>
+      <div class="hero-sub">Captura y control de refacciones por sustitucion y reparacion</div>
       <div class="chipbar">
         <span class="chip"><i class="bi bi-folder2-open"></i> <strong class="me-1">Expediente:</strong> <span id="chipExp">—</span></span>
         <span class="chip"><i class="bi bi-shield-check"></i> <strong class="me-1">Siniestro:</strong> <span id="chipSin">—</span></span>
-        <span class="chip"><i class="bi bi-car-front"></i> <strong class="me-1">Vehículo:</strong> <span id="chipVeh">—</span></span>
+        <span class="chip"><i class="bi bi-car-front"></i> <strong class="me-1">Vehiculo:</strong> <span id="chipVeh">—</span></span>
       </div>
     </div>
 
@@ -170,12 +170,12 @@
 
     <!-- Paneles principales (Sustitución / Reparación) -->
     <div class="row g-3">
-      <!-- Sustitución -->
+      <!-- Sustitucion -->
       <div class="col-12 col-lg-6">
         <div class="panel h-100">
           <div class="panel-head">
             <i class="bi bi-arrow-repeat text-primary fs-5"></i>
-            <h3 class="ttl">Sustitución</h3>
+            <h3 class="ttl">Sustitucion</h3>
           </div>
           <div class="panel-body">
             <div class="row g-2 align-items-end">
@@ -184,7 +184,7 @@
                 <asp:TextBox ID="txtCantSust" runat="server" CssClass="form-control qty" MaxLength="4" />
               </div>
               <div class="col-12 col-sm-5">
-                <label class="label-strong mb-1">Descripción</label>
+                <label class="label-strong mb-1">Descripcion</label>
                 <asp:TextBox ID="txtDescSust" runat="server" CssClass="form-control text-uppercase" />
               </div>
               <div class="col-6 col-sm-3">
@@ -217,7 +217,7 @@
                     <ItemStyle CssClass="col-cant" />
                     <HeaderStyle CssClass="col-cant" />
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="Descripción">
+                  <asp:TemplateField HeaderText="Descripcion">
                     <ItemTemplate>
                       <asp:Label ID="lblDescripcion" runat="server" Text='<%# Eval("Descripcion") %>'></asp:Label>
                     </ItemTemplate>
@@ -308,12 +308,12 @@
         </div>
       </div>
 
-      <!-- Reparación -->
+      <!-- Reparacion -->
       <div class="col-12 col-lg-6">
         <div class="panel h-100">
           <div class="panel-head">
             <i class="bi bi-tools text-primary fs-5"></i>
-            <h3 class="ttl">Reparación</h3>
+            <h3 class="ttl">Reparacion</h3>
           </div>
           <div class="panel-body">
             <div class="row g-2 align-items-end">
@@ -322,7 +322,7 @@
                 <asp:TextBox ID="txtCantRep" runat="server" CssClass="form-control qty" MaxLength="4" />
               </div>
               <div class="col-12 col-sm-5">
-                <label class="label-strong mb-1">Descripción</label>
+                <label class="label-strong mb-1">Descripcion</label>
                 <asp:TextBox ID="txtDescRep" runat="server" CssClass="form-control text-uppercase" />
               </div>
               <div class="col-12 col-sm-3">
@@ -462,7 +462,7 @@
           <div class="col-md-4">
             <div class="card border-0 shadow-sm">
               <div class="card-body">
-                <div class="mb-2 fw-bold">Autorización 1</div>
+                <div class="mb-2 fw-bold">Autorizacion 1</div>
                 <asp:DropDownList ID="ddlAutHoj1" runat="server" CssClass="form-select"></asp:DropDownList>
                 <asp:TextBox ID="txtPassHoj1" runat="server" CssClass="form-control mt-2" TextMode="Password" placeholder="Contraseña" />
                 <div class="d-grid mt-2">
@@ -478,7 +478,7 @@
           <div class="col-md-4">
             <div class="card border-0 shadow-sm">
               <div class="card-body">
-                <div class="mb-2 fw-bold">Autorización 2</div>
+                <div class="mb-2 fw-bold">Autorizacion 2</div>
                 <asp:DropDownList ID="ddlAutHoj2" runat="server" CssClass="form-select"></asp:DropDownList>
                 <asp:TextBox ID="txtPassHoj2" runat="server" CssClass="form-control mt-2" TextMode="Password" placeholder="Contraseña" />
                 <div class="d-grid mt-2">
@@ -494,7 +494,7 @@
           <div class="col-md-4">
             <div class="card border-0 shadow-sm">
               <div class="card-body">
-                <div class="mb-2 fw-bold">Autorización 3</div>
+                <div class="mb-2 fw-bold">Autorizacion 3</div>
                 <asp:DropDownList ID="ddlAutHoj3" runat="server" CssClass="form-select"></asp:DropDownList>
                 <asp:TextBox ID="txtPassHoj3" runat="server" CssClass="form-control mt-2" TextMode="Password" placeholder="Contraseña" />
                 <div class="d-grid mt-2">
@@ -524,7 +524,7 @@
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-cloud-arrow-up me-2"></i>Fotos de diagnóstico (mínimo 3)</h5>
+        <h5 class="modal-title"><i class="bi bi-cloud-arrow-up me-2"></i>Fotos de diagnostico (minimo 3)</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
@@ -532,8 +532,8 @@
           Se guardarán en <strong>\3. FOTOS DIAGNOSTICO HOJALATERIA\</strong> con prefijo <strong>Id-5car</strong> y consecutivo.
         </div>
         <div class="mb-2 small text-muted d-flex flex-wrap gap-4">
-          <div><span class="text-muted">Refacción Id:</span> <span id="fmRefId" class="fw-semibold">—</span></div>
-          <div><span class="text-muted">Descripción:</span> <span id="fmDesc" class="fw-semibold">—</span></div>
+          <div><span class="text-muted">Refaccion Id:</span> <span id="fmRefId" class="fw-semibold">—</span></div>
+          <div><span class="text-muted">Descripcion:</span> <span id="fmDesc" class="fw-semibold">—</span></div>
         </div>
         <div class="row g-3">
           <div class="col-12">
@@ -567,10 +567,10 @@
   <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width:96vw">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="galTitle"><i class="bi bi-images me-2"></i>Galería</h5>
+        <h5 class="modal-title" id="galTitle"><i class="bi bi-images me-2"></i>Galeria</h5>
         <div class="ms-auto d-flex flex-wrap gap-2">
           <button class="btn btn-sm btn-outline-light" id="btnSelAll" type="button"><i class="bi bi-check2-square me-1"></i>Seleccionar todo</button>
-          <button class="btn btn-sm btn-outline-light" id="btnSelNone" type="button"><i class="bi bi-square me-1"></i>Quitar selección</button>
+          <button class="btn btn-sm btn-outline-light" id="btnSelNone" type="button"><i class="bi bi-square me-1"></i>Quitar seleccion</button>
           <button class="btn btn-sm btn-dark" id="btnZip" type="button"><i class="bi bi-file-zip me-1"></i>Descargar ZIP</button>
           <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cerrar</button>
         </div>
@@ -780,7 +780,7 @@
         // Mensaje
         try{
           const lbl = document.getElementById('<%= lblStatus.ClientID %>');
-          if(lbl){ lbl.className = 'd-block mt-3 fw-semibold text-success'; lbl.textContent = `Descripción actualizada y ${res.renamed||0} archivo(s) renombrado(s).`; }
+          if(lbl){ lbl.className = 'd-block mt-3 fw-semibold text-success'; lbl.textContent = `Descripcion actualizada y ${res.renamed||0} archivo(s) renombrado(s).`; }
         }catch(_){}
       },
       function(err){
@@ -1046,12 +1046,12 @@
 
         // Expuesta para RegisterStartupScript del servidor
         window.__openGaleriaDiag = function (title, virtualFolder, prefix, filesCsv) {
-            $title.textContent = title || 'Galería';
+            $title.textContent = title || 'Galeria';
             __folder = virtualFolder || '';
             __prefix = prefix || '';
             __files = (filesCsv || '').split('|').filter(Boolean);
 
-            // Extraer refId y descripción del prefix (formato: "id-desc")
+            // Extraer refId y descripcion del prefix (formato: "id-desc")
             var parts = prefix.split('-');
             __currentRefId = parts[0] || null;
             __currentDesc = parts.slice(1).join('-') || '';
@@ -1075,7 +1075,7 @@
             var row = fotosBtn.closest('tr');
             var descripcion = fotosBtn.getAttribute('data-descripcion') || '';
 
-            // Re-verificar si cumple con el mínimo de fotos
+            // Re-verificar si cumple con el minimo de fotos
             PageMethods.HasMinFotos(expediente, parseInt(__currentRefId, 10), descripcion, 3,
                 function(ok) {
                     if (row) {
