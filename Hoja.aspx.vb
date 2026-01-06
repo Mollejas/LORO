@@ -2833,7 +2833,7 @@ Paint:
 
             ' Cargar solo complementos - Mecánica Reparación (WHERE complemento = 1)
             Dim dtMecRep As New DataTable()
-            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(nivel_rep_l, 0) as nivel_rep_l, ISNULL(nivel_rep_m, 0) as nivel_rep_m, ISNULL(nivel_rep_f, 0) as nivel_rep_f, ISNULL(nivel_rep_pint_l, 0) as nivel_rep_pint_l, ISNULL(nivel_rep_pint_m, 0) as nivel_rep_pint_m, ISNULL(nivel_rep_pint_f, 0) as nivel_rep_pint_f FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' AND ISNULL(complemento, 0) = 1 ORDER BY id", cn)
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(nivel_rep_l, 0) as nivel_rep_l, ISNULL(nivel_rep_m, 0) as nivel_rep_m, ISNULL(nivel_rep_f, 0) as nivel_rep_f, ISNULL(nivel_rep_pint_l, 0) as nivel_rep_pint_l, ISNULL(nivel_rep_pint_m, 0) as nivel_rep_pint_m, ISNULL(nivel_rep_pint_f, 0) as nivel_rep_pint_f FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' AND ISNULL(complemento, 0) = 1 ORDER BY id", cn)
                 cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtMecRep)
@@ -2844,7 +2844,7 @@ Paint:
 
             ' Cargar solo complementos - Mecánica Sustitución (WHERE complemento = 1)
             Dim dtMecSus As New DataTable()
-            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1 FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'SUSTITUCION' AND ISNULL(complemento, 0) = 1 ORDER BY id", cn)
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'SUSTITUCION' AND ISNULL(complemento, 0) = 1 ORDER BY id", cn)
                 cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtMecSus)
@@ -2855,7 +2855,7 @@ Paint:
 
             ' Cargar solo complementos - Hojalatería Reparación (WHERE complemento = 1)
             Dim dtHojRep As New DataTable()
-            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(nivel_rep_l, 0) as nivel_rep_l, ISNULL(nivel_rep_m, 0) as nivel_rep_m, ISNULL(nivel_rep_f, 0) as nivel_rep_f, ISNULL(nivel_rep_pint_l, 0) as nivel_rep_pint_l, ISNULL(nivel_rep_pint_m, 0) as nivel_rep_pint_m, ISNULL(nivel_rep_pint_f, 0) as nivel_rep_pint_f FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' AND ISNULL(complemento, 0) = 1 ORDER BY id", cn)
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado, ISNULL(nivel_rep_l, 0) as nivel_rep_l, ISNULL(nivel_rep_m, 0) as nivel_rep_m, ISNULL(nivel_rep_f, 0) as nivel_rep_f, ISNULL(nivel_rep_pint_l, 0) as nivel_rep_pint_l, ISNULL(nivel_rep_pint_m, 0) as nivel_rep_pint_m, ISNULL(nivel_rep_pint_f, 0) as nivel_rep_pint_f FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' AND ISNULL(complemento, 0) = 1 ORDER BY id", cn)
                 cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtHojRep)
@@ -2866,7 +2866,7 @@ Paint:
 
             ' Cargar solo complementos - Hojalatería Sustitución (WHERE complemento = 1)
             Dim dtHojSus As New DataTable()
-            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1 FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'SUSTITUCION' AND ISNULL(complemento, 0) = 1 ORDER BY id", cn)
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, observ1, ISNULL(autorizado, 0) as autorizado FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'SUSTITUCION' AND ISNULL(complemento, 0) = 1 ORDER BY id", cn)
                 cmd.Parameters.Add("@exp", SqlDbType.NVarChar).Value = expediente
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(dtHojSus)

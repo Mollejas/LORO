@@ -1780,6 +1780,12 @@
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                   <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
+                  <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
                 </Columns>
               </asp:GridView>
             </div>
@@ -1790,23 +1796,29 @@
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                   <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
-                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_l")) = 1, "✓", "") %></ItemTemplate>
+                  <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_m")) = 1, "✓", "") %></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_f")) = 1, "✓", "") %></ItemTemplate>
+                  <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_l")) = 1, "✓", "") %></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_l" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_l")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_m")) = 1, "✓", "") %></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_m" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_m")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_f")) = 1, "✓", "") %></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_f" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_f")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_l" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_l")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_m" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_m")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_f" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_f")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
@@ -1823,6 +1835,12 @@
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                   <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
+                  <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
                 </Columns>
               </asp:GridView>
             </div>
@@ -1833,23 +1851,29 @@
                   <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
                   <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
                   <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
-                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_l")) = 1, "✓", "") %></ItemTemplate>
+                  <asp:TemplateField HeaderText="Si" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-si" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="1"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
-                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_m")) = 1, "✓", "") %></ItemTemplate>
-                  </asp:TemplateField>
-                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_f")) = 1, "✓", "") %></ItemTemplate>
+                  <asp:TemplateField HeaderText="No" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-no" data-id='<%# Eval("id") %>' data-field="autorizado" data-val="0"><%# IIf(Convert.ToInt32(Eval("autorizado")) = 0, "✗", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_l")) = 1, "✓", "") %></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_l" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_l")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_m")) = 1, "✓", "") %></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_m" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_m")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                   <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
-                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_f")) = 1, "✓", "") %></ItemTemplate>
+                    <ItemTemplate><span class="ht-toggle ht-nivel-rep" data-id='<%# Eval("id") %>' data-field="nivel_rep_f" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_f")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_l" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_l")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_m" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_m")) = 1, "✓", "") %></span></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><span class="ht-toggle ht-nivel-pint" data-id='<%# Eval("id") %>' data-field="nivel_rep_pint_f" data-val="1"><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_f")) = 1, "✓", "") %></span></ItemTemplate>
                   </asp:TemplateField>
                 </Columns>
               </asp:GridView>
