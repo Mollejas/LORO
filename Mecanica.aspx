@@ -185,11 +185,11 @@
               </div>
               <div class="col-12 col-sm-5">
                 <label class="label-strong mb-1">Descripción</label>
-                <asp:TextBox ID="txtDescSust" runat="server" CssClass="form-control" />
+                <asp:TextBox ID="txtDescSust" runat="server" CssClass="form-control text-uppercase" />
               </div>
               <div class="col-6 col-sm-3">
                 <label class="label-strong mb-1">Num. de parte (opcional)</label>
-                <asp:TextBox ID="txtNumParteSust" runat="server" CssClass="form-control" MaxLength="80" />
+                <asp:TextBox ID="txtNumParteSust" runat="server" CssClass="form-control text-uppercase" MaxLength="80" />
               </div>
               <div class="col-12 col-sm-2 d-grid">
                 <asp:Button ID="btnAddSust" runat="server" CssClass="btn btn-brand" Text="Guardar"
@@ -222,7 +222,7 @@
                       <asp:Label ID="lblDescripcion" runat="server" Text='<%# Eval("Descripcion") %>'></asp:Label>
                     </ItemTemplate>
                     <EditItemTemplate>
-                      <asp:TextBox ID="txtDescripcion" runat="server" Text='<%# Bind("Descripcion") %>' CssClass="form-control form-control-sm"></asp:TextBox>
+                      <asp:TextBox ID="txtDescripcion" runat="server" Text='<%# Bind("Descripcion") %>' CssClass="form-control form-control-sm text-uppercase"></asp:TextBox>
                     </EditItemTemplate>
                     <ItemStyle CssClass="col-desc" />
                     <HeaderStyle CssClass="col-desc" />
@@ -232,7 +232,7 @@
                       <asp:Label ID="lblNumParte" runat="server" Text='<%# Eval("NumParte") %>'></asp:Label>
                     </ItemTemplate>
                     <EditItemTemplate>
-                      <asp:TextBox ID="txtNumParte" runat="server" Text='<%# Bind("NumParte") %>' CssClass="form-control form-control-sm"></asp:TextBox>
+                      <asp:TextBox ID="txtNumParte" runat="server" Text='<%# Bind("NumParte") %>' CssClass="form-control form-control-sm text-uppercase"></asp:TextBox>
                     </EditItemTemplate>
                     <ItemStyle CssClass="col-np" />
                     <HeaderStyle CssClass="col-np" />
@@ -323,11 +323,11 @@
               </div>
               <div class="col-12 col-sm-5">
                 <label class="label-strong mb-1">Descripción</label>
-                <asp:TextBox ID="txtDescRep" runat="server" CssClass="form-control" />
+                <asp:TextBox ID="txtDescRep" runat="server" CssClass="form-control text-uppercase" />
               </div>
               <div class="col-12 col-sm-3">
                 <label class="label-strong mb-1">Observaciones (opcional)</label>
-                <asp:TextBox ID="txtObsRep" runat="server" CssClass="form-control" MaxLength="250" />
+                <asp:TextBox ID="txtObsRep" runat="server" CssClass="form-control text-uppercase" MaxLength="250" />
               </div>
               <div class="col-12 col-sm-2 d-grid">
                 <asp:Button ID="btnAddRep" runat="server" CssClass="btn btn-brand" Text="Guardar"
@@ -359,7 +359,7 @@
                       <asp:Label ID="lblDescripcion" runat="server" Text='<%# Eval("Descripcion") %>'></asp:Label>
                     </ItemTemplate>
                     <EditItemTemplate>
-                      <asp:TextBox ID="txtDescripcion" runat="server" Text='<%# Bind("Descripcion") %>' CssClass="form-control form-control-sm"></asp:TextBox>
+                      <asp:TextBox ID="txtDescripcion" runat="server" Text='<%# Bind("Descripcion") %>' CssClass="form-control form-control-sm text-uppercase"></asp:TextBox>
                     </EditItemTemplate>
                     <ItemStyle CssClass="col-desc" /><HeaderStyle CssClass="col-desc" />
                   </asp:TemplateField>
@@ -368,7 +368,7 @@
                       <asp:Label ID="lblObserv1" runat="server" Text='<%# Eval("Observ1") %>'></asp:Label>
                     </ItemTemplate>
                     <EditItemTemplate>
-                      <asp:TextBox ID="txtObserv1" runat="server" Text='<%# Bind("Observ1") %>' CssClass="form-control form-control-sm"></asp:TextBox>
+                      <asp:TextBox ID="txtObserv1" runat="server" Text='<%# Bind("Observ1") %>' CssClass="form-control form-control-sm text-uppercase"></asp:TextBox>
                     </EditItemTemplate>
                     <ItemStyle CssClass="col-obs" /><HeaderStyle CssClass="col-obs" />
                   </asp:TemplateField>
