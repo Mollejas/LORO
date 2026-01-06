@@ -1107,12 +1107,9 @@
         <div id="tileSeguimientoCompl" runat="server" class="tile compacto">
           <div class="title">Seguimiento complementos</div>
           <div class="icon-row compacto">
-            <a href="#" class="icon-btn compacto" id="btnSubirSeguimientoCompl" title="Subir seguimiento a complementos">
-              <i class="bi bi-cloud-upload"></i>
-            </a>
-            <asp:LinkButton ID="btnVerSeguimientoCompl" runat="server" CssClass="icon-btn compacto" ToolTip="Ver seguimiento a complementos" aria-label="Ver seguimiento a complementos">
+            <a href="#" class="icon-btn compacto" data-bs-toggle="modal" data-bs-target="#modalSeguimientoComplementos" title="Ver seguimiento a complementos">
               <i class="bi bi-eye"></i>
-            </asp:LinkButton>
+            </a>
           </div>
         </div>
       </div>
@@ -1724,6 +1721,138 @@
               <asp:LinkButton ID="btnValidarRef3" runat="server" CssClass="btn btn-sm btn-success" OnClick="btnValidarRef3_Click">
                 <i class="bi bi-check"></i> Validar
               </asp:LinkButton>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: Seguimiento Complementos ===================== -->
+  <div class="modal fade" id="modalSeguimientoComplementos" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-clipboard-check"></i> Seguimiento de Complementos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Encabezado con datos del auto e imagen -->
+          <div class="row mb-4">
+            <div class="col-md-8">
+              <h6 class="fw-bold mb-3">Datos del Vehículo</h6>
+              <table class="table table-sm table-bordered">
+                <tr>
+                  <th style="width:120px;">Expediente</th>
+                  <td><asp:Label ID="lblSCExpediente" runat="server" /></td>
+                  <th style="width:100px;">Año</th>
+                  <td><asp:Label ID="lblSCAnio" runat="server" /></td>
+                </tr>
+                <tr>
+                  <th>Marca</th>
+                  <td><asp:Label ID="lblSCMarca" runat="server" /></td>
+                  <th>Color</th>
+                  <td><asp:Label ID="lblSCColor" runat="server" /></td>
+                </tr>
+                <tr>
+                  <th>Modelo</th>
+                  <td><asp:Label ID="lblSCModelo" runat="server" /></td>
+                  <th>Placas</th>
+                  <td><asp:Label ID="lblSCPlacas" runat="server" /></td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-4 text-center">
+              <asp:Image ID="imgSCPrincipal" runat="server" CssClass="img-fluid rounded" style="max-height:150px;" AlternateText="Imagen del vehículo" />
+            </div>
+          </div>
+
+          <!-- GridViews de Mecánica - Solo Complementos -->
+          <h6 class="fw-bold text-primary mb-2"><i class="bi bi-wrench"></i> Mecánica - Complementos</h6>
+          <div class="row mb-4">
+            <div class="col-lg-6">
+              <h6 class="text-muted">Sustitución</h6>
+              <asp:GridView ID="gvSCMecSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin complementos">
+                <Columns>
+                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
+                  <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
+                  <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
+                </Columns>
+              </asp:GridView>
+            </div>
+            <div class="col-lg-6">
+              <h6 class="text-muted">Reparación</h6>
+              <asp:GridView ID="gvSCMecReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin complementos">
+                <Columns>
+                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
+                  <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
+                  <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
+                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_l")) = 1, "✓", "") %></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_m")) = 1, "✓", "") %></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_f")) = 1, "✓", "") %></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_l")) = 1, "✓", "") %></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_m")) = 1, "✓", "") %></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_f")) = 1, "✓", "") %></ItemTemplate>
+                  </asp:TemplateField>
+                </Columns>
+              </asp:GridView>
+            </div>
+          </div>
+
+          <!-- GridViews de Hojalatería - Solo Complementos -->
+          <h6 class="fw-bold text-warning mb-2"><i class="bi bi-tools"></i> Hojalatería - Complementos</h6>
+          <div class="row">
+            <div class="col-lg-6">
+              <h6 class="text-muted">Sustitución</h6>
+              <asp:GridView ID="gvSCHojSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin complementos">
+                <Columns>
+                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
+                  <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
+                  <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="100px" />
+                </Columns>
+              </asp:GridView>
+            </div>
+            <div class="col-lg-6">
+              <h6 class="text-muted">Reparación</h6>
+              <asp:GridView ID="gvSCHojReparacion" runat="server" CssClass="table table-sm table-striped table-bordered ht-grid" AutoGenerateColumns="False" EmptyDataText="Sin complementos">
+                <Columns>
+                  <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="40px" ItemStyle-CssClass="text-center" />
+                  <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
+                  <asp:BoundField DataField="observ1" HeaderText="Observaciones" />
+                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_l")) = 1, "✓", "") %></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_m")) = 1, "✓", "") %></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_f")) = 1, "✓", "") %></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="L" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_l")) = 1, "✓", "") %></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="M" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_m")) = 1, "✓", "") %></ItemTemplate>
+                  </asp:TemplateField>
+                  <asp:TemplateField HeaderText="F" ItemStyle-Width="30px" ItemStyle-CssClass="text-center">
+                    <ItemTemplate><%# IIf(Convert.ToInt32(Eval("nivel_rep_pint_f")) = 1, "✓", "") %></ItemTemplate>
+                  </asp:TemplateField>
+                </Columns>
+              </asp:GridView>
             </div>
           </div>
         </div>
