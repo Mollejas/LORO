@@ -1232,9 +1232,7 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
           <button type="button" id="btnToggleCamPresup" class="btn btn-outline-primary">Abrir cámara</button>
-          <asp:Button ID="btnGuardarMultiplesPresup" runat="server" Text="Guardar fotos ingreso"
-            CssClass="btn btn-brand" OnClick="btnGuardarMultiplesPresup_Click"
-            Enabled="false" ClientIDMode="Static" />
+          <button type="button" id="btnGuardarMultiplesPresupJS" class="btn btn-brand" disabled>Guardar fotos ingreso</button>
         </div>
       </div>
     </div>
@@ -2819,7 +2817,7 @@
       const zone         = document.getElementById('dropZonePresup');
       const input        = document.getElementById('fuMultiplesPresup');
       const thumbs       = document.getElementById('thumbsPresup');
-      const btnSave      = document.getElementById('btnGuardarMultiplesPresup');
+      const btnSave      = document.getElementById('btnGuardarMultiplesPresupJS');
       const progressWrap = document.getElementById('fotosPresupProgressWrap');
       const progressBar  = document.getElementById('fotosPresupProgressBar');
       const statusOk     = document.getElementById('fotosPresupStatus');
@@ -2969,19 +2967,120 @@
         appendFiles([file]);
       };
 
-      // Detectar cuando las fotos se guardaron exitosamente (después del postback)
-      if (statusOk && !statusOk.classList.contains('d-none')) {
-        // Ocultar el status inmediatamente para evitar re-disparos
-        statusOk.classList.add('d-none');
-
-        // Cerrar modal si está abierto
-        setTimeout(() => {
-          const modalInstance = bootstrap.Modal.getInstance(modal);
-          if (modalInstance) {
-            modalInstance.hide();
+      // ===== PROCESAMIENTO FOTO POR FOTO =====
+      if (btnSave) {
+        btnSave.addEventListener('click', async function() {
+          const files = Array.from(accumulatedFiles);
+          if (files.length === 0) {
+            alert('No hay fotos seleccionadas');
+            return;
           }
-          alert('FOTOS GUARDADAS EXITOSAMENTE');
-        }, 100);
+
+          const carpetaRel = document.getElementById('<%= hidCarpeta.ClientID %>')?.value;
+          if (!carpetaRel) {
+            alert('Error: carpeta no disponible');
+            return;
+          }
+
+          // Deshabilitar botones
+          btnSave.disabled = true;
+          const btnCancel = modal.querySelector('.btn-light');
+          if (btnCancel) btnCancel.disabled = true;
+
+          // Obtener índice inicial
+          let siguienteIndice = 1;
+          try {
+            const resp = await fetch('GetSiguienteIndicePresup.ashx?carpetaRel=' + encodeURIComponent(carpetaRel));
+            const data = await resp.json();
+            if (data.ok) siguienteIndice = data.indice;
+          } catch (e) {
+            console.warn('Error obteniendo índice inicial:', e);
+          }
+
+          // Mostrar progreso
+          progressWrap.classList.remove('d-none');
+          progressBar.classList.add('progress-bar-animated');
+
+          let procesadas = 0;
+          let errores = 0;
+          const total = files.length;
+          const startTime = Date.now();
+
+          // Procesar cada foto
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+
+            // Actualizar progreso
+            const percent = Math.round(((i + 1) / total) * 100);
+            progressBar.style.width = percent + '%';
+            progressBar.setAttribute('aria-valuenow', percent);
+
+            // Calcular tiempo estimado
+            const elapsed = (Date.now() - startTime) / 1000;
+            const avgTime = elapsed / (i + 1);
+            const remaining = Math.ceil(avgTime * (total - i - 1));
+
+            progressBar.textContent = `${percent}% (${i + 1}/${total}) - ${remaining}s restantes`;
+
+            try {
+              // Subir foto individual
+              const formData = new FormData();
+              formData.append('file', file);
+              formData.append('carpetaRel', carpetaRel);
+              formData.append('siguienteIndice', siguienteIndice.toString());
+
+              const response = await fetch('UploadFotoIngreso.ashx', {
+                method: 'POST',
+                body: formData
+              });
+
+              const result = await response.json();
+
+              if (result.ok) {
+                procesadas++;
+                siguienteIndice++;
+
+                // Eliminar miniatura del preview
+                const thumbWrap = thumbs.children[0]; // Siempre el primero porque vamos eliminando
+                if (thumbWrap) {
+                  thumbWrap.style.transition = 'opacity 0.3s';
+                  thumbWrap.style.opacity = '0';
+                  setTimeout(() => thumbWrap.remove(), 300);
+                }
+              } else {
+                console.error('Error subiendo foto:', result.error);
+                errores++;
+              }
+            } catch (error) {
+              console.error('Error procesando foto:', error);
+              errores++;
+            }
+          }
+
+          // Finalizar
+          progressBar.classList.remove('progress-bar-animated');
+          progressBar.style.width = '100%';
+          progressBar.textContent = '100% - Completado';
+
+          // Limpiar
+          accumulatedFiles = [];
+          input.value = '';
+          enableSave();
+
+          // Mensaje final
+          setTimeout(() => {
+            alert(`Fotos guardadas: ${procesadas}\nErrores: ${errores}`);
+
+            // Recargar página para actualizar el tile
+            if (procesadas > 0) {
+              location.reload();
+            } else {
+              // Cerrar modal si hubo errores
+              const modalInstance = bootstrap.Modal.getInstance(modal);
+              if (modalInstance) modalInstance.hide();
+            }
+          }, 500);
+        });
       }
     })();
   </script>
