@@ -2743,7 +2743,169 @@ Paint:
     ' Ver Creacion de Valuacion
     Protected Sub btnVerCreacionValuacion_Click(sender As Object, e As EventArgs)
         If String.IsNullOrWhiteSpace(hidId.Value) Then Exit Sub
-        Response.Redirect("EnvioVal.aspx?id=" & hidId.Value)
+
+        Dim admId As Integer
+        If Not Integer.TryParse(hidId.Value, admId) Then Exit Sub
+
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+        If String.IsNullOrWhiteSpace(cs) Then Exit Sub
+
+        ' Cargar datos del vehículo
+        Dim expediente As String = ""
+        Dim carpetaRel As String = ""
+
+        Using cn As New SqlConnection(cs)
+            cn.Open()
+
+            ' Obtener datos de admisiones
+            Using cmd As New SqlCommand("SELECT expediente, marca, tipo, modelo, color, placas, carpetarel FROM admisiones WHERE id = @id", cn)
+                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+                Using rd = cmd.ExecuteReader()
+                    If rd.Read() Then
+                        expediente = If(rd.IsDBNull(0), "", rd.GetString(0))
+                        hidCVExpediente.Value = expediente
+                        lblCVExpediente.Text = expediente
+                        lblCVMarca.Text = If(rd.IsDBNull(1), "", rd.GetString(1))
+                        lblCVModelo.Text = If(rd.IsDBNull(2), "", rd.GetString(2))  ' Tipo es el modelo del vehículo
+                        lblCVAnio.Text = If(rd.IsDBNull(3), "", rd.GetValue(3).ToString())  ' Modelo es el año
+                        lblCVColor.Text = If(rd.IsDBNull(4), "", rd.GetString(4))
+                        lblCVPlacas.Text = If(rd.IsDBNull(5), "", rd.GetString(5))
+                        carpetaRel = If(rd.IsDBNull(6), "", rd.GetString(6))
+                    End If
+                End Using
+            End Using
+
+            ' Cargar imagen principal
+            If Not String.IsNullOrWhiteSpace(carpetaRel) Then
+                Dim baseFolder As String = ResolverCarpetaFisica(carpetaRel)
+                Dim imgPath As String = Path.Combine(baseFolder, "1. DOCUMENTOS DE INGRESO", "principal.jpg")
+                If File.Exists(imgPath) Then
+                    Dim bytes = File.ReadAllBytes(imgPath)
+                    imgCVPrincipal.ImageUrl = "data:image/jpeg;base64," & Convert.ToBase64String(bytes)
+                Else
+                    imgCVPrincipal.ImageUrl = ""
+                End If
+            End If
+        End Using
+
+        ' Cargar refacciones
+        CargarRefaccionesCV()
+
+        ' Abrir modal
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "openModalCV", "var m = new bootstrap.Modal(document.getElementById('modalCreacionValuacion')); m.show();", True)
+    End Sub
+
+    ' Cargar refacciones para modal Creacion de Valuacion
+    Private Sub CargarRefaccionesCV()
+        Dim expediente As String = hidCVExpediente.Value
+        If String.IsNullOrWhiteSpace(expediente) Then Return
+
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+        Using cn As New SqlConnection(cs)
+            cn.Open()
+
+            ' Mecánica - Sustitución
+            Dim dtMecSust As New DataTable()
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, ISNULL(precio, 0) as precio FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
+                cmd.Parameters.AddWithValue("@exp", expediente)
+                Using da As New SqlDataAdapter(cmd)
+                    da.Fill(dtMecSust)
+                End Using
+            End Using
+            gvCVMecSustitucion.DataSource = dtMecSust
+            gvCVMecSustitucion.DataBind()
+
+            ' Mecánica - Reparación
+            Dim dtMecRep As New DataTable()
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, observ1, ISNULL(precio, 0) as precio FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'MECANICA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
+                cmd.Parameters.AddWithValue("@exp", expediente)
+                Using da As New SqlDataAdapter(cmd)
+                    da.Fill(dtMecRep)
+                End Using
+            End Using
+            gvCVMecReparacion.DataSource = dtMecRep
+            gvCVMecReparacion.DataBind()
+
+            ' Hojalatería - Sustitución
+            Dim dtHojSust As New DataTable()
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, numparte, ISNULL(precio, 0) as precio FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'SUSTITUCION' ORDER BY id", cn)
+                cmd.Parameters.AddWithValue("@exp", expediente)
+                Using da As New SqlDataAdapter(cmd)
+                    da.Fill(dtHojSust)
+                End Using
+            End Using
+            gvCVHojSustitucion.DataSource = dtHojSust
+            gvCVHojSustitucion.DataBind()
+
+            ' Hojalatería - Reparación
+            Dim dtHojRep As New DataTable()
+            Using cmd As New SqlCommand("SELECT id, cantidad, descripcion, observ1, ISNULL(precio, 0) as precio FROM refacciones WHERE expediente = @exp AND UPPER(area) = 'HOJALATERIA' AND UPPER(categoria) = 'REPARACION' ORDER BY id", cn)
+                cmd.Parameters.AddWithValue("@exp", expediente)
+                Using da As New SqlDataAdapter(cmd)
+                    da.Fill(dtHojRep)
+                End Using
+            End Using
+            gvCVHojReparacion.DataSource = dtHojRep
+            gvCVHojReparacion.DataBind()
+        End Using
+    End Sub
+
+    ' Eventos de GridView para Creacion de Valuacion
+    Protected Sub gvCV_RowEditing(sender As Object, e As GridViewEditEventArgs)
+        Dim gv As GridView = CType(sender, GridView)
+        gv.EditIndex = e.NewEditIndex
+        CargarRefaccionesCV()
+    End Sub
+
+    Protected Sub gvCV_RowCancelingEdit(sender As Object, e As GridViewCancelEditEventArgs)
+        Dim gv As GridView = CType(sender, GridView)
+        gv.EditIndex = -1
+        CargarRefaccionesCV()
+    End Sub
+
+    Protected Sub gvCVMecSust_RowUpdating(sender As Object, e As GridViewUpdateEventArgs)
+        ActualizarPrecioCV(gvCVMecSustitucion, e)
+    End Sub
+
+    Protected Sub gvCVMecRep_RowUpdating(sender As Object, e As GridViewUpdateEventArgs)
+        ActualizarPrecioCV(gvCVMecReparacion, e)
+    End Sub
+
+    Protected Sub gvCVHojSust_RowUpdating(sender As Object, e As GridViewUpdateEventArgs)
+        ActualizarPrecioCV(gvCVHojSustitucion, e)
+    End Sub
+
+    Protected Sub gvCVHojRep_RowUpdating(sender As Object, e As GridViewUpdateEventArgs)
+        ActualizarPrecioCV(gvCVHojReparacion, e)
+    End Sub
+
+    Private Sub ActualizarPrecioCV(gv As GridView, e As GridViewUpdateEventArgs)
+        Try
+            Dim row As GridViewRow = gv.Rows(e.RowIndex)
+            Dim id As Integer = Convert.ToInt32(gv.DataKeys(e.RowIndex).Value)
+            Dim txtPrecio As TextBox = TryCast(row.FindControl("txtPrecio"), TextBox)
+
+            If txtPrecio IsNot Nothing Then
+                Dim precio As Decimal = 0
+                Decimal.TryParse(txtPrecio.Text.Trim(), precio)
+
+                Dim cs As String = DatabaseHelper.GetConnectionString()
+                Using cn As New SqlConnection(cs)
+                    Using cmd As New SqlCommand("UPDATE refacciones SET precio = @precio WHERE id = @id", cn)
+                        cmd.Parameters.AddWithValue("@precio", precio)
+                        cmd.Parameters.AddWithValue("@id", id)
+                        cn.Open()
+                        cmd.ExecuteNonQuery()
+                    End Using
+                End Using
+            End If
+
+            gv.EditIndex = -1
+            CargarRefaccionesCV()
+
+        Catch ex As Exception
+            ' Log error silently
+        End Try
     End Sub
 
     ' Ver Hoja de Trabajo Sin Autorizar
