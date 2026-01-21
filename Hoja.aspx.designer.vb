@@ -1449,5 +1449,5 @@ Partial Public Class Hoja
     '''<remarks>
     '''Campo generado automáticamente.
     '''</remarks>
-    Protected WithEvents btnDescargarValuacion As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents btnDescargarValuacion As Global.System.Web.UI.HtmlControls.HtmlButton
 End Class
