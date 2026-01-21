@@ -1442,4 +1442,12 @@ Partial Public Class Hoja
     '''Campo generado automáticamente.
     '''</remarks>
     Protected WithEvents gvCVHojReparacion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control btnDescargarValuacion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents btnDescargarValuacion As Global.System.Web.UI.WebControls.Button
 End Class
