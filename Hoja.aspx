@@ -1067,6 +1067,16 @@
           </div>
         </div>
 
+        <!-- Creacion de valuacion -->
+        <div id="tileCreacionValuacion" runat="server" class="tile compacto">
+          <div class="title">Creacion de valuacion</div>
+          <div class="icon-row compacto">
+            <asp:LinkButton ID="btnVerCreacionValuacion" runat="server" CssClass="icon-btn compacto" ToolTip="Ver creacion de valuacion" aria-label="Ver creacion de valuacion" OnClick="btnVerCreacionValuacion_Click">
+              <i class="bi bi-eye"></i>
+            </asp:LinkButton>
+          </div>
+        </div>
+
         <!-- Valuación sin autorizar PDF -->
         <div id="tileValSinAut" runat="server" class="tile compacto">
           <div class="title">Valuación sin autorizar</div>
