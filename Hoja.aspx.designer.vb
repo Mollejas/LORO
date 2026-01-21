@@ -770,6 +770,15 @@ Partial Public Class Hoja
     Protected WithEvents hidInvSrc As Global.System.Web.UI.WebControls.HiddenField
 
     '''<summary>
+    '''Control hidCVExpediente.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents hidCVExpediente As Global.System.Web.UI.WebControls.HiddenField
+
+    '''<summary>
     '''Control fuInvGruaPdf.
     '''</summary>
     '''<remarks>
@@ -1345,4 +1354,92 @@ Partial Public Class Hoja
     '''Campo generado automáticamente.
     '''</remarks>
     Protected WithEvents gvSCHojReparacion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control lblCVExpediente.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents lblCVExpediente As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblCVMarca.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents lblCVMarca As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblCVModelo.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents lblCVModelo As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblCVAnio.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents lblCVAnio As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblCVColor.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents lblCVColor As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control lblCVPlacas.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents lblCVPlacas As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Control imgCVPrincipal.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents imgCVPrincipal As Global.System.Web.UI.WebControls.Image
+
+    '''<summary>
+    '''Control gvCVMecSustitucion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents gvCVMecSustitucion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control gvCVMecReparacion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents gvCVMecReparacion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control gvCVHojSustitucion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents gvCVHojSustitucion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control gvCVHojReparacion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''</remarks>
+    Protected WithEvents gvCVHojReparacion As Global.System.Web.UI.WebControls.GridView
 End Class

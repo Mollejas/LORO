@@ -1132,6 +1132,7 @@
   <asp:HiddenField ID="hidViewerSrc" runat="server" ClientIDMode="Static" />
   <asp:HiddenField ID="hidInvGruaSrc" runat="server" ClientIDMode="Static" />
   <asp:HiddenField ID="hidInvSrc" runat="server" ClientIDMode="Static" />
+  <asp:HiddenField ID="hidCVExpediente" runat="server" ClientIDMode="Static" />
 
   <!-- ===================== MODAL: Subir INV GRÚA (PDF) ===================== -->
   <div class="modal fade" id="modalInvGrua" tabindex="-1" aria-hidden="true">
