@@ -1739,6 +1739,170 @@
     </div>
   </div>
 
+  <!-- ===================== MODAL: Creacion de Valuacion ===================== -->
+  <div class="modal fade" id="modalCreacionValuacion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-calculator"></i> Creacion de Valuacion</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Datos del Vehiculo -->
+          <div class="row mb-4">
+            <div class="col-md-8">
+              <h6 class="fw-bold mb-3">Datos del Vehiculo</h6>
+              <table class="table table-sm table-bordered">
+                <tr>
+                  <th style="width:120px;">Expediente</th>
+                  <td><asp:Label ID="lblCVExpediente" runat="server" /></td>
+                  <th style="width:100px;">Ano</th>
+                  <td><asp:Label ID="lblCVAnio" runat="server" /></td>
+                </tr>
+                <tr>
+                  <th>Marca</th>
+                  <td><asp:Label ID="lblCVMarca" runat="server" /></td>
+                  <th>Color</th>
+                  <td><asp:Label ID="lblCVColor" runat="server" /></td>
+                </tr>
+                <tr>
+                  <th>Modelo</th>
+                  <td><asp:Label ID="lblCVModelo" runat="server" /></td>
+                  <th>Placas</th>
+                  <td><asp:Label ID="lblCVPlacas" runat="server" /></td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-4 text-center">
+              <asp:Image ID="imgCVPrincipal" runat="server" CssClass="img-fluid rounded" style="max-height:150px;" AlternateText="Imagen del vehiculo" />
+            </div>
+          </div>
+
+          <!-- Mecanica -->
+          <h6 class="fw-bold text-primary mb-2"><i class="bi bi-wrench"></i> Mecanica</h6>
+
+          <!-- Mecanica - Sustitucion -->
+          <div class="mb-4">
+            <h6 class="text-muted">Sustitucion</h6>
+            <asp:GridView ID="gvCVMecSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered"
+                          AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id"
+                          OnRowEditing="gvCV_RowEditing" OnRowCancelingEdit="gvCV_RowCancelingEdit" OnRowUpdating="gvCVMecSust_RowUpdating">
+              <Columns>
+                <asp:BoundField DataField="id" HeaderText="ID" Visible="false" />
+                <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="60px" ItemStyle-CssClass="text-center" ReadOnly="true" />
+                <asp:BoundField DataField="descripcion" HeaderText="Descripcion" ReadOnly="true" />
+                <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="120px" ReadOnly="true" />
+                <asp:TemplateField HeaderText="Precio">
+                  <ItemTemplate>
+                    <%# String.Format("{0:C2}", If(IsDBNull(Eval("precio")), 0, Eval("precio"))) %>
+                  </ItemTemplate>
+                  <EditItemTemplate>
+                    <asp:TextBox ID="txtPrecio" runat="server" Text='<%# Bind("precio") %>' CssClass="form-control form-control-sm" style="width:120px;text-align:right;" />
+                  </EditItemTemplate>
+                  <ItemStyle Width="130px" CssClass="text-end" />
+                </asp:TemplateField>
+                <asp:CommandField ShowEditButton="True" ButtonType="Button"
+                                  ControlStyle-CssClass="btn btn-sm btn-outline-primary"
+                                  EditText="Editar" UpdateText="Guardar" CancelText="Cancelar"
+                                  ItemStyle-Width="180px" />
+              </Columns>
+            </asp:GridView>
+          </div>
+
+          <!-- Mecanica - Reparacion -->
+          <div class="mb-4">
+            <h6 class="text-muted">Reparacion</h6>
+            <asp:GridView ID="gvCVMecReparacion" runat="server" CssClass="table table-sm table-striped table-bordered"
+                          AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id"
+                          OnRowEditing="gvCV_RowEditing" OnRowCancelingEdit="gvCV_RowCancelingEdit" OnRowUpdating="gvCVMecRep_RowUpdating">
+              <Columns>
+                <asp:BoundField DataField="id" HeaderText="ID" Visible="false" />
+                <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="60px" ItemStyle-CssClass="text-center" ReadOnly="true" />
+                <asp:BoundField DataField="descripcion" HeaderText="Descripcion" ReadOnly="true" />
+                <asp:BoundField DataField="observ1" HeaderText="Observaciones" ReadOnly="true" />
+                <asp:TemplateField HeaderText="Precio">
+                  <ItemTemplate>
+                    <%# String.Format("{0:C2}", If(IsDBNull(Eval("precio")), 0, Eval("precio"))) %>
+                  </ItemTemplate>
+                  <EditItemTemplate>
+                    <asp:TextBox ID="txtPrecio" runat="server" Text='<%# Bind("precio") %>' CssClass="form-control form-control-sm" style="width:120px;text-align:right;" />
+                  </EditItemTemplate>
+                  <ItemStyle Width="130px" CssClass="text-end" />
+                </asp:TemplateField>
+                <asp:CommandField ShowEditButton="True" ButtonType="Button"
+                                  ControlStyle-CssClass="btn btn-sm btn-outline-primary"
+                                  EditText="Editar" UpdateText="Guardar" CancelText="Cancelar"
+                                  ItemStyle-Width="180px" />
+              </Columns>
+            </asp:GridView>
+          </div>
+
+          <!-- Hojalateria -->
+          <h6 class="fw-bold text-warning mb-2"><i class="bi bi-tools"></i> Hojalateria</h6>
+
+          <!-- Hojalateria - Sustitucion -->
+          <div class="mb-4">
+            <h6 class="text-muted">Sustitucion</h6>
+            <asp:GridView ID="gvCVHojSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered"
+                          AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id"
+                          OnRowEditing="gvCV_RowEditing" OnRowCancelingEdit="gvCV_RowCancelingEdit" OnRowUpdating="gvCVHojSust_RowUpdating">
+              <Columns>
+                <asp:BoundField DataField="id" HeaderText="ID" Visible="false" />
+                <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="60px" ItemStyle-CssClass="text-center" ReadOnly="true" />
+                <asp:BoundField DataField="descripcion" HeaderText="Descripcion" ReadOnly="true" />
+                <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="120px" ReadOnly="true" />
+                <asp:TemplateField HeaderText="Precio">
+                  <ItemTemplate>
+                    <%# String.Format("{0:C2}", If(IsDBNull(Eval("precio")), 0, Eval("precio"))) %>
+                  </ItemTemplate>
+                  <EditItemTemplate>
+                    <asp:TextBox ID="txtPrecio" runat="server" Text='<%# Bind("precio") %>' CssClass="form-control form-control-sm" style="width:120px;text-align:right;" />
+                  </EditItemTemplate>
+                  <ItemStyle Width="130px" CssClass="text-end" />
+                </asp:TemplateField>
+                <asp:CommandField ShowEditButton="True" ButtonType="Button"
+                                  ControlStyle-CssClass="btn btn-sm btn-outline-primary"
+                                  EditText="Editar" UpdateText="Guardar" CancelText="Cancelar"
+                                  ItemStyle-Width="180px" />
+              </Columns>
+            </asp:GridView>
+          </div>
+
+          <!-- Hojalateria - Reparacion -->
+          <div class="mb-4">
+            <h6 class="text-muted">Reparacion</h6>
+            <asp:GridView ID="gvCVHojReparacion" runat="server" CssClass="table table-sm table-striped table-bordered"
+                          AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id"
+                          OnRowEditing="gvCV_RowEditing" OnRowCancelingEdit="gvCV_RowCancelingEdit" OnRowUpdating="gvCVHojRep_RowUpdating">
+              <Columns>
+                <asp:BoundField DataField="id" HeaderText="ID" Visible="false" />
+                <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="60px" ItemStyle-CssClass="text-center" ReadOnly="true" />
+                <asp:BoundField DataField="descripcion" HeaderText="Descripcion" ReadOnly="true" />
+                <asp:BoundField DataField="observ1" HeaderText="Observaciones" ReadOnly="true" />
+                <asp:TemplateField HeaderText="Precio">
+                  <ItemTemplate>
+                    <%# String.Format("{0:C2}", If(IsDBNull(Eval("precio")), 0, Eval("precio"))) %>
+                  </ItemTemplate>
+                  <EditItemTemplate>
+                    <asp:TextBox ID="txtPrecio" runat="server" Text='<%# Bind("precio") %>' CssClass="form-control form-control-sm" style="width:120px;text-align:right;" />
+                  </EditItemTemplate>
+                  <ItemStyle Width="130px" CssClass="text-end" />
+                </asp:TemplateField>
+                <asp:CommandField ShowEditButton="True" ButtonType="Button"
+                                  ControlStyle-CssClass="btn btn-sm btn-outline-primary"
+                                  EditText="Editar" UpdateText="Guardar" CancelText="Cancelar"
+                                  ItemStyle-Width="180px" />
+              </Columns>
+            </asp:GridView>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ===================== MODAL: Seguimiento Complementos ===================== -->
   <div class="modal fade" id="modalSeguimientoComplementos" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
