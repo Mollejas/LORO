@@ -2855,28 +2855,38 @@ Paint:
         Dim gv As GridView = CType(sender, GridView)
         gv.EditIndex = e.NewEditIndex
         CargarRefaccionesCV()
+        ReabrirModalCV()
     End Sub
 
     Protected Sub gvCV_RowCancelingEdit(sender As Object, e As GridViewCancelEditEventArgs)
         Dim gv As GridView = CType(sender, GridView)
         gv.EditIndex = -1
         CargarRefaccionesCV()
+        ReabrirModalCV()
     End Sub
 
     Protected Sub gvCVMecSust_RowUpdating(sender As Object, e As GridViewUpdateEventArgs)
         ActualizarPrecioCV(gvCVMecSustitucion, e)
+        ReabrirModalCV()
     End Sub
 
     Protected Sub gvCVMecRep_RowUpdating(sender As Object, e As GridViewUpdateEventArgs)
         ActualizarPrecioCV(gvCVMecReparacion, e)
+        ReabrirModalCV()
     End Sub
 
     Protected Sub gvCVHojSust_RowUpdating(sender As Object, e As GridViewUpdateEventArgs)
         ActualizarPrecioCV(gvCVHojSustitucion, e)
+        ReabrirModalCV()
     End Sub
 
     Protected Sub gvCVHojRep_RowUpdating(sender As Object, e As GridViewUpdateEventArgs)
         ActualizarPrecioCV(gvCVHojReparacion, e)
+        ReabrirModalCV()
+    End Sub
+
+    Private Sub ReabrirModalCV()
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "reabrirModalCV", "setTimeout(function(){var m=new bootstrap.Modal(document.getElementById('modalCreacionValuacion'));m.show();},100);", True)
     End Sub
 
     Private Sub ActualizarPrecioCV(gv As GridView, e As GridViewUpdateEventArgs)
@@ -2928,13 +2938,14 @@ Paint:
 
                 Dim fila As Integer = 1
 
-                ' Logo (si existe)
+                ' Logo (si existe) - Centrado y más grande
                 Dim logoPath As String = Server.MapPath("~/images/logo.png")
                 If File.Exists(logoPath) Then
                     Dim logo As OfficeOpenXml.Drawing.ExcelPicture = ws.Drawings.AddPicture("Logo", New FileInfo(logoPath))
-                    logo.SetPosition(0, 0, 0, 0)
-                    logo.SetSize(200, 80)
-                    fila = 6
+                    ' Centrar logo en columnas 3-6 (centro de 8 columnas)
+                    logo.SetPosition(0, 5, 2, 10)
+                    logo.SetSize(350, 100) ' Más grande y estirado
+                    fila = 7
                 End If
 
                 ' Título principal
@@ -2972,9 +2983,9 @@ Paint:
                     End Using
                 End Using
 
-                ' Datos del vehículo
+                ' Encabezado de sección
                 ws.Cells(fila, 1).Value = "DATOS DEL VEHÍCULO"
-                ws.Cells(fila, 1, fila, 4).Merge = True
+                ws.Cells(fila, 1, fila, 8).Merge = True
                 With ws.Cells(fila, 1)
                     .Style.Font.Size = 14
                     .Style.Font.Bold = True
@@ -2983,46 +2994,48 @@ Paint:
                 End With
                 fila += 1
 
-                ' Tabla de datos
-                ws.Cells(fila, 1).Value = "Expediente:"
-                ws.Cells(fila, 2).Value = expediente
-                ws.Cells(fila, 3).Value = "Año:"
-                ws.Cells(fila, 4).Value = anio
+                ' Imagen del vehículo a la IZQUIERDA (columnas 1-2)
+                Dim filaImagen As Integer = fila
+                If Not String.IsNullOrWhiteSpace(carpetaRel) Then
+                    Dim imgPath As String = Path.Combine(ResolverCarpetaFisica(carpetaRel), "1. DOCUMENTOS DE INGRESO", "principal.jpg")
+                    If File.Exists(imgPath) Then
+                        Dim img As OfficeOpenXml.Drawing.ExcelPicture = ws.Drawings.AddPicture("VehiculoImg", New FileInfo(imgPath))
+                        ' Posicionar a la izquierda
+                        img.SetPosition(filaImagen - 1, 5, 0, 5)
+                        img.SetSize(180, 135)
+                    End If
+                End If
+
+                ' Tabla de datos A LA DERECHA (columnas 3-8)
+                ws.Cells(fila, 3).Value = "Expediente:"
+                ws.Cells(fila, 4).Value = expediente
+                ws.Cells(fila, 5).Value = "Año:"
+                ws.Cells(fila, 6).Value = anio
                 fila += 1
 
-                ws.Cells(fila, 1).Value = "Marca:"
-                ws.Cells(fila, 2).Value = marca
-                ws.Cells(fila, 3).Value = "Color:"
-                ws.Cells(fila, 4).Value = color
+                ws.Cells(fila, 3).Value = "Marca:"
+                ws.Cells(fila, 4).Value = marca
+                ws.Cells(fila, 5).Value = "Color:"
+                ws.Cells(fila, 6).Value = color
                 fila += 1
 
-                ws.Cells(fila, 1).Value = "Modelo:"
-                ws.Cells(fila, 2).Value = modelo
-                ws.Cells(fila, 3).Value = "Placas:"
-                ws.Cells(fila, 4).Value = placas
+                ws.Cells(fila, 3).Value = "Modelo:"
+                ws.Cells(fila, 4).Value = modelo
+                ws.Cells(fila, 5).Value = "Placas:"
+                ws.Cells(fila, 6).Value = placas
                 fila += 1
 
-                ' Estilo de la tabla de datos
-                For i As Integer = fila - 3 To fila - 1
-                    ws.Cells(i, 1).Style.Font.Bold = True
+                ' Estilo de la tabla de datos (columnas 3-6)
+                For i As Integer = filaImagen To fila - 1
                     ws.Cells(i, 3).Style.Font.Bold = True
-                    For j As Integer = 1 To 4
+                    ws.Cells(i, 5).Style.Font.Bold = True
+                    For j As Integer = 3 To 6
                         ws.Cells(i, j).Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
                         ws.Cells(i, j).Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
                         ws.Cells(i, j).Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
                         ws.Cells(i, j).Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
                     Next
                 Next
-
-                ' Imagen del vehículo (en columna 6-8)
-                If Not String.IsNullOrWhiteSpace(carpetaRel) Then
-                    Dim imgPath As String = Path.Combine(ResolverCarpetaFisica(carpetaRel), "1. DOCUMENTOS DE INGRESO", "principal.jpg")
-                    If File.Exists(imgPath) Then
-                        Dim img As OfficeOpenXml.Drawing.ExcelPicture = ws.Drawings.AddPicture("VehiculoImg", New FileInfo(imgPath))
-                        img.SetPosition(fila - 4, 0, 5, 0)
-                        img.SetSize(200, 150)
-                    End If
-                End If
 
                 fila += 2
 
