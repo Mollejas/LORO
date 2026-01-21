@@ -1785,45 +1785,51 @@
           <!-- Mecanica - Sustitucion -->
           <div class="mb-4">
             <h6 class="text-muted">Sustitucion</h6>
-            <asp:GridView ID="gvCVMecSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered"
-                          AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id"
-                          OnRowEditing="gvCV_RowEditing" OnRowCancelingEdit="gvCV_RowCancelingEdit" OnRowUpdating="gvCVMecSust_RowUpdating">
-              <Columns>
-                <asp:BoundField DataField="id" HeaderText="ID" Visible="false" />
-                <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="60px" ItemStyle-CssClass="text-center" ReadOnly="true" />
-                <asp:BoundField DataField="descripcion" HeaderText="Descripcion" ReadOnly="true" />
-                <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="120px" ReadOnly="true" />
-                <asp:TemplateField HeaderText="Precio">
-                  <ItemTemplate>
-                    <%# String.Format("{0:C2}", If(IsDBNull(Eval("precio")), 0, Eval("precio"))) %>
-                  </ItemTemplate>
-                  <EditItemTemplate>
-                    <asp:TextBox ID="txtPrecio" runat="server" Text='<%# Bind("precio") %>' CssClass="form-control form-control-sm" style="width:120px;text-align:right;" />
-                  </EditItemTemplate>
-                  <ItemStyle Width="130px" CssClass="text-end" />
-                </asp:TemplateField>
-                <asp:CommandField ShowEditButton="True" ButtonType="Button"
-                                  ControlStyle-CssClass="btn btn-sm btn-outline-primary"
-                                  EditText="Editar" UpdateText="Guardar" CancelText="Cancelar"
-                                  ItemStyle-Width="180px" />
-              </Columns>
-            </asp:GridView>
+            <asp:UpdatePanel ID="upCVMecSust" runat="server" UpdateMode="Conditional">
+              <ContentTemplate>
+                <asp:GridView ID="gvCVMecSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered"
+                              AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id"
+                              OnRowEditing="gvCV_RowEditing" OnRowCancelingEdit="gvCV_RowCancelingEdit" OnRowUpdating="gvCVMecSust_RowUpdating">
+                  <Columns>
+                    <asp:BoundField DataField="id" HeaderText="ID" Visible="false" />
+                    <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="60px" ItemStyle-CssClass="text-center" ReadOnly="true" />
+                    <asp:BoundField DataField="descripcion" HeaderText="Descripcion" ReadOnly="true" />
+                    <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="120px" ReadOnly="true" />
+                    <asp:TemplateField HeaderText="Precio">
+                      <ItemTemplate>
+                        <%# String.Format("{0:C2}", If(IsDBNull(Eval("precio")), 0, Eval("precio"))) %>
+                      </ItemTemplate>
+                      <EditItemTemplate>
+                        <asp:TextBox ID="txtPrecio" runat="server" Text='<%# Bind("precio") %>' CssClass="form-control form-control-sm" style="width:120px;text-align:right;" />
+                      </EditItemTemplate>
+                      <ItemStyle Width="130px" CssClass="text-end" />
+                    </asp:TemplateField>
+                    <asp:CommandField ShowEditButton="True" ButtonType="Button"
+                                      ControlStyle-CssClass="btn btn-sm btn-outline-primary"
+                                      EditText="Editar" UpdateText="Guardar" CancelText="Cancelar"
+                                      ItemStyle-Width="180px" />
+                  </Columns>
+                </asp:GridView>
+              </ContentTemplate>
+            </asp:UpdatePanel>
           </div>
 
           <!-- Mecanica - Reparacion -->
           <div class="mb-4">
             <h6 class="text-muted">Reparacion</h6>
-            <asp:GridView ID="gvCVMecReparacion" runat="server" CssClass="table table-sm table-striped table-bordered"
-                          AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id"
-                          OnRowEditing="gvCV_RowEditing" OnRowCancelingEdit="gvCV_RowCancelingEdit" OnRowUpdating="gvCVMecRep_RowUpdating">
-              <Columns>
-                <asp:BoundField DataField="id" HeaderText="ID" Visible="false" />
-                <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="60px" ItemStyle-CssClass="text-center" ReadOnly="true" />
-                <asp:BoundField DataField="descripcion" HeaderText="Descripcion" ReadOnly="true" />
-                <asp:BoundField DataField="observ1" HeaderText="Observaciones" ReadOnly="true" />
-                <asp:TemplateField HeaderText="Precio">
-                  <ItemTemplate>
-                    <%# String.Format("{0:C2}", If(IsDBNull(Eval("precio")), 0, Eval("precio"))) %>
+            <asp:UpdatePanel ID="upCVMecRep" runat="server" UpdateMode="Conditional">
+              <ContentTemplate>
+                <asp:GridView ID="gvCVMecReparacion" runat="server" CssClass="table table-sm table-striped table-bordered"
+                              AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id"
+                              OnRowEditing="gvCV_RowEditing" OnRowCancelingEdit="gvCV_RowCancelingEdit" OnRowUpdating="gvCVMecRep_RowUpdating">
+                  <Columns>
+                    <asp:BoundField DataField="id" HeaderText="ID" Visible="false" />
+                    <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="60px" ItemStyle-CssClass="text-center" ReadOnly="true" />
+                    <asp:BoundField DataField="descripcion" HeaderText="Descripcion" ReadOnly="true" />
+                    <asp:BoundField DataField="observ1" HeaderText="Observaciones" ReadOnly="true" />
+                    <asp:TemplateField HeaderText="Precio">
+                      <ItemTemplate>
+                        <%# String.Format("{0:C2}", If(IsDBNull(Eval("precio")), 0, Eval("precio"))) %>
                   </ItemTemplate>
                   <EditItemTemplate>
                     <asp:TextBox ID="txtPrecio" runat="server" Text='<%# Bind("precio") %>' CssClass="form-control form-control-sm" style="width:120px;text-align:right;" />
@@ -1836,6 +1842,8 @@
                                   ItemStyle-Width="180px" />
               </Columns>
             </asp:GridView>
+              </ContentTemplate>
+            </asp:UpdatePanel>
           </div>
 
           <!-- Hojalateria -->
@@ -1844,57 +1852,65 @@
           <!-- Hojalateria - Sustitucion -->
           <div class="mb-4">
             <h6 class="text-muted">Sustitucion</h6>
-            <asp:GridView ID="gvCVHojSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered"
-                          AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id"
-                          OnRowEditing="gvCV_RowEditing" OnRowCancelingEdit="gvCV_RowCancelingEdit" OnRowUpdating="gvCVHojSust_RowUpdating">
-              <Columns>
-                <asp:BoundField DataField="id" HeaderText="ID" Visible="false" />
-                <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="60px" ItemStyle-CssClass="text-center" ReadOnly="true" />
-                <asp:BoundField DataField="descripcion" HeaderText="Descripcion" ReadOnly="true" />
-                <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="120px" ReadOnly="true" />
-                <asp:TemplateField HeaderText="Precio">
-                  <ItemTemplate>
-                    <%# String.Format("{0:C2}", If(IsDBNull(Eval("precio")), 0, Eval("precio"))) %>
-                  </ItemTemplate>
-                  <EditItemTemplate>
-                    <asp:TextBox ID="txtPrecio" runat="server" Text='<%# Bind("precio") %>' CssClass="form-control form-control-sm" style="width:120px;text-align:right;" />
-                  </EditItemTemplate>
-                  <ItemStyle Width="130px" CssClass="text-end" />
-                </asp:TemplateField>
-                <asp:CommandField ShowEditButton="True" ButtonType="Button"
-                                  ControlStyle-CssClass="btn btn-sm btn-outline-primary"
-                                  EditText="Editar" UpdateText="Guardar" CancelText="Cancelar"
-                                  ItemStyle-Width="180px" />
-              </Columns>
-            </asp:GridView>
+            <asp:UpdatePanel ID="upCVHojSust" runat="server" UpdateMode="Conditional">
+              <ContentTemplate>
+                <asp:GridView ID="gvCVHojSustitucion" runat="server" CssClass="table table-sm table-striped table-bordered"
+                              AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id"
+                              OnRowEditing="gvCV_RowEditing" OnRowCancelingEdit="gvCV_RowCancelingEdit" OnRowUpdating="gvCVHojSust_RowUpdating">
+                  <Columns>
+                    <asp:BoundField DataField="id" HeaderText="ID" Visible="false" />
+                    <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="60px" ItemStyle-CssClass="text-center" ReadOnly="true" />
+                    <asp:BoundField DataField="descripcion" HeaderText="Descripcion" ReadOnly="true" />
+                    <asp:BoundField DataField="numparte" HeaderText="Num. Parte" ItemStyle-Width="120px" ReadOnly="true" />
+                    <asp:TemplateField HeaderText="Precio">
+                      <ItemTemplate>
+                        <%# String.Format("{0:C2}", If(IsDBNull(Eval("precio")), 0, Eval("precio"))) %>
+                      </ItemTemplate>
+                      <EditItemTemplate>
+                        <asp:TextBox ID="txtPrecio" runat="server" Text='<%# Bind("precio") %>' CssClass="form-control form-control-sm" style="width:120px;text-align:right;" />
+                      </EditItemTemplate>
+                      <ItemStyle Width="130px" CssClass="text-end" />
+                    </asp:TemplateField>
+                    <asp:CommandField ShowEditButton="True" ButtonType="Button"
+                                      ControlStyle-CssClass="btn btn-sm btn-outline-primary"
+                                      EditText="Editar" UpdateText="Guardar" CancelText="Cancelar"
+                                      ItemStyle-Width="180px" />
+                  </Columns>
+                </asp:GridView>
+              </ContentTemplate>
+            </asp:UpdatePanel>
           </div>
 
           <!-- Hojalateria - Reparacion -->
           <div class="mb-4">
             <h6 class="text-muted">Reparacion</h6>
-            <asp:GridView ID="gvCVHojReparacion" runat="server" CssClass="table table-sm table-striped table-bordered"
-                          AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id"
-                          OnRowEditing="gvCV_RowEditing" OnRowCancelingEdit="gvCV_RowCancelingEdit" OnRowUpdating="gvCVHojRep_RowUpdating">
-              <Columns>
-                <asp:BoundField DataField="id" HeaderText="ID" Visible="false" />
-                <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="60px" ItemStyle-CssClass="text-center" ReadOnly="true" />
-                <asp:BoundField DataField="descripcion" HeaderText="Descripcion" ReadOnly="true" />
-                <asp:BoundField DataField="observ1" HeaderText="Observaciones" ReadOnly="true" />
-                <asp:TemplateField HeaderText="Precio">
-                  <ItemTemplate>
-                    <%# String.Format("{0:C2}", If(IsDBNull(Eval("precio")), 0, Eval("precio"))) %>
-                  </ItemTemplate>
-                  <EditItemTemplate>
-                    <asp:TextBox ID="txtPrecio" runat="server" Text='<%# Bind("precio") %>' CssClass="form-control form-control-sm" style="width:120px;text-align:right;" />
-                  </EditItemTemplate>
-                  <ItemStyle Width="130px" CssClass="text-end" />
-                </asp:TemplateField>
-                <asp:CommandField ShowEditButton="True" ButtonType="Button"
-                                  ControlStyle-CssClass="btn btn-sm btn-outline-primary"
-                                  EditText="Editar" UpdateText="Guardar" CancelText="Cancelar"
-                                  ItemStyle-Width="180px" />
-              </Columns>
-            </asp:GridView>
+            <asp:UpdatePanel ID="upCVHojRep" runat="server" UpdateMode="Conditional">
+              <ContentTemplate>
+                <asp:GridView ID="gvCVHojReparacion" runat="server" CssClass="table table-sm table-striped table-bordered"
+                              AutoGenerateColumns="False" EmptyDataText="Sin registros" DataKeyNames="id"
+                              OnRowEditing="gvCV_RowEditing" OnRowCancelingEdit="gvCV_RowCancelingEdit" OnRowUpdating="gvCVHojRep_RowUpdating">
+                  <Columns>
+                    <asp:BoundField DataField="id" HeaderText="ID" Visible="false" />
+                    <asp:BoundField DataField="cantidad" HeaderText="Cant" ItemStyle-Width="60px" ItemStyle-CssClass="text-center" ReadOnly="true" />
+                    <asp:BoundField DataField="descripcion" HeaderText="Descripcion" ReadOnly="true" />
+                    <asp:BoundField DataField="observ1" HeaderText="Observaciones" ReadOnly="true" />
+                    <asp:TemplateField HeaderText="Precio">
+                      <ItemTemplate>
+                        <%# String.Format("{0:C2}", If(IsDBNull(Eval("precio")), 0, Eval("precio"))) %>
+                      </ItemTemplate>
+                      <EditItemTemplate>
+                        <asp:TextBox ID="txtPrecio" runat="server" Text='<%# Bind("precio") %>' CssClass="form-control form-control-sm" style="width:120px;text-align:right;" />
+                      </EditItemTemplate>
+                      <ItemStyle Width="130px" CssClass="text-end" />
+                    </asp:TemplateField>
+                    <asp:CommandField ShowEditButton="True" ButtonType="Button"
+                                      ControlStyle-CssClass="btn btn-sm btn-outline-primary"
+                                      EditText="Editar" UpdateText="Guardar" CancelText="Cancelar"
+                                      ItemStyle-Width="180px" />
+                  </Columns>
+                </asp:GridView>
+              </ContentTemplate>
+            </asp:UpdatePanel>
           </div>
         </div>
         <div class="modal-footer">

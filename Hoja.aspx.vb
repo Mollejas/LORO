@@ -2855,38 +2855,28 @@ Paint:
         Dim gv As GridView = CType(sender, GridView)
         gv.EditIndex = e.NewEditIndex
         CargarRefaccionesCV()
-        ReabrirModalCV()
     End Sub
 
     Protected Sub gvCV_RowCancelingEdit(sender As Object, e As GridViewCancelEditEventArgs)
         Dim gv As GridView = CType(sender, GridView)
         gv.EditIndex = -1
         CargarRefaccionesCV()
-        ReabrirModalCV()
     End Sub
 
     Protected Sub gvCVMecSust_RowUpdating(sender As Object, e As GridViewUpdateEventArgs)
         ActualizarPrecioCV(gvCVMecSustitucion, e)
-        ReabrirModalCV()
     End Sub
 
     Protected Sub gvCVMecRep_RowUpdating(sender As Object, e As GridViewUpdateEventArgs)
         ActualizarPrecioCV(gvCVMecReparacion, e)
-        ReabrirModalCV()
     End Sub
 
     Protected Sub gvCVHojSust_RowUpdating(sender As Object, e As GridViewUpdateEventArgs)
         ActualizarPrecioCV(gvCVHojSustitucion, e)
-        ReabrirModalCV()
     End Sub
 
     Protected Sub gvCVHojRep_RowUpdating(sender As Object, e As GridViewUpdateEventArgs)
         ActualizarPrecioCV(gvCVHojReparacion, e)
-        ReabrirModalCV()
-    End Sub
-
-    Private Sub ReabrirModalCV()
-        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "reabrirModalCV", "setTimeout(function(){var m=new bootstrap.Modal(document.getElementById('modalCreacionValuacion'));m.show();},100);", True)
     End Sub
 
     Private Sub ActualizarPrecioCV(gv As GridView, e As GridViewUpdateEventArgs)
@@ -2938,13 +2928,13 @@ Paint:
 
                 Dim fila As Integer = 1
 
-                ' Logo (si existe) - Centrado y más grande
+                ' Logo (si existe) - Centrado con ancho reducido
                 Dim logoPath As String = Server.MapPath("~/images/logo.png")
                 If File.Exists(logoPath) Then
                     Dim logo As OfficeOpenXml.Drawing.ExcelPicture = ws.Drawings.AddPicture("Logo", New FileInfo(logoPath))
                     ' Centrar logo en columnas 3-6 (centro de 8 columnas)
                     logo.SetPosition(0, 5, 2, 10)
-                    logo.SetSize(350, 100) ' Más grande y estirado
+                    logo.SetSize(175, 100) ' Ancho a la mitad, alto igual
                     fila = 7
                 End If
 
@@ -2994,15 +2984,15 @@ Paint:
                 End With
                 fila += 1
 
-                ' Imagen del vehículo a la IZQUIERDA (columnas 1-2)
+                ' Imagen del vehículo a la IZQUIERDA (columnas 1-2) - Más compacta
                 Dim filaImagen As Integer = fila
                 If Not String.IsNullOrWhiteSpace(carpetaRel) Then
                     Dim imgPath As String = Path.Combine(ResolverCarpetaFisica(carpetaRel), "1. DOCUMENTOS DE INGRESO", "principal.jpg")
                     If File.Exists(imgPath) Then
                         Dim img As OfficeOpenXml.Drawing.ExcelPicture = ws.Drawings.AddPicture("VehiculoImg", New FileInfo(imgPath))
-                        ' Posicionar a la izquierda
+                        ' Posicionar a la izquierda - más pequeña
                         img.SetPosition(filaImagen - 1, 5, 0, 5)
-                        img.SetSize(180, 135)
+                        img.SetSize(120, 90) ' Reducida para ocupar menos espacio
                     End If
                 End If
 
@@ -3037,7 +3027,8 @@ Paint:
                     Next
                 Next
 
-                fila += 2
+                ' Agregar 5 filas de espacio extra antes de las tablas
+                fila += 6
 
                 ' Cargar refacciones y generar tablas
                 fila = AgregarTablaRefaccionesExcel(ws, fila, expediente, "MECÁNICA - SUSTITUCIÓN", "MECANICA", "SUSTITUCION", True)
