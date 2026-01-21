@@ -38,32 +38,31 @@ Partial Public Class EnvioVal
 
         Using cn As New SqlConnection(cs)
             cn.Open()
-            Using cmd As New SqlCommand("SELECT expediente, anio, marca, modelo, color, placas, carpeta FROM admisiones WHERE id = @id", cn)
-                cmd.Parameters.AddWithValue("@id", admId)
+            Using cmd As New SqlCommand("SELECT expediente, marca, tipo, modelo, color, placas, carpetarel FROM admisiones WHERE id = @id", cn)
+                cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
 
-                Using reader = cmd.ExecuteReader()
-                    If reader.Read() Then
-                        Dim expediente As String = If(reader("expediente")?.ToString(), "")
+                Using rd = cmd.ExecuteReader()
+                    If rd.Read() Then
+                        Dim expediente As String = If(rd.IsDBNull(0), "", rd.GetString(0))
                         hidExpediente.Value = expediente
                         lblExpediente.Text = expediente
-                        lblAnio.Text = If(reader("anio")?.ToString(), "—")
-                        lblMarca.Text = If(reader("marca")?.ToString(), "—")
-                        lblModelo.Text = If(reader("modelo")?.ToString(), "—")
-                        lblColor.Text = If(reader("color")?.ToString(), "—")
-                        lblPlacas.Text = If(reader("placas")?.ToString(), "—")
+                        lblMarca.Text = If(rd.IsDBNull(1), "", rd.GetString(1))
+                        lblModelo.Text = If(rd.IsDBNull(2), "", rd.GetString(2))  ' Tipo es el modelo del vehículo
+                        lblAnio.Text = If(rd.IsDBNull(3), "", rd.GetValue(3).ToString())  ' Modelo es el año
+                        lblColor.Text = If(rd.IsDBNull(4), "", rd.GetString(4))
+                        lblPlacas.Text = If(rd.IsDBNull(5), "", rd.GetString(5))
 
-                        ' Cargar imagen principal
-                        Dim carpeta As String = If(reader("carpeta")?.ToString(), "")
-                        If Not String.IsNullOrWhiteSpace(carpeta) Then
-                            Dim carpetaFisica As String = Server.MapPath(carpeta)
-                            Dim subFolder As String = Path.Combine(carpetaFisica, "1. DOCUMENTOS DE INGRESO")
-                            Dim principalPath As String = Path.Combine(subFolder, "principal.jpg")
+                        Dim carpetaRel As String = If(rd.IsDBNull(6), "", rd.GetString(6))
 
-                            If File.Exists(principalPath) Then
-                                Dim relativePath As String = carpeta.TrimStart("~"c) & "/1. DOCUMENTOS DE INGRESO/principal.jpg"
-                                imgPrincipal.ImageUrl = relativePath & "?v=" & DateTime.Now.Ticks.ToString()
+                        ' Cargar imagen principal (mismo método que Hoja de Trabajo)
+                        If Not String.IsNullOrWhiteSpace(carpetaRel) Then
+                            Dim baseFolder As String = ResolverCarpetaFisica(carpetaRel)
+                            Dim imgPath As String = Path.Combine(baseFolder, "1. DOCUMENTOS DE INGRESO", "principal.jpg")
+                            If File.Exists(imgPath) Then
+                                Dim bytes = File.ReadAllBytes(imgPath)
+                                imgPrincipal.ImageUrl = "data:image/jpeg;base64," & Convert.ToBase64String(bytes)
                             Else
-                                imgPrincipal.Visible = False
+                                imgPrincipal.ImageUrl = ""
                             End If
                         End If
                     End If
@@ -71,6 +70,15 @@ Partial Public Class EnvioVal
             End Using
         End Using
     End Sub
+
+    Private Function ResolverCarpetaFisica(carpetaRel As String) As String
+        If String.IsNullOrWhiteSpace(carpetaRel) Then Return ""
+        If carpetaRel.StartsWith("~") Then
+            Return Server.MapPath(carpetaRel)
+        Else
+            Return Server.MapPath("~" & carpetaRel)
+        End If
+    End Function
 
     Private Sub CargarRefacciones()
         Dim expediente As String = hidExpediente.Value
