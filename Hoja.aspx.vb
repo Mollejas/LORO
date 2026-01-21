@@ -2740,6 +2740,12 @@ Paint:
         UpdateBottomWidgets()
     End Sub
 
+    ' Ver Creacion de Valuacion
+    Protected Sub btnVerCreacionValuacion_Click(sender As Object, e As EventArgs)
+        If String.IsNullOrWhiteSpace(hidId.Value) Then Exit Sub
+        Response.Redirect("EnvioVal.aspx?id=" & hidId.Value)
+    End Sub
+
     ' Ver Hoja de Trabajo Sin Autorizar
     Protected Sub btnVerHojaTrabajo_Click(sender As Object, e As EventArgs)
         If String.IsNullOrWhiteSpace(hidId.Value) Then Exit Sub
