@@ -1898,6 +1898,10 @@
           </div>
         </div>
         <div class="modal-footer">
+          <asp:Button ID="btnDescargarValuacion" runat="server" CssClass="btn btn-success"
+                      Text="Descargar Valuacion" OnClick="btnDescargarValuacion_Click">
+            <i class="bi bi-file-earmark-excel"></i>
+          </asp:Button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>
       </div>

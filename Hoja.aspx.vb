@@ -2908,6 +2908,262 @@ Paint:
         End Try
     End Sub
 
+    ' Descargar Valuación en Excel
+    Protected Sub btnDescargarValuacion_Click(sender As Object, e As EventArgs)
+        Try
+            Dim expediente As String = hidCVExpediente.Value
+            If String.IsNullOrWhiteSpace(expediente) Then Exit Sub
+
+            Dim admId As Integer
+            If Not Integer.TryParse(hidId.Value, admId) Then Exit Sub
+
+            ' Usar EPPlus para crear el Excel
+            Using pck As New OfficeOpenXml.ExcelPackage()
+                Dim ws As OfficeOpenXml.ExcelWorksheet = pck.Workbook.Worksheets.Add("Valuacion")
+
+                ' Configurar página para impresión profesional
+                ws.PrinterSettings.PaperSize = OfficeOpenXml.ePaperSize.Letter
+                ws.PrinterSettings.Orientation = OfficeOpenXml.eOrientation.Portrait
+                ws.PrinterSettings.FitToPage = True
+
+                Dim fila As Integer = 1
+
+                ' Logo (si existe)
+                Dim logoPath As String = Server.MapPath("~/images/logo.png")
+                If File.Exists(logoPath) Then
+                    Dim logo As OfficeOpenXml.Drawing.ExcelPicture = ws.Drawings.AddPicture("Logo", New FileInfo(logoPath))
+                    logo.SetPosition(0, 0, 0, 0)
+                    logo.SetSize(200, 80)
+                    fila = 6
+                End If
+
+                ' Título principal
+                ws.Cells(fila, 1).Value = "VALUACIÓN DE VEHÍCULO"
+                ws.Cells(fila, 1, fila, 8).Merge = True
+                With ws.Cells(fila, 1)
+                    .Style.Font.Size = 18
+                    .Style.Font.Bold = True
+                    .Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center
+                    .Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid
+                    .Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(0, 112, 192))
+                    .Style.Font.Color.SetColor(System.Drawing.Color.White)
+                End With
+                fila += 2
+
+                ' Obtener datos del vehículo
+                Dim cs As String = DatabaseHelper.GetConnectionString()
+                Dim marca, modelo, anio, color, placas, carpetaRel As String
+                marca = "" : modelo = "" : anio = "" : color = "" : placas = "" : carpetaRel = ""
+
+                Using cn As New SqlConnection(cs)
+                    cn.Open()
+                    Using cmd As New SqlCommand("SELECT marca, tipo, modelo, color, placas, carpetarel FROM admisiones WHERE id = @id", cn)
+                        cmd.Parameters.Add("@id", SqlDbType.Int).Value = admId
+                        Using rd = cmd.ExecuteReader()
+                            If rd.Read() Then
+                                marca = If(rd.IsDBNull(0), "", rd.GetString(0))
+                                modelo = If(rd.IsDBNull(1), "", rd.GetString(1))
+                                anio = If(rd.IsDBNull(2), "", rd.GetValue(2).ToString())
+                                color = If(rd.IsDBNull(3), "", rd.GetString(3))
+                                placas = If(rd.IsDBNull(4), "", rd.GetString(4))
+                                carpetaRel = If(rd.IsDBNull(5), "", rd.GetString(5))
+                            End If
+                        End Using
+                    End Using
+                End Using
+
+                ' Datos del vehículo
+                ws.Cells(fila, 1).Value = "DATOS DEL VEHÍCULO"
+                ws.Cells(fila, 1, fila, 4).Merge = True
+                With ws.Cells(fila, 1)
+                    .Style.Font.Size = 14
+                    .Style.Font.Bold = True
+                    .Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid
+                    .Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(217, 217, 217))
+                End With
+                fila += 1
+
+                ' Tabla de datos
+                ws.Cells(fila, 1).Value = "Expediente:"
+                ws.Cells(fila, 2).Value = expediente
+                ws.Cells(fila, 3).Value = "Año:"
+                ws.Cells(fila, 4).Value = anio
+                fila += 1
+
+                ws.Cells(fila, 1).Value = "Marca:"
+                ws.Cells(fila, 2).Value = marca
+                ws.Cells(fila, 3).Value = "Color:"
+                ws.Cells(fila, 4).Value = color
+                fila += 1
+
+                ws.Cells(fila, 1).Value = "Modelo:"
+                ws.Cells(fila, 2).Value = modelo
+                ws.Cells(fila, 3).Value = "Placas:"
+                ws.Cells(fila, 4).Value = placas
+                fila += 1
+
+                ' Estilo de la tabla de datos
+                For i As Integer = fila - 3 To fila - 1
+                    ws.Cells(i, 1).Style.Font.Bold = True
+                    ws.Cells(i, 3).Style.Font.Bold = True
+                    For j As Integer = 1 To 4
+                        ws.Cells(i, j).Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                        ws.Cells(i, j).Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                        ws.Cells(i, j).Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                        ws.Cells(i, j).Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    Next
+                Next
+
+                ' Imagen del vehículo (en columna 6-8)
+                If Not String.IsNullOrWhiteSpace(carpetaRel) Then
+                    Dim imgPath As String = Path.Combine(ResolverCarpetaFisica(carpetaRel), "1. DOCUMENTOS DE INGRESO", "principal.jpg")
+                    If File.Exists(imgPath) Then
+                        Dim img As OfficeOpenXml.Drawing.ExcelPicture = ws.Drawings.AddPicture("VehiculoImg", New FileInfo(imgPath))
+                        img.SetPosition(fila - 4, 0, 5, 0)
+                        img.SetSize(200, 150)
+                    End If
+                End If
+
+                fila += 2
+
+                ' Cargar refacciones y generar tablas
+                fila = AgregarTablaRefaccionesExcel(ws, fila, expediente, "MECÁNICA - SUSTITUCIÓN", "MECANICA", "SUSTITUCION", True)
+                fila = AgregarTablaRefaccionesExcel(ws, fila, expediente, "MECÁNICA - REPARACIÓN", "MECANICA", "REPARACION", False)
+                fila = AgregarTablaRefaccionesExcel(ws, fila, expediente, "HOJALATERÍA - SUSTITUCIÓN", "HOJALATERIA", "SUSTITUCION", True)
+                fila = AgregarTablaRefaccionesExcel(ws, fila, expediente, "HOJALATERÍA - REPARACIÓN", "HOJALATERIA", "REPARACION", False)
+
+                ' Ajustar anchos de columna
+                ws.Column(1).Width = 10
+                ws.Column(2).Width = 40
+                ws.Column(3).Width = 20
+                ws.Column(4).Width = 15
+                ws.Column(5).Width = 15
+
+                ' Generar archivo y enviarlo al cliente
+                Dim fileName As String = String.Format("Valuacion_{0}_{1:yyyyMMdd}.xlsx", expediente, DateTime.Now)
+                Response.Clear()
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                Response.AddHeader("content-disposition", "attachment; filename=" & fileName)
+                Response.BinaryWrite(pck.GetAsByteArray())
+                Response.End()
+            End Using
+
+        Catch ex As Exception
+            ' Mostrar error al usuario
+            ScriptManager.RegisterStartupScript(Me, Me.GetType(), "errorDescarga", "alert('Error al generar Excel: " & ex.Message.Replace("'", "\'") & "');", True)
+        End Try
+    End Sub
+
+    Private Function AgregarTablaRefaccionesExcel(ws As OfficeOpenXml.ExcelWorksheet, filaInicio As Integer, expediente As String, titulo As String, area As String, categoria As String, tieneNumParte As Boolean) As Integer
+        Dim fila As Integer = filaInicio
+
+        ' Título de la sección
+        ws.Cells(fila, 1).Value = titulo
+        ws.Cells(fila, 1, fila, 5).Merge = True
+        With ws.Cells(fila, 1)
+            .Style.Font.Size = 12
+            .Style.Font.Bold = True
+            .Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid
+            If area = "MECANICA" Then
+                .Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(155, 194, 230))
+            Else
+                .Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(255, 230, 153))
+            End If
+        End With
+        fila += 1
+
+        ' Encabezados
+        ws.Cells(fila, 1).Value = "Cant"
+        ws.Cells(fila, 2).Value = "Descripción"
+        If tieneNumParte Then
+            ws.Cells(fila, 3).Value = "Num. Parte"
+        Else
+            ws.Cells(fila, 3).Value = "Observaciones"
+        End If
+        ws.Cells(fila, 4).Value = "Precio Unit."
+        ws.Cells(fila, 5).Value = "Total"
+
+        For i As Integer = 1 To 5
+            With ws.Cells(fila, i)
+                .Style.Font.Bold = True
+                .Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid
+                .Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(217, 217, 217))
+                .Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                .Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                .Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                .Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+            End With
+        Next
+        fila += 1
+
+        ' Obtener datos
+        Dim cs As String = DatabaseHelper.GetConnectionString()
+        Dim dt As New DataTable()
+        Using cn As New SqlConnection(cs)
+            cn.Open()
+            Dim campo As String = If(tieneNumParte, "numparte", "observ1")
+            Dim sql As String = String.Format("SELECT cantidad, descripcion, {0}, ISNULL(precio, 0) as precio FROM refacciones WHERE expediente = @exp AND UPPER(area) = @area AND UPPER(categoria) = @cat ORDER BY id", campo)
+            Using cmd As New SqlCommand(sql, cn)
+                cmd.Parameters.AddWithValue("@exp", expediente)
+                cmd.Parameters.AddWithValue("@area", area)
+                cmd.Parameters.AddWithValue("@cat", categoria)
+                Using da As New SqlDataAdapter(cmd)
+                    da.Fill(dt)
+                End Using
+            End Using
+        End Using
+
+        ' Agregar filas de datos
+        Dim total As Decimal = 0
+        For Each row As DataRow In dt.Rows
+            Dim cantidad As Integer = If(IsDBNull(row("cantidad")), 0, Convert.ToInt32(row("cantidad")))
+            Dim precio As Decimal = If(IsDBNull(row("precio")), 0, Convert.ToDecimal(row("precio")))
+            Dim subtotal As Decimal = cantidad * precio
+
+            ws.Cells(fila, 1).Value = cantidad
+            ws.Cells(fila, 2).Value = If(IsDBNull(row("descripcion")), "", row("descripcion").ToString())
+            ws.Cells(fila, 3).Value = If(IsDBNull(row(2)), "", row(2).ToString())
+            ws.Cells(fila, 4).Value = precio
+            ws.Cells(fila, 5).Value = subtotal
+
+            ' Formato de moneda
+            ws.Cells(fila, 4).Style.Numberformat.Format = "$#,##0.00"
+            ws.Cells(fila, 5).Style.Numberformat.Format = "$#,##0.00"
+
+            ' Bordes
+            For i As Integer = 1 To 5
+                ws.Cells(fila, i).Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                ws.Cells(fila, i).Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                ws.Cells(fila, i).Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                ws.Cells(fila, i).Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+            Next
+
+            total += subtotal
+            fila += 1
+        Next
+
+        ' Fila de total
+        If dt.Rows.Count > 0 Then
+            ws.Cells(fila, 4).Value = "TOTAL:"
+            ws.Cells(fila, 5).Value = total
+            ws.Cells(fila, 4).Style.Font.Bold = True
+            ws.Cells(fila, 5).Style.Font.Bold = True
+            ws.Cells(fila, 5).Style.Numberformat.Format = "$#,##0.00"
+            ws.Cells(fila, 4).Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid
+            ws.Cells(fila, 4).Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(255, 242, 204))
+            ws.Cells(fila, 5).Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid
+            ws.Cells(fila, 5).Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(255, 242, 204))
+            fila += 1
+        Else
+            ws.Cells(fila, 1, fila, 5).Merge = True
+            ws.Cells(fila, 1).Value = "Sin registros"
+            ws.Cells(fila, 1).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center
+            fila += 1
+        End If
+
+        Return fila + 1 ' Espacio entre tablas
+    End Function
+
     ' Ver Hoja de Trabajo Sin Autorizar
     Protected Sub btnVerHojaTrabajo_Click(sender As Object, e As EventArgs)
         If String.IsNullOrWhiteSpace(hidId.Value) Then Exit Sub
